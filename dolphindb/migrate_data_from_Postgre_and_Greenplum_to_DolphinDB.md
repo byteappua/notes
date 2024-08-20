@@ -8,8 +8,7 @@ DolphinDB 是一种高效、分布式的数据管理和分析平台，集成了�
 
 PostgreSQL 迁移数据到 DolphinDB 的整体框架如下：
 
-<img src="images/migrate_data_from_Postgre_and_Greenplum_to_DolphinDB/01.png">
-
+<img src="./images/migrate_data_from_Postgre_and_Greenplum_to_DolphinDB/01.png">
 
 - [1. 实现方法](#1-实现方法)
   - [1.1 ODBC 插件](#11-odbc-插件)
@@ -30,7 +29,7 @@ PostgreSQL 迁移数据到 DolphinDB 的整体框架如下：
 
 ODBC（Open Database Connectivity）插件是 DolphinDB 提供的通过 ODBC 接口访问 PostgreSQL 的开源产品。使用插件配合 DolphinDB 脚本使用，与服务器在同一个进程空间内运行，能高效地完成 Oracle 数据到 DolphinDB 的数据写入。
 
-ODBC 提供如下函数，函数的具体使用请参考 [odbc/README_CN.md · 浙江智臾科技有限公司/DolphinDBPlugin - Gitee](https://gitee.com/dolphindb/DolphinDBPlugin/blob/release200/odbc/README_CN.md) 
+ODBC 提供如下函数，函数的具体使用请参考 [odbc/README_CN.md · 浙江智臾科技有限公司/DolphinDBPlugin - Gitee](https://gitee.com/dolphindb/DolphinDBPlugin/blob/release200/odbc/README_CN.md)
 
 - `odbc::connect(connStr, [dataBaseType])`
 - `odbc::close(conn)`
@@ -87,9 +86,9 @@ PostgreSQL 建表语句如下：
 ```
 create table ticksh(
   SecurityID         varchar(20),
-  TradeTime       	 TIMESTAMP,
+  TradeTime         TIMESTAMP,
   TradePrice         NUMERIC(38,4),
-  TradeQty 	         NUMERIC(38),
+  TradeQty           NUMERIC(38),
   TradeAmount        NUMERIC(38,4),
   BuyNo              NUMERIC(38),
   SellNo             NUMERIC(38),
@@ -106,17 +105,17 @@ create table ticksh(
 
 ```
 def createTick(dbName, tbName){
-	if(existsDatabase(dbName)){
-		dropDatabase(dbName)
-	}
-	db1 = database(, VALUE, 2020.01.01..2021.01.01)
-	db2 = database(, HASH, [SYMBOL, 10])
-	db = database(dbName, COMPO, [db1, db2], , "TSDB")
-	db = database(dbName)
-	name = `SecurityID`TradeTime`TradePrice`TradeQty`TradeAmount`BuyNo`SellNo`ChannelNo`TradeIndex`TradeBSFlag`BizIndex
-	type = `SYMBOL`TIMESTAMP`DOUBLE`INT`DOUBLE`INT`INT`INT`INT`SYMBOL`INT
-	schemaTable = table(1:0, name, type)
-	db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`TradeTime`SecurityID, compressMethods={TradeTime:"delta"}, sortColumns=`SecurityID`TradeTime, keepDuplicates=ALL)
+ if(existsDatabase(dbName)){
+  dropDatabase(dbName)
+ }
+ db1 = database(, VALUE, 2020.01.01..2021.01.01)
+ db2 = database(, HASH, [SYMBOL, 10])
+ db = database(dbName, COMPO, [db1, db2], , "TSDB")
+ db = database(dbName)
+ name = `SecurityID`TradeTime`TradePrice`TradeQty`TradeAmount`BuyNo`SellNo`ChannelNo`TradeIndex`TradeBSFlag`BizIndex
+ type = `SYMBOL`TIMESTAMP`DOUBLE`INT`DOUBLE`INT`INT`INT`INT`SYMBOL`INT
+ schemaTable = table(1:0, name, type)
+ db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`TradeTime`SecurityID, compressMethods={TradeTime:"delta"}, sortColumns=`SecurityID`TradeTime, keepDuplicates=ALL)
 }
 
 dbName="dfs://TSDB_tick"
@@ -189,16 +188,16 @@ FileUsage       = 1
 2）*/etc/odbc.ini* 文件用于设置 ODBC 中所用到的 Driver 、所要使用的数据库等配置，更多配置项可参考 [ODBC 连接字符串配置](https://gitee.com/link?target=https%3A%2F%2Fwww.connectionstrings.com%2F)。其中的 Driver 为 */etc/odbcinst.ini* 文件中配置的第一行方括号中的内容。添加内容如下（如果配置文件不存在，需手工创建）：
 
 ```
-[postgresql] 					//ODBC 数据源名称
-Description = PostgresSQLODBC	//ODBC 的描述
-Driver = PostgreSQL				//驱动名称
-Database = postgres				//数据库名称
-Servername = 127.0.0.1			//布置了 Postgresql 数据库的服务器 IP 地址
-UserName = postgres				//数据库相关的用户名
-Password = postgres				//数据库密码
-Port = 5432					    //布置了 Postgresql 数据库的服务器的端口号
-ReadOnly = 0					//关闭只读特性
-ConnSettings = set client_encoding to UTF8	//客户端编码
+[postgresql]      //ODBC 数据源名称
+Description = PostgresSQLODBC //ODBC 的描述
+Driver = PostgreSQL    //驱动名称
+Database = postgres    //数据库名称
+Servername = 127.0.0.1   //布置了 Postgresql 数据库的服务器 IP 地址
+UserName = postgres    //数据库相关的用户名
+Password = postgres    //数据库密码
+Port = 5432         //布置了 Postgresql 数据库的服务器的端口号
+ReadOnly = 0     //关闭只读特性
+ConnSettings = set client_encoding to UTF8 //客户端编码
 ```
 
 **step4：测试 ODBC 连接**
@@ -225,7 +224,7 @@ isql postgresql postgres postgres  //后两位分别是用户名和密码
 SQL>
 ```
 
-<img src="images/migrate_data_from_Postgre_and_Greenplum_to_DolphinDB/02.png">
+<img src="./images/migrate_data_from_Postgre_and_Greenplum_to_DolphinDB/02.png">
 
 **注意**：如有其他常见问题，可参考 [ODBC_plugin_user_guide.md · 浙江智臾科技有限公司/Tutorials_CN - Gitee](https://gitee.com/dolphindb/Tutorials_CN/blob/master/ODBC_plugin_user_guide.md#5-odbc-%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%E5%92%8C%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98) 文章中的第5章注意事项和常见问题。
 
@@ -249,20 +248,20 @@ conn = odbc::connect("Driver={PostgreSQL};Server=*;Port=5432;Database=postgres;U
 
 ```
 def transForm(mutable msg){
-	msg.replaceColumn!(`TradeQty, int(msg[`TradeQty]))
-	msg.replaceColumn!(`BuyNo, int(msg[`BuyNo]))
-	msg.replaceColumn!(`SellNo, int(msg[`SellNo]))
-	msg.replaceColumn!(`ChannelNo, int(msg[`ChannelNo]))
-	msg.replaceColumn!(`TradeIndex, int(msg[`TradeIndex]))
-	msg.replaceColumn!(`BizIndex, int(msg[`BizIndex]))
-	return msg
+ msg.replaceColumn!(`TradeQty, int(msg[`TradeQty]))
+ msg.replaceColumn!(`BuyNo, int(msg[`BuyNo]))
+ msg.replaceColumn!(`SellNo, int(msg[`SellNo]))
+ msg.replaceColumn!(`ChannelNo, int(msg[`ChannelNo]))
+ msg.replaceColumn!(`TradeIndex, int(msg[`TradeIndex]))
+ msg.replaceColumn!(`BizIndex, int(msg[`BizIndex]))
+ return msg
 }
 
 def syncData(conn, dbName, tbName, dt){
-	sql = "select SecurityID, TradeTime, TradePrice, TradeQty, TradeAmount, BuyNo, SellNo, ChannelNo, TradeIndex, TradeBSFlag, BizIndex from ticksh"
-	if(!isNull(dt)) {
-		sql = sql + " where to_date(TradeTime,'yyyy-MM-dd hh24:mi:ss') = dt"
-	}
+ sql = "select SecurityID, TradeTime, TradePrice, TradeQty, TradeAmount, BuyNo, SellNo, ChannelNo, TradeIndex, TradeBSFlag, BizIndex from ticksh"
+ if(!isNull(dt)) {
+  sql = sql + " where to_date(TradeTime,'yyyy-MM-dd hh24:mi:ss') = dt"
+ }
     odbc::query(conn,sql, loadTable(dbName,tbName), 100000, transForm)
 }
 
@@ -279,7 +278,7 @@ syncData(conn, dbName, tbName, NULL)
 
 ```
 for(dt in 2021.01.04..2021.01.05){
-	submitJob(`syncPostgreTick, `syncPostgreTick, syncData, conn, dbName, tbName, dt)
+ submitJob(`syncPostgreTick, `syncPostgreTick, syncData, conn, dbName, tbName, dt)
 }
 // 查看后台任务
 select * from getRecentJobs() where jobDesc = `syncPostgreTick
@@ -298,7 +297,7 @@ python datax.py /opt/datax/job/job.json
 
 可能出现报错，报错为[您提供的配置文件存在错误信息... plugin.json ]不存在：
 
-<img src="images/migrate_data_from_Postgre_and_Greenplum_to_DolphinDB/03.png">
+<img src="./images/migrate_data_from_Postgre_and_Greenplum_to_DolphinDB/03.png">
 
 该问题是因为在 `reader` 和 `writer` 目录下存在临时文件，影响了 datax 的运行，解决方法如下：
 
@@ -308,7 +307,7 @@ find /datax/plugin/reader/ -type f -name "._*er" | xargs rm -rf
 find /datax/plugin/writer/ -type f -name "._*er" | xargs rm -rf
 ```
 
-自检成功后，将 [DataX-DolphinDBWriter ](https://gitee.com/link?target=https%3A%2F%2Fgithub.com%2Fdolphindb%2Fdatax-writer)中源码的 `./dist/dolphindbwriter` 目录下所有内容拷贝到 `DataX/plugin/writer` 目录下，即可使用。
+自检成功后，将 [DataX-DolphinDBWriter](https://gitee.com/link?target=https%3A%2F%2Fgithub.com%2Fdolphindb%2Fdatax-writer)中源码的 `./dist/dolphindbwriter` 目录下所有内容拷贝到 `DataX/plugin/writer` 目录下，即可使用。
 
 #### **3.4.2 执行 DataX 任务**
 

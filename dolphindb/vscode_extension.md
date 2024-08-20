@@ -21,7 +21,6 @@ DolphinDB 公司开发了这个针对 DolphinDB 数据库的 VSCode 插件，在
   - [常见问题](#常见问题)
   - [开发说明](#开发说明)
 
-
 ## 功能
 
 - 代码高亮
@@ -90,7 +89,7 @@ DolphinDB 公司开发了这个针对 DolphinDB 数据库的 VSCode 插件，在
 - 查看会话变量的值
 - 非 scalar, pair 类型的变量右侧有两个图标
   - 点击左边的图标可以在编辑器下方面板的 DolphinDB 区域中查看变量
-  - 点击右边的图标可以直接打开一个浏览器弹窗，在弹窗中查看变量 (需要配置浏览器允许弹窗, 见后文)。弹窗功能需要浏览器中有一个打开的 `DolphinDB Data Browser` 标签页 (URL 可能是 http://localhost:8321/)，如果缺少这个标签页插件会先自动打开这个页面
+  - 点击右边的图标可以直接打开一个浏览器弹窗，在弹窗中查看变量 (需要配置浏览器允许弹窗, 见后文)。弹窗功能需要浏览器中有一个打开的 `DolphinDB Data Browser` 标签页 (URL 可能是 <http://localhost:8321/)，如果缺少这个标签页插件会先自动打开这个页面>
 
 如下图所示：
 
@@ -113,6 +112,7 @@ DolphinDB 公司开发了这个针对 DolphinDB 数据库的 VSCode 插件，在
 DolphinDB 的 VSCode 插件提供针对用户脚本的调试功能，该功能满足实时追踪运行脚本、显示中间变量的值以及展示函数调用栈信息的用户需求，以利于用户写出更快更好的脚本。具体调试方法如下：
 
 ### 原理
+
 ![components](images/vscodeext/debug/zh/components.png)
 
 其中，
@@ -148,29 +148,29 @@ DolphinDB 的 VSCode 插件提供针对用户脚本的调试功能，该功能�
   
 1. 在选定行左侧空白处单击鼠标左键设置断点。
 
-    <img src="images/vscodeext/debug/zh/set-breakpoint1.png" width='400' />
+    <img src="./images/vscodeext/debug/zh/set-breakpoint1.png" width='400' />
 
 1. 为了接下来的调试演示，我们在第 4 行和第 8 行分别设置了断点，设置断点后，编辑器区的左侧空白区域处会出现红色的圆点，表示断点设置成功。
 
-    <img src="images/vscodeext/debug/zh/set-breakpoint2.png" width='400' />
+    <img src="./images/vscodeext/debug/zh/set-breakpoint2.png" width='400' />
   
 #### 启动调试
   
 1. 在左下角的连接管理面板中选择用于调试的服务器。
 
-    <img src="images/vscodeext/debug/zh/server.png" width='400' />
+    <img src="./images/vscodeext/debug/zh/server.png" width='400' />
   
 2. 在底部状态栏中设置语言模式为DolphinDB。
 
-    <img src="images/vscodeext/debug/zh/language.png" width='400' />
+    <img src="./images/vscodeext/debug/zh/language.png" width='400' />
 
 3. 按 F5 或通过左侧边栏的运行和调试打开主边栏，点击 `运行和调试`。
   
-    <img src="images/vscodeext/debug/zh/primary-sidebar.png" width='400' />
+    <img src="./images/vscodeext/debug/zh/primary-sidebar.png" width='400' />
 
 启动后的界面如下图所示，
 
-<img src="images/vscodeext/debug/zh/launched.png" width='800' />
+<img src="./images/vscodeext/debug/zh/launched.png" width='800' />
 
 其中，
 
@@ -181,14 +181,14 @@ DolphinDB 的 VSCode 插件提供针对用户脚本的调试功能，该功能�
 
 **注意**：调试过程如果无法启动，打开调试控制台，通过错误信息检查排查错误原因。可能的错误原因包括：
 
-- DolphinDB Server 版本太低会报错 `Server sent no subprotocol` 
+- DolphinDB Server 版本太低会报错 `Server sent no subprotocol`
 - 调试服务器连接失败，请确保 DolphinDB Server 版本不低于 2.00.10 或 1.30.22。
 
 #### 调试
 
 启动调试后，VSCode 的界面上方会出现如下图所示的调试工具栏：
 
-<img src="images/vscodeext/debug/zh/debug-bar.png" width='400' />
+<img src="./images/vscodeext/debug/zh/debug-bar.png" width='400' />
 
 从左到右的名称及对应的键盘快捷键分别为：
 
@@ -204,44 +204,43 @@ DolphinDB 的 VSCode 插件提供针对用户脚本的调试功能，该功能�
 用于调试的按钮功能和使用方法如下：
 
 - 逐过程（F10）：在上个调试界面中，黄色的背景标出了即将被 Server 执行的第 4 行代码所对应的语句。我们按下 F10，让 Server 程序执行完第 4 行代码。此时的调试界面如下图所示，黄色的背景变成了第 5 行代码所对应的语句。
-    
-    <img src="images/vscodeext/debug/zh/F10.png" width='400' />
+
+    <img src="./images/vscodeext/debug/zh/F10.png" width='400' />
 - 继续（F5）：我们可以利用逐过程的方式一条语句一条语句地执行脚本，但是这样做的效率较低。着重关注断点所在的语句有助于提升执行调试效率。在这里，我们关心的是第 8 行代码所对应的语句，按下 F5 后，Server 程序会一直执行到第 8 行代码。此时的调试界面如下图所示，黄色的背景变成了第 8 行代码所对应的语句。
   
-    <img src="images/vscodeext/debug/zh/F5.png" width='400' />
+    <img src="./images/vscodeext/debug/zh/F5.png" width='400' />
 
 - 查看变量：在调试界面的左侧，即调试主边栏中，我们可以在略上方的位置看到变量的值，如下图所示：
 
-    <img src="images/vscodeext/debug/zh/var.png" width='400' />
+    <img src="./images/vscodeext/debug/zh/var.png" width='400' />
 
     在这里，`close` 和 `bret` 这两个变量因为过长而导致显示不全，我们可以将光标悬浮在变量的值上方，即可看到完整的值。
 
-    <img src="images/vscodeext/debug/zh/var-hover.png" width='400' />
+    <img src="./images/vscodeext/debug/zh/var-hover.png" width='400' />
 
 - 单步调试（F11）：单步调试用于进入函数内部，查看函数内部的执行情况。在上一步，我们运行到了第8行代码，即 `rsi` 函数的调用语句。按下 F11 后，Server程序会进入 `rsi` 内。此时对应的调试界面如下图所示，黄色的背景标示程序已经运行到该函数内部，且即将执行第一条语句。
 
-    <img src="images/vscodeext/debug/zh/F11.png" width='400' />
+    <img src="./images/vscodeext/debug/zh/F11.png" width='400' />
 
 - 查看调用栈：我们将目光再次移动到调试主边栏中。在略下方的位置，可以看到当前的函数调用栈，如下图所示。
 
-    <img src="images/vscodeext/debug/zh/call-stack.png" width='400' />
-    
+    <img src="./images/vscodeext/debug/zh/call-stack.png" width='400' />
+
     单击调用栈的某一行，就能在上游函数和下游函数之间切换。此时，调试主边栏上方的变量部分也会显示该层函数所对应的变量的值。
 
 - 动态更新断点：在脚本执行的过程中，我们可以动态地更新断点。例如，我们可以在 152 行和 153 行的位置新增两个断点，如下图所示，编辑器区的左侧空白区域处会出现两个红色的圆点，表示断点已经新增成功。
 
-    <img src="images/vscodeext/debug/zh/set-breakpoint3.png" width='400' />
+    <img src="./images/vscodeext/debug/zh/set-breakpoint3.png" width='400' />
 
     当然，我们也可以取消断点。例如，我们单击 152 行左侧空白处来删除 152 行对应的断点。如下图所示，编辑器区左侧空白区域处 152 行对应的红色圆点消失，表示 152 行处的断点已经取消成功。
 
-    <img src="images/vscodeext/debug/zh/cancel-breakpoint.png" width='400' />
+    <img src="./images/vscodeext/debug/zh/cancel-breakpoint.png" width='400' />
 
-- 跳出函数：实际过程中，我们经常需要执行完这个函数并返回上层函数。例如，我们点击调试工具栏中的单步跳出按钮<img src="images/vscodeext/debug/zh/step-out-icon.png" width='20' />，即可执行完当前函数体的所有内容并返回到上一层函数。此时，如下图所示，我们已经返回到`test.dos`中的第9行代码所对应的语句，代表执行完第8行对应的 `rsi` 函数。
+- 跳出函数：实际过程中，我们经常需要执行完这个函数并返回上层函数。例如，我们点击调试工具栏中的单步跳出按钮<img src="./images/vscodeext/debug/zh/step-out-icon.png" width='20' />，即可执行完当前函数体的所有内容并返回到上一层函数。此时，如下图所示，我们已经返回到`test.dos`中的第9行代码所对应的语句，代表执行完第8行对应的 `rsi` 函数。
 
-    <img src="images/vscodeext/debug/zh/step-out.png" width='400' />
+    <img src="./images/vscodeext/debug/zh/step-out.png" width='400' />
 
-- 重启以及停止：重启和停止按钮的功能与其名字相符。例如，我们点击调试工具栏中的重启按钮<img src="images/vscodeext/debug/zh/restart-icon.png" width='20' />，即可重启调试；相应地，点击停止按钮<img src="images/vscodeext/debug/zh/stop-icon.png" width='20' />，即可停止调试。
-
+- 重启以及停止：重启和停止按钮的功能与其名字相符。例如，我们点击调试工具栏中的重启按钮<img src="./images/vscodeext/debug/zh/restart-icon.png" width='20' />，即可重启调试；相应地，点击停止按钮<img src="./images/vscodeext/debug/zh/stop-icon.png" width='20' />，即可停止调试。
 
 ### 进阶用法
 
@@ -249,23 +248,23 @@ DolphinDB 的 VSCode 插件提供针对用户脚本的调试功能，该功能�
 
 调试开始时, DolphinDB 会对代码进行初步检测, 如果代码有语法错误, 不会进入调试状态, 并且调试控制台会输出错误信息。
 
-<img src="images/vscodeext/debug/zh/debug-errmsg.png" width='400' />
+<img src="./images/vscodeext/debug/zh/debug-errmsg.png" width='400' />
 
 #### 断点管理
 
-如下图所示，在调试主边栏的下方，可以看到所有断点的信息，包括断点的状态、断点的文件名和文件路径以及行号。值得注意的是右上方有两个按钮，禁用所有断点<img src="images/vscodeext/debug/zh/disable-breakpoints.png" width='20' />以及删除所有断点<img src="images/vscodeext/debug/zh/delete-breakpoints.png" width='20' />。
+如下图所示，在调试主边栏的下方，可以看到所有断点的信息，包括断点的状态、断点的文件名和文件路径以及行号。值得注意的是右上方有两个按钮，禁用所有断点<img src="./images/vscodeext/debug/zh/disable-breakpoints.png" width='20' />以及删除所有断点<img src="./images/vscodeext/debug/zh/delete-breakpoints.png" width='20' />。
   
-- 点击禁用所有断点<img src="images/vscodeext/debug/zh/disable-breakpoints.png" width='20' />可以暂时关闭所有断点，恢复正常程序的执行；再次点击此按钮或者手动添加新断点时，会自动开启所有断点。
-- 点击删除所有断点<img src="images/vscodeext/debug/zh/delete-breakpoints.png" width='20' />可以删除所有断点，包括已经禁用的断点。
+- 点击禁用所有断点<img src="./images/vscodeext/debug/zh/disable-breakpoints.png" width='20' />可以暂时关闭所有断点，恢复正常程序的执行；再次点击此按钮或者手动添加新断点时，会自动开启所有断点。
+- 点击删除所有断点<img src="./images/vscodeext/debug/zh/delete-breakpoints.png" width='20' />可以删除所有断点，包括已经禁用的断点。
 
-<img src="images/vscodeext/debug/zh/breakpoints-manager.png" width='400' />
+<img src="./images/vscodeext/debug/zh/breakpoints-manager.png" width='400' />
 
 #### 多目标调试
 
 使用多目标调试很简单：在启动一个调试会话的同时, 只需启动另一个调试会话，VSCode 将自动切换到多目标模式：
 
 - 各个会话现在在“调用堆栈”视图中显示为顶级元素
-    
+
     ![1687151041845](images/vscodeext/debug/zh/callstack-view.png)
 
 - 调试工具栏显示当前活动的会话（所有其他会话在下拉菜单中可用）
@@ -304,13 +303,13 @@ DolphinDB 的 VSCode 插件提供针对用户脚本的调试功能，该功能�
 - 如果出现执行代码并返回表格后，底部没有自动切换到 DolphinDB 视图的情况，需要重置 DolphinDB 视图的位置，如下图所示
 
     <img src='./images/vscodeext/reset-location.png' width='400'>
-    
+
 - 如果按 `Ctrl + E` 快捷键无反应：
-    - 可能是由于未关联 DolphinDB 语言（此时语法高亮也未生效）
-    - 也可能由于快捷键与其他插件冲突，需要在 VSCode 的 `文件 > 首选项 > 键盘快捷方式` (`File > Preferences > Keyboard Shortcuts`) 中自定义快捷键，在搜索框中输入 `CTRL+E`, 删除和 `DolphinDB: 执行代码` 冲突的其他插件的快捷键。
+  - 可能是由于未关联 DolphinDB 语言（此时语法高亮也未生效）
+  - 也可能由于快捷键与其他插件冲突，需要在 VSCode 的 `文件 > 首选项 > 键盘快捷方式` (`File > Preferences > Keyboard Shortcuts`) 中自定义快捷键，在搜索框中输入 `CTRL+E`, 删除和 `DolphinDB: 执行代码` 冲突的其他插件的快捷键。
 
     <img src='./images/vscodeext/key-bindings.png' width='600'>
-    
+
 - VSCode 有大约为 `1 GB` 的内存限制。建议使用 `limit` 限制返回记录数；或者将结果赋给某个变量，如 `a = select * from`，后续通过点击侧边栏变量旁边的按钮进行分页懒加载，按需取回单页数据。
 - 为了在浏览器中展示表格等数据，每个 VSCode 窗口会启动一个本地 HTTP 服务器，其可用端口范围可以通过 `dolphindb.ports` 配置，默认为 `8321-8420`，鼠标悬浮在 ports 上可查看详细解释。
 

@@ -7,22 +7,21 @@ Level 2 高频行情数据包含大量有价值的信息，利用这些数据生
 本文涉及的脚本见[附件](#6-附件)，DolphinDB server 版本为 2.00.9。
 
 - [1.  Level 2 行情数据介绍](#1--level-2-行情数据介绍)
-	- [1.1 数据概况](#11-数据概况)
-	- [1.2 数据结构](#12-数据结构)
+  - [1.1 数据概况](#11-数据概况)
+  - [1.2 数据结构](#12-数据结构)
 - [2.  DolphinDB 高效存储 Level 2 行情数据](#2--dolphindb-高效存储-level-2-行情数据)
-	- [2.1 分区方案](#21-分区方案)
-	- [2.2 分区内分组排序](#22-分区内分组排序)
-	- [2.3 Level 2 行情数据存储方案](#23-level-2-行情数据存储方案)
+  - [2.1 分区方案](#21-分区方案)
+  - [2.2 分区内分组排序](#22-分区内分组排序)
+  - [2.3 Level 2 行情数据存储方案](#23-level-2-行情数据存储方案)
 - [3.  基于历史数据的批量因子计算](#3--基于历史数据的批量因子计算)
-	- [3.1 快照数据的因子计算](#31-快照数据的因子计算)
-	- [3.2 逐笔成交数据的因子计算](#32-逐笔成交数据的因子计算)
-	- [3.3 逐笔委托数据的因子计算](#33-逐笔委托数据的因子计算)
+  - [3.1 快照数据的因子计算](#31-快照数据的因子计算)
+  - [3.2 逐笔成交数据的因子计算](#32-逐笔成交数据的因子计算)
+  - [3.3 逐笔委托数据的因子计算](#33-逐笔委托数据的因子计算)
 - [4. 基于 Level 2 实时行情数据的流式实现](#4-基于-level-2-实时行情数据的流式实现)
-	- [4.1  快照实时行情数据的高频因子流批一体实现](#41--快照实时行情数据的高频因子流批一体实现)
-	- [4.2  延时成交订单因子的流式实现](#42--延时成交订单因子的流式实现)
+  - [4.1  快照实时行情数据的高频因子流批一体实现](#41--快照实时行情数据的高频因子流批一体实现)
+  - [4.2  延时成交订单因子的流式实现](#42--延时成交订单因子的流式实现)
 - [5. 总结](#5-总结)
 - [6. 附件](#6-附件)
-
 
 # 1.  Level 2 行情数据介绍
 
@@ -182,7 +181,7 @@ $logQuoteSlope_{t}$ 衡量 t 时刻的订单斜率。其中， $bid_{t}$ 和 $as
 ```
  @state
 def timeWeightedOrderSlope(bid,bidQty,ask,askQty,lag=20){
-	return (log(iif(ask==0,bid,ask))-log(iif(bid==0,ask,bid)))\(log(askQty)-log(bidQty)).ffill().mavg(lag, 1).nullFill(0)
+ return (log(iif(ask==0,bid,ask))-log(iif(bid==0,ask,bid)))\(log(askQty)-log(bidQty)).ffill().mavg(lag, 1).nullFill(0)
 }
 ```
 
@@ -203,10 +202,10 @@ SOIR 反应盘口各档综合的买卖委托量不均衡程度。如果 SOIR 为
 ```
 @state
 def wavgSOIR(bidQty,askQty,lag=20){
-	imbalance= rowWavg((bidQty - askQty)\(bidQty + askQty), 10 9 8 7 6 5 4 3 2 1).ffill().nullFill(0)
-	mean = mavg(prev(imbalance), (lag-1), 2)
-	std = mstdp(prev(imbalance) * 1000000, (lag-1), 2) \ 1000000
-	return iif(std >= 0.0000001,(imbalance - mean) \ std, NULL).ffill().nullFill(0)
+ imbalance= rowWavg((bidQty - askQty)\(bidQty + askQty), 10 9 8 7 6 5 4 3 2 1).ffill().nullFill(0)
+ mean = mavg(prev(imbalance), (lag-1), 2)
+ std = mstdp(prev(imbalance) * 1000000, (lag-1), 2) \ 1000000
+ return iif(std >= 0.0000001,(imbalance - mean) \ std, NULL).ffill().nullFill(0)
 }
 ```
 
@@ -218,23 +217,21 @@ bidQty, askQty 为[数组向量](https://www.dolphindb.cn/cn/help/DataTypesandSt
 
 <img src="./images/Level-2_stock_data_processing/3_5.png" width=50%>
 
- 
-
 $chg(bidQty_{i})$ 和 $chg(askQty_{i})$ 分别表示在 i 时刻盘口买一和卖一变化量，而 $avgPrice_{i}$ 表示在 i-1 时刻到 i 时刻成交的平均价格。
 
 ```
   @state
 def traPriceWeightedNetBuyQuoteVolumeRatio(bid,bidQty,ask,askQty,TotalValTrd,TotalVolTrd,lag=20){
-	prevbid = prev(bid)
-	prevbidQty = prev(bidQty)
-	prevask = prev(ask)
-	prevaskQty = prev(askQty)
-	bidchg = iif(round(bid-prevbid,2)>0, bidQty, iif(round(bid-prevbid,2)<0, -prevbidQty, bidQty-prevbidQty))
-	offerchg = iif(iif(ask==0,iif(prevask>0,1,0), ask-prevask)>0, prevaskQty, iif(iif(prevask==0,
-		iif(ask>0,-1,0), iif(ask>0,ask-prevask,1))<0, askQty, askQty-prevaskQty))
-	avgprice = deltas(TotalValTrd)\deltas(TotalVolTrd)
-	factorValue = (bidchg-offerchg)\(abs(bidchg)+abs(offerchg))*avgprice
-	return nullFill(msum(factorValue,lag,1)\msum(avgprice,lag,1), 0)
+ prevbid = prev(bid)
+ prevbidQty = prev(bidQty)
+ prevask = prev(ask)
+ prevaskQty = prev(askQty)
+ bidchg = iif(round(bid-prevbid,2)>0, bidQty, iif(round(bid-prevbid,2)<0, -prevbidQty, bidQty-prevbidQty))
+ offerchg = iif(iif(ask==0,iif(prevask>0,1,0), ask-prevask)>0, prevaskQty, iif(iif(prevask==0,
+  iif(ask>0,-1,0), iif(ask>0,ask-prevask,1))<0, askQty, askQty-prevaskQty))
+ avgprice = deltas(TotalValTrd)\deltas(TotalVolTrd)
+ factorValue = (bidchg-offerchg)\(abs(bidchg)+abs(offerchg))*avgprice
+ return nullFill(msum(factorValue,lag,1)\msum(avgprice,lag,1), 0)
 }
 ```
 
@@ -246,7 +243,7 @@ def traPriceWeightedNetBuyQuoteVolumeRatio(bid,bidQty,ask,askQty,TotalValTrd,Tot
 
 <img src="./images/Level-2_stock_data_processing/3_6.png" width=60%>
 
-有效十档范围内表示不考虑已不在十档范围内的档位，即表示只考虑以下区间的档位： 
+有效十档范围内表示不考虑已不在十档范围内的档位，即表示只考虑以下区间的档位：
 
 <img src="./images/Level-2_stock_data_processing/3_7.png" width=40%>
 
@@ -274,9 +271,9 @@ def level10_Diff(price, qty, buy, lag=20){
 ```
 @state
 def level10_InferPriceTrend(bid, ask, bidQty, askQty, lag1=60, lag2=20){
-	inferPrice = (rowSum(bid*bidQty)+rowSum(ask*askQty))\(rowSum(bidQty)+rowSum(askQty))
-	price = iif(bid[0] <=0 or ask[0]<=0, NULL, inferPrice)
-	return price.ffill().linearTimeTrend(lag1).at(1).nullFill(0).mavg(lag2, 1).nullFill(0)
+ inferPrice = (rowSum(bid*bidQty)+rowSum(ask*askQty))\(rowSum(bidQty)+rowSum(askQty))
+ price = iif(bid[0] <=0 or ask[0]<=0, NULL, inferPrice)
+ return price.ffill().linearTimeTrend(lag1).at(1).nullFill(0).mavg(lag2, 1).nullFill(0)
 }
 ```
 
@@ -288,13 +285,13 @@ A 股 Level 2 行情快照数据一天的数据量超过10G，因此金融量化
 
 ```
 timer {
-	res=select SecurityID,DateTime,timeWeightedOrderSlope(bidPrice[0],bidOrderQty[0],OfferPrice[0],OfferOrderQty[0])  as TimeWeightedOrderSlope,
-	level10_InferPriceTrend(bidPrice,OfferPrice,bidOrderQty,OfferOrderQty,60,20) as Level10_InferPriceTrend,
-	level10_Diff(bidPrice, bidOrderQty, true,20) as Level10_Diff,
-	traPriceWeightedNetBuyQuoteVolumeRatio(bidPrice[0],bidOrderQty[0],OfferPrice[0],OfferOrderQty[0],TotalValueTrade,
-	totalVolumeTrade) as TraPriceWeightedNetBuyQuoteVolumeRatio,
-	wavgSOIR( bidOrderQty,OfferOrderQty,20) as HeightImbalance
-	from  loadTable(dbName,snapshotTBname) where date(DateTime)=idate context by SecurityID csort DateTime map 
+ res=select SecurityID,DateTime,timeWeightedOrderSlope(bidPrice[0],bidOrderQty[0],OfferPrice[0],OfferOrderQty[0])  as TimeWeightedOrderSlope,
+ level10_InferPriceTrend(bidPrice,OfferPrice,bidOrderQty,OfferOrderQty,60,20) as Level10_InferPriceTrend,
+ level10_Diff(bidPrice, bidOrderQty, true,20) as Level10_Diff,
+ traPriceWeightedNetBuyQuoteVolumeRatio(bidPrice[0],bidOrderQty[0],OfferPrice[0],OfferOrderQty[0],TotalValueTrade,
+ totalVolumeTrade) as TraPriceWeightedNetBuyQuoteVolumeRatio,
+ wavgSOIR( bidOrderQty,OfferOrderQty,20) as HeightImbalance
+ from  loadTable(dbName,snapshotTBname) where date(DateTime)=idate context by SecurityID csort DateTime map 
 }
 ```
 
@@ -312,8 +309,6 @@ timer {
 | 8        | 19.27s          |
 | 16       | 11.91s          |
 | 32       | 8.11s           |
-
- 
 
 - 与 Python 计算性能的对比
 
@@ -347,15 +342,15 @@ $n$ 表示截至 t 时刻主买、主卖订单数量， $avgTradePrice$ 表示�
 
 ```
 def singleOrderAveragePrice(buyNo,sellNo,tradePrice,tradeQty,BSFlag="B"){
-	if(BSFlag=="B"){
-		 totolMoney=groupby(sum,iif(buyNo>sellNo,tradePrice*tradeQty,0),buyNo).values()[1]
-		 totolqty=groupby(sum,iif(buyNo>sellNo,tradeQty,0),buyNo).values()[1]
-	}
-	else{
-		 totolMoney=groupby(sum,iif(buyNo<sellNo,tradePrice*tradeQty,0),sellNo).values()[1]
-		 totolqty=groupby(sum,iif(buyNo<sellNo,tradeQty,0),sellNo).values()[1]
-		}
-	 return totolMoney\totolqty
+ if(BSFlag=="B"){
+   totolMoney=groupby(sum,iif(buyNo>sellNo,tradePrice*tradeQty,0),buyNo).values()[1]
+   totolqty=groupby(sum,iif(buyNo>sellNo,tradeQty,0),buyNo).values()[1]
+ }
+ else{
+   totolMoney=groupby(sum,iif(buyNo<sellNo,tradePrice*tradeQty,0),sellNo).values()[1]
+   totolqty=groupby(sum,iif(buyNo<sellNo,tradeQty,0),sellNo).values()[1]
+  }
+  return totolMoney\totolqty
 }
 res=select avg(singleOrderAveragePrice(BidApplSeqNum,OfferApplSeqNum,TradePrice,TradeQty,"B")) as ActBuySingleOrderAveragePriceFactor,
 avg(singleOrderAveragePrice(BidApplSeqNum,OfferApplSeqNum,TradePrice,TradeQty,"S")) as ActSellSingleOrderAveragePriceFactor from 
@@ -399,7 +394,7 @@ t3 = select SecurityID,DateTime,delayedTradeNum(bsFlag, delayedTraderflag, "S") 
 
 ```
 
-下单信息记录在逐笔委托表里，如果统计下单到成交之间的时间间隔，则需要把逐笔成交表和逐笔委托表进行关联。这里首先通过[左半连接](https://www.dolphindb.cn/cn/help/SQLStatements/TableJoiners/leftjoin.html?highlight=lsj#left-join) (`lsj`) 返回逐笔成交表中所有与逐笔委托表匹配的记录，如果逐笔委托表中有多条匹配记录（如上交所的下单和撤单记录），`lsj` 将会取第一条（下单时的订单记录）匹配记录。因此，`lsj` 可以把订单委托下单的时间以及下单量准确关联到成交记录中。DolphinDB 提供很多表关联函数，具体可参考：[表连接 — DolphinDB 2.0 documentation](https://www.dolphindb.cn/cn/help/200/SQLStatements/TableJoiners/index.html#id1) 
+下单信息记录在逐笔委托表里，如果统计下单到成交之间的时间间隔，则需要把逐笔成交表和逐笔委托表进行关联。这里首先通过[左半连接](https://www.dolphindb.cn/cn/help/SQLStatements/TableJoiners/leftjoin.html?highlight=lsj#left-join) (`lsj`) 返回逐笔成交表中所有与逐笔委托表匹配的记录，如果逐笔委托表中有多条匹配记录（如上交所的下单和撤单记录），`lsj` 将会取第一条（下单时的订单记录）匹配记录。因此，`lsj` 可以把订单委托下单的时间以及下单量准确关联到成交记录中。DolphinDB 提供很多表关联函数，具体可参考：[表连接 — DolphinDB 2.0 documentation](https://www.dolphindb.cn/cn/help/200/SQLStatements/TableJoiners/index.html#id1)
 
 计算股票延时成交订单因子的步骤为，首先根据成交表的买卖单号与委托表的订单委托号建立连接，并计算改订单的累计延时成交次数和订单的累计成交量；其次通过自定义函数，计算股票的延时成交订单数以及延时成交的订单量。
 
@@ -417,8 +412,8 @@ Level 2 行情逐笔委托数据包含所有的委托订单信息（除了上交
 
 ```
 defg calcSZOrderValue(side,price,orderQty,tradePrice,orderType,bsFlag){
-	price_=iif(orderType =="50",price,NULL).nullFill(tradePrice)
-	return sum(iif(side==bsFlag,price_*orderQty,NULL)).nullFill(0)
+ price_=iif(orderType =="50",price,NULL).nullFill(tradePrice)
+ return sum(iif(side==bsFlag,price_*orderQty,NULL)).nullFill(0)
 }
 res=select calcSZOrderValue(side,price,orderQty,tradePrice,orderType,"B") as BuyOrderValue, 
 calcSZOrderValue(side,price,orderQty,tradePrice,orderType,"S") as SellOrderValue
@@ -459,14 +454,14 @@ DolphinDB 的响应式状态引擎（Reactive State Engine），接收一个在�
 ```
 @state
 def wavgSOIRStream(bidQty,askQty,lag=20){
-	Imbalance_=rowWavg((bidQty-askQty)\(bidQty+askQty),
-	 10 9 8 7 6 5 4 3 2 1)
-	Imbalance= ffill(Imbalance_).nullFill(0)
-	mean = mavg(prev(Imbalance), (lag-1), 2)
-	std = mstdp(prev(Imbalance) *1000000, (lag-1),2) \ 1000000
-	factorValue = conditionalIterate(std >= 0.0000001,
-	(Imbalance - mean) \ std, cumlastNot)
-	return ffill(factorValue).nullFill(0)
+ Imbalance_=rowWavg((bidQty-askQty)\(bidQty+askQty),
+  10 9 8 7 6 5 4 3 2 1)
+ Imbalance= ffill(Imbalance_).nullFill(0)
+ mean = mavg(prev(Imbalance), (lag-1), 2)
+ std = mstdp(prev(Imbalance) *1000000, (lag-1),2) \ 1000000
+ factorValue = conditionalIterate(std >= 0.0000001,
+ (Imbalance - mean) \ std, cumlastNot)
+ return ffill(factorValue).nullFill(0)
 }
 ```
 
@@ -475,12 +470,12 @@ def wavgSOIRStream(bidQty,askQty,lag=20){
 [`conditionalIterate`](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/c/conditionalIterate.html?highlight=conditionaliterate) 函数只适用于响应式状态引擎，通过条件迭代实现因子中的递归逻辑。假设该函数计算结果对应输出表的列为 factor，且迭代仅基于前一个值，对于第 k 条记录（k = 0, 1, 2 …），其计算逻辑为：
 
 - cond[k] == true：factor[k] = trueValue
-- cond[k] == false：factor[k] = falseIterFunc(factor)[k-1]
+- cond[k] == false：factor[k] = falseIterFunc[factor](k-1)
 
 基于Level 2 行情快照数据的高频因子流式计算脚本如下：
 
 ```
-metrics = array(ANY, 5)	
+metrics = array(ANY, 5) 
 metrics[0]=<DateTime>
 metrics[1] = <timeWeightedOrderSlope(BidPrice[0],BidOrderQty[0],OfferPrice[0],OfferOrderQty[0],20)>
 metrics[2] =<level10_InferPriceTrend(BidPrice,OfferPrice,BidOrderQty,OfferOrderQty,60,20)>
@@ -566,7 +561,7 @@ def delayedTradeNum(bsFlag, flag, side){
 def delayedTradeQty(bsFlag, flag, tradeQty, cumTradeQty, side){
         return iif(bsFlag==side && flag>1, tradeQty, iif(bsFlag==side && flag==1, cumTradeQty, 0)).cumsum()
 }
-metrics = array(ANY, 5)	
+metrics = array(ANY, 5) 
 metrics[0]=<TradeTime>
 metrics[1]=<delayedTradeNum(BuySellFlag,DelayedTradeFlag,"B")>
 metrics[2]=<delayedTradeNum(BuySellFlag,DelayedTradeFlag,"S")>
@@ -600,16 +595,16 @@ subscribeTable(tableName="RSEresult", actionName="TSengine", offset=0, handler=a
 
 # 6. 附件
 
-快照批处理脚本：   [shapshot数据处理.dos](script/Level-2_stock_data_processing/shapshot数据处理.dos) 
+快照批处理脚本：   [shapshot数据处理.dos](script/Level-2_stock_data_processing/shapshot数据处理.dos)
 
-逐笔数据批计算脚本：  [entrust数据处理.dos](script/Level-2_stock_data_processing/entrust数据处理.dos) 
+逐笔数据批计算脚本：  [entrust数据处理.dos](script/Level-2_stock_data_processing/entrust数据处理.dos)
 
-成交表数据批计算脚本：  [trade数据处理.dos](script/Level-2_stock_data_processing/trade数据处理.dos) 
+成交表数据批计算脚本：  [trade数据处理.dos](script/Level-2_stock_data_processing/trade数据处理.dos)
 
-快照流式计算脚本：  [shapshot数据流式计算.dos](script/Level-2_stock_data_processing/shapshot数据流式计算.dos) 
+快照流式计算脚本：  [shapshot数据流式计算.dos](script/Level-2_stock_data_processing/shapshot数据流式计算.dos)
 
-延时订单因子流式实现：   [延时订单因子流式实现.dos](script/Level-2_stock_data_processing/延时订单因子流式实现.dos) 
+延时订单因子流式实现：   [延时订单因子流式实现.dos](script/Level-2_stock_data_processing/延时订单因子流式实现.dos)
 
-与python性能比对：  [与python性能比对](script/Level-2_stock_data_processing/与python性能比对) 
+与python性能比对：  [与python性能比对](script/Level-2_stock_data_processing/与python性能比对)
 
-python实现脚本：  [python实现脚本.py](script/Level-2_stock_data_processing/python实现脚本.py) 
+python实现脚本：  [python实现脚本.py](script/Level-2_stock_data_processing/python实现脚本.py)

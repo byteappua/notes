@@ -47,7 +47,7 @@
   - 公式：
 
     ![equation1](./images/fund_factor_contrasted_by_py/equation1.png)
-    
+
   - 代码实现：
 
     - DolphinDB：
@@ -72,14 +72,14 @@
   - 公式：
   
     ![equation2](./images/fund_factor_contrasted_by_py/equation2.png)
-    
+
   - 代码实现：
   
     - DolphinDB：
   
       ```
       defg getAnnualVolatility(value){
-      	return std(deltas(value)\prev(value)) * sqrt(252)
+       return std(deltas(value)\prev(value)) * sqrt(252)
       }
       ```
   
@@ -100,14 +100,14 @@
   - 公式：
 
     ![equation3](./images/fund_factor_contrasted_by_py/equation3.png)
-    
+
   - 代码实现：
 
     - DolphinDB：
 
       ```
       defg getAnnualSkew(value){
-      	return skew(deltas(value)\prev(value))
+       return skew(deltas(value)\prev(value))
       }
       ```
 
@@ -128,14 +128,14 @@
   - 公式：
   
     ![equation4](./images/fund_factor_contrasted_by_py/equation4.png)
-    
+
   - 代码实现:
   
     - DolphinDB：
   
       ```
       defg getAnnualKur(value){
-      	return kurtosis(deltas(value)\prev(value)) 
+       return kurtosis(deltas(value)\prev(value)) 
       }
       ```
   
@@ -156,14 +156,14 @@
   - 公式：
   
     ![equation5](./images/fund_factor_contrasted_by_py/equation5.png)
-    
+
   - 代码实现：
   
     - DolphinDB：
   
       ```
       defg getSharp(value){
-      	return (getAnnualReturn(value) - 0.03)\getAnnualVolatility(value) as sharpeRat
+       return (getAnnualReturn(value) - 0.03)\getAnnualVolatility(value) as sharpeRat
       }
       ```
   
@@ -181,26 +181,26 @@
   - 公式：
   
     在某个时间周期的净值序列中，记 `i` 为某一天，`DailyValuei` 为第 `i` 天的净值，`j` 为 `i` 之前的某一天，`DailyValuej` 为第 `j` 天的净值，找到一组 `i`,  `j` 使得其收益率回撤幅度最大记为最大回撤率 `MaxDrawdown`，
-    
+
     ![equation6](./images/fund_factor_contrasted_by_py/equation6.png)
-    
+
   - 代码实现：
   
     - DolphinDB：
   
       ```
       def getMaxDrawdown(value){
-      	i = imax((cummax(value) - value) \ cummax(value))
-      	if (i==0){
-      		return 0
-      	}
-      	j = imax(value[:i])
-      	return (value[j] - value[i]) \ (value[j])
+       i = imax((cummax(value) - value) \ cummax(value))
+       if (i==0){
+        return 0
+       }
+       j = imax(value[:i])
+       return (value[j] - value[i]) \ (value[j])
       }
       ```
-    
+
     - Python：
-    
+
       ```python
       def getMaxDrawdown(value):
           i = np.argmax((np.maximum.accumulate(value) - value) / np.maximum.accumulate(value))
@@ -217,19 +217,19 @@
   - 公式：
   
     ![equation7](./images/fund_factor_contrasted_by_py/equation7.png)
-    
+
   - 代码实现：
   
     - DolphinDB：
   
       ```
       def getDrawdownRatio(value){
-      	return getAnnualReturn(value) \ getMaxDrawdown(value)
+       return getAnnualReturn(value) \ getMaxDrawdown(value)
       }
       ```
-      
+
     - Python：
-    
+
       ```python
       def getDrawdownRatio(value):
           return getAnnualReturn(value) / getMaxDrawdown(value) if getMaxDrawdown(value) != 0 else 0
@@ -244,14 +244,14 @@
     <img src="./images/fund_factor_contrasted_by_py/equation8.png" width="300"/>
 
     其中分子为日净值收益率和日基准收益率的协方差，分母为日基准收益率的方差
-    
+
   - 代码实现：
   
     - DolphinDB：
   
       ```
       def getBeta(value, price){
-      	return covar(deltas(value)\prev(value), deltas(price)\prev(price)) \ std(deltas(price)\prev(price))
+       return covar(deltas(value)\prev(value), deltas(price)\prev(price)) \ std(deltas(price)\prev(price))
       }
       ```
   
@@ -282,7 +282,7 @@
   
       ```
       def getAlpha(value, price){
-      	return getAnnualReturn(value) - 0.03 - getBeta(value, price) * (getAnnualReturn(price) - 0.03)
+       return getAnnualReturn(value) - 0.03 - getBeta(value, price) * (getAnnualReturn(price) - 0.03)
       }
       ```
   
@@ -334,7 +334,7 @@
     g. 以划分的标准粒度为自变量，以对应的各片段元素的均值为因变量，计算回归方程，截距即为赫斯特指数；
   
     ​    公式：AVS=a*k+b，经过计算后系数 a 为赫斯特指数
-    
+
   - 代码实现：
   
     - DolphinDB：
@@ -458,7 +458,7 @@
   dataDate = database(, VALUE, 2021.01.01..2021.12.31)
   symbol = database(, HASH, [SYMBOL, 20])
   if(existsDatabase(dbName)){
-  	dropDatabase(dbName)
+   dropDatabase(dbName)
   }
   db = database(dbName, COMPO, [dataDate, symbol])
   //定义表结构
@@ -528,7 +528,7 @@ mlog =  m_log[1:,]
 本节测试了DolphinDB的性能与任务量以及cpu核数的关系。
 
 - 任务量：修改提交作业的数量。
-- CPU 核数：修改 `dolphindb.cfg` 文件中的 [*workerNum* ](https://dolphindb.cn/cn/help/DatabaseandDistributedComputing/Configuration/Thread.html)参数，其配置值表示计算时所用到的CPU 核数。注意：每次参数修改后，需要重启 DolphinDB Server 才能生效。
+- CPU 核数：修改 `dolphindb.cfg` 文件中的 [*workerNum*](https://dolphindb.cn/cn/help/DatabaseandDistributedComputing/Configuration/Thread.html)参数，其配置值表示计算时所用到的CPU 核数。注意：每次参数修改后，需要重启 DolphinDB Server 才能生效。
 
 本教程以提交后台作业的计算时间来反映 DolphinDB 性能。完整脚本可参考附录：[基于 DolphinDB 的基金日频因子实现与性能测试](https://dolphindb1.atlassian.net/wiki/spaces/document/pages/523042851/draft+Python10+DolphinDB#)。
 
@@ -536,16 +536,16 @@ mlog =  m_log[1:,]
 
   ```
   def getmetric(result2, symList){
-  	Return = select fundNum, 
-  	            getAnnualReturn(value) as annualReturn,
-  	            getAnnualVolatility(value) as annualVolRat,
-  	            getAnnualSkew(value) as skewValue,
-  	            getAnnualKur(value) as kurValue,
-  	            getSharp(value) as sharpValue,
-  	            getMaxDrawdown(value) as MaxDrawdown,
-  	            getDrawdownRatio(value) as DrawdownRatio,
-  	            getBeta(value, price) as Beta,
-  	            getAlpha(value, price) as Alpha	
+   Return = select fundNum, 
+               getAnnualReturn(value) as annualReturn,
+               getAnnualVolatility(value) as annualVolRat,
+               getAnnualSkew(value) as skewValue,
+               getAnnualKur(value) as kurValue,
+               getSharp(value) as sharpValue,
+               getMaxDrawdown(value) as MaxDrawdown,
+               getDrawdownRatio(value) as DrawdownRatio,
+               getBeta(value, price) as Beta,
+               getAlpha(value, price) as Alpha 
                from result2
                where TradeDate in 2018.05.24..2021.05.27 and fundNum in symList group by fundNum
    }
@@ -563,13 +563,13 @@ mlog =  m_log[1:,]
 
   ```
   def parJob(){
-    	timer{fund_OLAP=select * from loadTable("dfs://fund_OLAP", "fund_OLAP")
-    		  fund_hs_OLAP=select * from loadTable("dfs://fund_OLAP", "fund_hs_OLAP")
-    		  ajResult = select tradingdate, fundNum, value, fund_hs_OLAP.tradingDate as hstradingDate, fund_hs_OLAP.value as price from aj(fund_OLAP, fund_hs_OLAP, `tradingDate)
-    		  result2 = select tradingdate, fundNum, iif(isNull(value), ffill!(value), value) as value,price from ajResult where tradingDate == hstradingDate
-    		  symList = exec distinct(fundNum) as fundNum from result2 order by fundNum
+     timer{fund_OLAP=select * from loadTable("dfs://fund_OLAP", "fund_OLAP")
+        fund_hs_OLAP=select * from loadTable("dfs://fund_OLAP", "fund_hs_OLAP")
+        ajResult = select tradingdate, fundNum, value, fund_hs_OLAP.tradingDate as hstradingDate, fund_hs_OLAP.value as price from aj(fund_OLAP, fund_hs_OLAP, `tradingDate)
+        result2 = select tradingdate, fundNum, iif(isNull(value), ffill!(value), value) as value,price from ajResult where tradingDate == hstradingDate
+        symList = exec distinct(fundNum) as fundNum from result2 order by fundNum
             symList2 = symList.cut(250)
-    		  portfolio = select fundNum as fundNum, (deltas(value)\prev(value)) as log, tradingDate as tradingDate from result2 where tradingDate in 2018.05.24..2021.05.27 and fundNum in symList
+        portfolio = select fundNum as fundNum, (deltas(value)\prev(value)) as log, tradingDate as tradingDate from result2 where tradingDate in 2018.05.24..2021.05.27 and fundNum in symList
             m_log = exec log from portfolio pivot by tradingDate, fundNum
             mlog =  m_log[1:,]
             knum = 2..365
@@ -587,7 +587,7 @@ mlog =  m_log[1:,]
      * 提交5个 job（多用户）
      */
     for(i in 0..4){
-    	submitJob("parallJob5", "parallJob_multi_ten", parJob)
+     submitJob("parallJob5", "parallJob_multi_ten", parJob)
     }
   ```
   
@@ -617,7 +617,6 @@ mlog =  m_log[1:,]
   | 1     | 140.50      |
   | 6     | 27.53                                 |
   | 12    | 15.66                                 |
-
 
 > 注：由于赫斯特指数需要按照2+3+4+...+365种不同的粒度方式切分成不同种类的序列划分，同时分别对不同粒度的每一段序列分别计算均值、离差和标准差等，并最终求平均的 R/S 值，计算的子指标过大，时间复杂度较高，因此耗时相较于其它因子更长。
 

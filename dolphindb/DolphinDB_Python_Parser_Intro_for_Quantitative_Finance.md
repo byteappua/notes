@@ -15,6 +15,7 @@ DolphinDB Python Parser （简称 Python Parser）是 Python 语言的一个 Dol
 本教程基于量化投研中的因子挖掘场景，展示如何用 Python Parser 在 DolphinDB 上快速完成因子开发，包括因子计算和结果存储。
 
 本教程包含内容：
+
 - [基于逐笔数据挖掘日频因子全流程](#基于逐笔数据挖掘日频因子全流程)
   - [历史数据存储](#历史数据存储)
   - [创建日频因子存储库表](#创建日频因子存储库表)
@@ -41,8 +42,6 @@ DolphinDB Python Parser （简称 Python Parser）是 Python 语言的一个 Dol
 - [总结](#总结)
 - [附件](#附件)
 
-
-
 ## 基于逐笔数据挖掘日频因子全流程
 
 ### 历史数据存储
@@ -57,30 +56,23 @@ DolphinDB Python Parser （简称 Python Parser）是 Python 语言的一个 Dol
 
 上述教程代码都基于 DolphinDB 语法开发，在 DolphinDB 支持的编程 IDE 中执行代码时要选择 DolphinDB 语法解释器。选择方式如下：
 
-
 1. **GUI 客户端**：建议下载官网的最新版本：[DolphinDB GUI](https://www.dolphindb.cn/product#downloads)。
 
     使用前，应在 DolphinDB GUI 中确保语言下拉菜单已开启：点击 **File** > **Preferences**，选中 **Always show language dropdown** 复选框。
 
-    <img src="images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/1_0.png" title="GUI 首选项">
+    <img src="./images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/1_0.png" title="GUI 首选项">
 
     此后，即可在GUI用户界面中的语言选择菜单中选择 DolphinDB 语法解释器。
 
-    <img src="images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/1_1.png" title="GUI 配置界面">
-
-
-
+    <img src="./images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/1_1.png" title="GUI 配置界面">
 
 2. **Visual Studio Code（VS Code）编辑器 + DolphinDB VS Code 插件**：建议下载最新版 VS Code 插件：[Visual Studio Code extension for DolphinDB](https://www.dolphindb.cn/product#downloads)。本教程基于 V2.0.1041 开发。
 
-    在 VS Code 的 **Settings** 界面搜索 ` @ext:dolphindb.dolphindb-vscode connections` 后，编辑 `settings.json`，在 `dolphindb.connections` 一节中，指定 “python” 条目。
+    在 VS Code 的 **Settings** 界面搜索 `@ext:dolphindb.dolphindb-vscode connections` 后，编辑 `settings.json`，在 `dolphindb.connections` 一节中，指定 “python” 条目。
 
     `"python": true` 表示使用 Python Parser 语法解释器；`"python": false` 表示使用 DolphinDB 语法解释器。
 
-    <img src="images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/1_2.png" title="VS Code 配置界面">
-
-
-
+    <img src="./images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/1_2.png" title="VS Code 配置界面">
 
 为了能够成功运行本章节示例代码，可以先执行下述代码模拟生成少量逐笔成交数据：（需要将 csvDir 变量修改为 DolphinDB 部署服务器上 tradeData.csv 的实际目录，示例数据见[附件](#附件)）
 
@@ -128,7 +120,7 @@ def loadData(csvDir):
     loadTable("dfs://TL_Level2", "trade").append!(t)
 
     # 统计库内数据量
-    rowCount = select count(*) from loadTable("dfs://TL_Level2", "trade")      #	181,683
+    rowCount = select count(*) from loadTable("dfs://TL_Level2", "trade")      # 181,683
     print(rowCount)
 
 # 执行 loadData 函数, 需要将 csvDir 变量修改为 ddb 部署服务器上 csv 的实际目录
@@ -138,9 +130,7 @@ loadData(csvDir)
 
 本教程中的所有示例代码都是用 Python Parser 语法开发的，所以必须选择 Python Parser 语法解释器执行，GUI 编程工具解释器选择界面如下：
 
-<img src="images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/1_3.png" title="Python Parser 语法解释器">
-
-
+<img src="./images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/1_3.png" title="Python Parser 语法解释器">
 
 ### 创建日频因子存储库表
 
@@ -199,7 +189,7 @@ pt.schema()
 
 基于逐笔成交数据计算当日尾盘成交占比因子的计算公式如下：
 
-<img src="images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/1_4.png">
+<img src="./images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/1_4.png">
 
 其中 BCVP<sub>t</sub>  表示 t 日期的尾盘成交占比； Vol<sub>t</sub>  表示 t 日期的总成交量； Vol<sub>t,14:30-15:00</sub> 表示 t 日期的 14:30—15:00 的成交量之和。
 
@@ -489,7 +479,7 @@ db.createPartitionedTable(schemaTB, tbName, partitionColumns=["tradetime", "fact
                         sortColumns=["securityid", "tradetime"].toddb(), keepDuplicates=ddb.ALL, sortKeyMappingFunction=[lambda x:hashBucket(x, 500)].toddb())
 ```
 
-##  量化因子计算代码开发
+## 量化因子计算代码开发
 
 本章节基于股票行情数据，选取了一些具有代表性的因子，用 Python Parser 进行了实现，旨在指导用户进行自定义因子的转写和开发。
 
@@ -502,7 +492,7 @@ db.createPartitionedTable(schemaTB, tbName, partitionColumns=["tradetime", "fact
 
 在这里我们使用简单移动平均（Simple Moving Average），其中 n 为窗口大小：
 
-<img src="images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_1.png">
+<img src="./images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_1.png">
 
 在下边的例子中我们使用了全市场 2020.07.01 至 2023.07.19 的日频股票数据来进行计算，在实际使用中可以自由更换数据频率，如分钟频率，小时频率等。
 
@@ -545,13 +535,13 @@ combined_results = df.groupby('SECURITY_ID').apply(signal_ma,5,20)
 
 十档净委买增额因子指的是在有效十档范围内买方资金总体增加量，即所有买价变化量的总和，计算公式如下：
 
-<img src="images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_2.png">
+<img src="./images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_2.png">
 
 其中 level10_Diff<sub>t</sub> 表示 t 时刻的十档净委买增额； bid<sub>i,t</sub>  表示 t 时刻的第 i 档买方报价； bidQty<sub>i,t</sub> 表示 t 时刻的第 i 档买方挂单数量；指示函数 I 表示报价是否在有效释放范围内。
 
 有效十档范围内表示不考虑已不在十档范围内的档位，即表示只考虑以下区间的档位：
 
-<img src="images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_3.png">
+<img src="./images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_3.png">
 
 最后，对过去 n 时间窗口内的十档净委买增额求和。
 
@@ -595,8 +585,8 @@ res = df[df["TradeTime"].astype(ddb.DATE)==2023.02.01][["TradeTime", "SecurityID
 示例代码解析：
 
 - Level2 快照行情数据拥有十档行情量价数据。针对这种类型相同、含义相近的数据，可以考虑使用 DolphinDB 的 Array Vector 类型来存储。在 DolphinDB 里 Array Vector 是一种特殊的向量，用于存储可变长度的二维数组。上述代码就是基于十档行情用 Array Vector 类型存储的数据库开发的，其中 “BidPrice”、“BidOrderQty” 都是 ArrayVector 的列。
-- 表中 Array Vector 类型的列转化为 DataFrame 中的一列之后，其中每个元素为 List。 
-  <img src="images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_4.png">
+- 表中 Array Vector 类型的列转化为 DataFrame 中的一列之后，其中每个元素为 List。
+  <img src="./images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_4.png">
 
 - 针对 Array Vector 转化的列，Python Parser 中支持四则运算、比较等基础运算（比如两列相乘 `df["BidOrderQty"].fillna(0) * df["BidPrice"].fillna(0)`）；其他运算需要使用 `apply` 函数（比如求每一行的最小值 `temp["bid"].apply("min")`）。
 - 对于内置函数(比如 `max`/`min`/`sum` 等)，使用 `apply` 函数时，传入字符串和传入函数是有区别的。
@@ -611,7 +601,7 @@ res = df[df["TradeTime"].astype(ddb.DATE)==2023.02.01][["TradeTime", "SecurityID
 - `df = pd.DataFrame(snapshotTB, index="Market", lazy=True)` 通过 `pd.DataFrame()` 函数，将 DolphinDB 的表转化为数据框。对于分布式表而言，*index* 为必填参数，可以指定表中的任意一列，该列仅作为索引，后续可以不参与计算；*lazy* 参数指定计算是否立即执行，必须指定为 True，表示该 DataFrame 会存储所有函数调用，尽可能延迟计算，以减少计算带来的性能消耗。
 - 可以通过 df[过滤条件] 的形式选出库内指定范围的数据。比如：`df[(df["TradeTime"].astype(ddb.DATE)==2023.02.01)&(df["SecurityID"]=="000001")]` 指定取库内 2023.02.01 的 “000001“ 这一天一只股票的数据。
 - 建议在 `groupby` 执行计算函数之前，先对数据列进行过滤，只取出计算需要的列。可以降低内存使用，减少数据读取与拷贝的开销。
-- lazy 模式下不允许直接改变 DataFrame 的值。因为 `level10Diff` 函数里面有 `temp["bid"] = df["BidPrice"].fillna(0)` 的操作，所以对直接过滤出来的 df 直接调用函数 `level10Diff(df, 20)` 会报错： `Lazy-model DataFrame does not support update value.` 需要使用 `df.compute()` 将 lazy 模式的 DataFrame 强制触发计算，转化为 no-lazy 模式的 DataFrame。 
+- lazy 模式下不允许直接改变 DataFrame 的值。因为 `level10Diff` 函数里面有 `temp["bid"] = df["BidPrice"].fillna(0)` 的操作，所以对直接过滤出来的 df 直接调用函数 `level10Diff(df, 20)` 会报错： `Lazy-model DataFrame does not support update value.` 需要使用 `df.compute()` 将 lazy 模式的 DataFrame 强制触发计算，转化为 no-lazy 模式的 DataFrame。
 - 可以通过 .groupby(分组列).apply(函数) 的方式实现分组计算，Python Parser 内部对 `groupby.apply` 实现了并行计算。
 
 ### 价格变动与一档量差的回归系数
@@ -620,7 +610,7 @@ res = df[df["TradeTime"].astype(ddb.DATE)==2023.02.01][["TradeTime", "SecurityID
 
 回归模型：
 
-<img src="images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_5.png">
+<img src="./images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_5.png">
 
 其中，
 
@@ -660,8 +650,8 @@ res = df[df["TradeTime"].astype(ddb.DATE)==2023.02.01][["SecurityID", "LastPrice
 示例代码解析：
 
 - Level2 快照行情数据拥有十档行情量价数据。针对这种类型相同、含义相近的数据，可以考虑使用 DolphinDB 的 Array Vector 类型来存储。在 DolphinDB 里 Array Vector 是一种特殊的向量，用于存储可变长度的二维数组。上述代码就是基于十档行情用 Array Vector 类型存储的数据库开发的，其中 “BidOrderQty”，“OfferOrderQty” 都是 ArrayVector 的列。
-- 表中 Array Vector 类型的列转化为 DataFrame 中的一列之后，其中每个元素为 List。 
-  <img src="images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_6.png">
+- 表中 Array Vector 类型的列转化为 DataFrame 中的一列之后，其中每个元素为 List。
+  <img src="./images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_6.png">
 
 - 针对 ArrayVector 类型，DolphinDB 开发了很多内置函数提升 Array Vector 的易用性和计算性能，比如 row 系列函数。所以除了 上一章节的例子中使用的 `apply` 函数，也可以考虑将其通过 values 属性将 Series 转化为 DolphinDB 的类型，使用 DolphinDB 的内置函数，比如 `df["BidOrderQty"].values[0]` 取 Array Vector 的第一列.
 - 使用 `diff(1)` 的方式计算一阶差分。
@@ -671,7 +661,7 @@ res = df[df["TradeTime"].astype(ddb.DATE)==2023.02.01][["SecurityID", "LastPrice
 - `df = pd.DataFrame(snapshotTB, index="Market", lazy=True)` 通过 `pd.DataFrame()` 函数，将 DolphinDB 的表转化为数据框。对于分布式表而言，*index* 为必填参数，可以指定表中的任意一列，该列仅作为索引，后续可以不参与计算；*lazy* 参数指定计算是否立即执行，必须指定为 True，表示该 DataFrame 会存储所有函数调用，尽可能延迟计算，以减少计算带来的性能消耗。
 - 可以通过 df[过滤条件] 的形式选出库内指定范围的数据。比如：`df[(df["TradeTime"].astype(ddb.DATE)==2023.02.01)&(df["SecurityID"]=="000001")]` 指定取库内 2023.02.01 的 “000001“ 这一天一只股票的数据。
 - 建议在 `groupby` 执行计算函数之前，先对数据列进行过滤，只取出计算需要的列。可以降低内存使用，减少数据读取与拷贝的开销。
-- 不允许 lazy 和 no-lazy 的数据直接计算。当输入的 df 是 lazy 模式时，`df["LastPrice"].diff()` 操作会保留 lazy 模式，所以 deltaP 是 lazy 模式；`df["BidOrderQty"].apply(lambda x:x[0])` 则会直接触发计算，所以 NVOL 是 no-lazy 模式。所以对直接过滤出来的 df 直接调用函数 `priceSensitivityOrderFlowImbalance(df)` ，执行到 `NVOL*deltaP` 时会报错： `The operation args should be both lazy or not lazy.` 需要使用 `df.compute()` 将 lazy 模式的 DataFrame 强制触发计算，转化为 no-lazy 模式的 DataFrame。 
+- 不允许 lazy 和 no-lazy 的数据直接计算。当输入的 df 是 lazy 模式时，`df["LastPrice"].diff()` 操作会保留 lazy 模式，所以 deltaP 是 lazy 模式；`df["BidOrderQty"].apply(lambda x:x[0])` 则会直接触发计算，所以 NVOL 是 no-lazy 模式。所以对直接过滤出来的 df 直接调用函数 `priceSensitivityOrderFlowImbalance(df)` ，执行到 `NVOL*deltaP` 时会报错： `The operation args should be both lazy or not lazy.` 需要使用 `df.compute()` 将 lazy 模式的 DataFrame 强制触发计算，转化为 no-lazy 模式的 DataFrame。
 - 可以通过 .groupby(分组列).apply(函数) 的方式实现分组计算，Python Parser 内部对 `groupby.apply` 实现了并行计算。
 
 ### 主动成交量占比
@@ -680,11 +670,11 @@ res = df[df["TradeTime"].astype(ddb.DATE)==2023.02.01][["SecurityID", "LastPrice
 
 主动成交占比即主动成交量占总成交量的比例，其计算公式如下：
 
-<img src="images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_7.png">
+<img src="./images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_7.png">
 
 其中 tradeQty<sub>i</sub> 表示 i 时刻的成交量； actVolume<sub>t</sub> 表示 t 时刻起的前 lag 笔订单的主动成交量之和； totalVolume<sub>t</sub> 表示 t 时刻起的前 lag 笔订单的总成交量；指示函数 I 含义如下：
 
-<img src="images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_8.png">
+<img src="./images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_8.png">
 
 因子计算示例代码如下：
 
@@ -720,7 +710,7 @@ res = df[df["TradeTime"].astype(ddb.DATE)==2023.02.01][["TradeTime", "SecurityID
 - `df = pd.DataFrame(tradeTB, index="Market", lazy=True)` 通过 `pd.DataFrame()` 函数，将 DolphinDB 的表转化为数据框。对于分布式表而言，*index* 为必填参数，可以指定表中的任意一列，该列仅作为索引，后续可以不参与计算；*lazy* 参数指定计算是否立即执行，必须指定为 True，表示该 DataFrame 会存储所有函数调用，尽可能延迟计算，以减少计算带来的性能消耗。
 - 可以通过 df[过滤条件] 的形式选出库内指定范围的数据。比如：`df[(df["TradeTime"].astype(ddb.DATE)==2023.02.01)&(df["SecurityID"]=="000001")]` 指定取库内 2023.02.01 的 “000001“ 这一天一只股票的数据。
 - 建议在 `groupby` 执行计算函数之前，先对数据列进行过滤，只取出计算需要的列。可以降低内存使用，减少数据读取与拷贝的开销。
-- lazy 模式下不允许直接改变 DataFrame 的值。因为 `actVolumePercent` 函数里面有 `res["actVolumePercent"] = actVolume/totalVolume` 的操作，所以对直接过滤出来的 df 直接调用函数 `actVolumePercent(df, 60)` 会报错： `Lazy-model DataFrame does not support update value.` 需要使用 df.compute() 将 lazy 模式的 DataFrame 强制触发计算，转化为 no-lazy 模式的 DataFrame。 
+- lazy 模式下不允许直接改变 DataFrame 的值。因为 `actVolumePercent` 函数里面有 `res["actVolumePercent"] = actVolume/totalVolume` 的操作，所以对直接过滤出来的 df 直接调用函数 `actVolumePercent(df, 60)` 会报错： `Lazy-model DataFrame does not support update value.` 需要使用 df.compute() 将 lazy 模式的 DataFrame 强制触发计算，转化为 no-lazy 模式的 DataFrame。
 - 可以通过 .groupby(分组列).apply(函数) 的方式实现分组计算，Python Parser 内部对 groupby.apply 实现了并行计算。
 
 ### 早盘买卖单大小比
@@ -729,7 +719,7 @@ res = df[df["TradeTime"].astype(ddb.DATE)==2023.02.01][["TradeTime", "SecurityID
 
 早盘买卖单大小比即早盘时间段买入订单平均委托量占卖出订单平均委托量的比例的对数，其计算公式如下：
 
-<img src="images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_9.png">
+<img src="./images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_9.png">
 
 其中 openBidVol 表示早盘时间段买入订单平均委托量； openAskVol 表示早盘时间段卖出订单平均委托量； orderQty<sub>t</sub> 表示 t 时刻的委托量；
 
@@ -783,7 +773,7 @@ res = df[df["TradeTime"].astype(ddb.DATE)==2023.02.01][["TradeTime", "SecurityID
 
 委托量加权平均委托价格是将多笔委托单的委托价格按各自的委托量加权而算出的平均价格，其计算公式如下：
 
-<img src="images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_10.png">
+<img src="./images/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/3_10.png">
 
 其中 vwap<sub>t</sub> 表示 t 时刻起的前 lag 笔委托单的委托量加权平均委托价格； orderQty<sub>i</sub> 表示 i 时刻委托单的委托量； orderPrice<sub>i</sub> 表示 i 时刻委托单的委托价格。
 
@@ -820,7 +810,7 @@ res = df[df["TradeTime"].astype(ddb.DATE)==2023.02.01][["TradeTime", "SecurityID
 - `df = pd.DataFrame(orderTB, index="Market", lazy=True)` 通过 `pd.DataFrame()` 函数，将 DolphinDB 的表转化为数据框。对于分布式表而言，*index* 为必填参数，可以指定表中的任意一列，该列仅作为索引，后续可以不参与计算；*lazy* 参数指定计算是否立即执行，必须指定为 True，表示该 DataFrame 会存储所有函数调用，尽可能延迟计算，以减少计算带来的性能消耗。
 - 可以通过 df[过滤条件] 的形式选出库内指定范围的数据。比如：`df[(df["TradeTime"].astype(ddb.DATE)==2023.02.01)&(df["SecurityID"]=="000001")]` 指定取库内 2023.02.01 的 “000001” 这一天一只股票的数据。
 - 建议在 `groupby` 执行计算函数之前，先对数据列进行过滤，只取出计算需要的列。可以降低内存使用，减少数据读取与拷贝的开销。
-- lazy 模式下不允许直接改变 DataFrame 的值。因为 `volumeWeightedAvgPrice` 函数里面有 `res["orderWeightPrice"] = totalAmount/totalVolume` 的操作，所以对直接过滤出来的 df 直接调用函数 `volumeWeightedAvgPrice(df, 60)` 会报错： `Lazy-model DataFrame does not support update value.` 需要使用 `df.compute()` 将 lazy 模式的 DataFrame 强制触发计算，转化为 no-lazy 模式的 DataFrame。 
+- lazy 模式下不允许直接改变 DataFrame 的值。因为 `volumeWeightedAvgPrice` 函数里面有 `res["orderWeightPrice"] = totalAmount/totalVolume` 的操作，所以对直接过滤出来的 df 直接调用函数 `volumeWeightedAvgPrice(df, 60)` 会报错： `Lazy-model DataFrame does not support update value.` 需要使用 `df.compute()` 将 lazy 模式的 DataFrame 强制触发计算，转化为 no-lazy 模式的 DataFrame。
 - 可以通过 .groupby(分组列).apply(函数) 的方式实现分组计算，Python Parser 内部对 `groupby.apply` 实现了并行计算。
 
 ## 性能测试
@@ -857,24 +847,24 @@ res = df[df["TradeTime"].astype(ddb.DATE)==2023.02.01][["TradeTime", "SecurityID
 
 DolphinDB Python Parser 支持 Python 的常用语法，并兼容了 DolphinDB 部分独有语法。相比于 Python API，Python Parser 能够方便地访问 DolphinDB 库内的数据，减少了网络层面的开销；并且针对 groupby 等函数底层自动实现并行计算，提高计算性能。相比于 DolphinDB Scripts，Python Parser 兼容常用 Python 语法，学习难度更低，用户可以轻松上手 DolphinDB。
 
-本教程针对量化金融中最常见的因子计算场景，提供了一种基于 Python Parser 开发因子的解决方案，包括不同频率因子库的存储方案和基于不同频率不同数据源的基础因子开发代码，并且因子计算性能和 Python 多进程框架相比能有 5 倍以上的提升。 
+本教程针对量化金融中最常见的因子计算场景，提供了一种基于 Python Parser 开发因子的解决方案，包括不同频率因子库的存储方案和基于不同频率不同数据源的基础因子开发代码，并且因子计算性能和 Python 多进程框架相比能有 5 倍以上的提升。
 
 ## 附件
 
-- 示例数据：[tradeData.zip](data/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/tradeData.zip) 
+- 示例数据：[tradeData.zip](data/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/tradeData.zip)
 - 因子实现 DolphinDB 版本：
-  - [当日尾盘成交占比.txt](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_DolphinDB版本/当日尾盘成交占比.txt) 
-  - [价格变动与一档量差的回归系数.txt](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_DolphinDB版本/价格变动与一档量差的回归系数.txt) 
-  - [十档净委买增额.txt](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_DolphinDB版本/十档净委买增额.txt) 
-  - [双均线.txt](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_DolphinDB版本/双均线.txt) 
-  - [委托量加权平均委托价格.txt](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_DolphinDB版本/委托量加权平均委托价格.txt) 
-  - [早盘买卖单大小比.txt](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_DolphinDB版本/早盘买卖单大小比.txt) 
-  - [主动成交量占比.txt](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_DolphinDB版本/主动成交量占比.txt) 
+  - [当日尾盘成交占比.txt](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_DolphinDB版本/当日尾盘成交占比.txt)
+  - [价格变动与一档量差的回归系数.txt](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_DolphinDB版本/价格变动与一档量差的回归系数.txt)
+  - [十档净委买增额.txt](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_DolphinDB版本/十档净委买增额.txt)
+  - [双均线.txt](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_DolphinDB版本/双均线.txt)
+  - [委托量加权平均委托价格.txt](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_DolphinDB版本/委托量加权平均委托价格.txt)
+  - [早盘买卖单大小比.txt](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_DolphinDB版本/早盘买卖单大小比.txt)
+  - [主动成交量占比.txt](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_DolphinDB版本/主动成交量占比.txt)
 - 因子实现 Python 版本：
-  - [双均线](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_Python版本/双均线) 
-  - [当日尾盘成交占比.ipynb](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_Python版本/当日尾盘成交占比.ipynb) 
-  - [价格变动与一档量差的回归系数.ipynb](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_Python版本/价格变动与一档量差的回归系数.ipynb) 
-  - [十档委买增额.ipynb](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_Python版本/十档委买增额.ipynb) 
-  - [委托量加权平均委托价格.ipynb](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_Python版本/委托量加权平均委托价格.ipynb) 
-  - [早盘买卖单大小比.ipynb](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_Python版本/早盘买卖单大小比.ipynb) 
-  - [主动成交量占比.ipynb](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_Python版本/主动成交量占比.ipynb) 
+  - [双均线](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_Python版本/双均线)
+  - [当日尾盘成交占比.ipynb](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_Python版本/当日尾盘成交占比.ipynb)
+  - [价格变动与一档量差的回归系数.ipynb](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_Python版本/价格变动与一档量差的回归系数.ipynb)
+  - [十档委买增额.ipynb](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_Python版本/十档委买增额.ipynb)
+  - [委托量加权平均委托价格.ipynb](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_Python版本/委托量加权平均委托价格.ipynb)
+  - [早盘买卖单大小比.ipynb](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_Python版本/早盘买卖单大小比.ipynb)
+  - [主动成交量占比.ipynb](script/DolphinDB_Python_Parser_Intro_for_Quantitative_Finance/因子实现_Python版本/主动成交量占比.ipynb)

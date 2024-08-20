@@ -10,7 +10,6 @@ DolphinDB 是一款国产的高性能分布式时序数据库产品。支持 SQL
 
 <img src="./images/OceanBase_to_DolphinDB/1_1.png" width=60%>
 
-
 - [1. 应用需求](#1-应用需求)
 - [2. 实现方法](#2-实现方法)
 - [3. 迁移案例与操作步骤](#3-迁移案例与操作步骤)
@@ -21,10 +20,6 @@ DolphinDB 是一款国产的高性能分布式时序数据库产品。支持 SQL
 - [附录](#附录)
   - [DataX DolphinDB-Writer 配置项](#datax-dolphindb-writer-配置项)
   - [完整代码及测试数据](#完整代码及测试数据)
-
-
-
-
 
 # 1. 应用需求
 
@@ -88,17 +83,17 @@ DataX 驱动的开发基于 Java SDK，支持高可用。
 
 ```
 def createTick(dbName, tbName){
-	if(existsDatabase(dbName)){
-		dropDatabase(dbName)
-	}
-	db1 = database(, VALUE, 2020.01.01..2021.01.01)
-	db2 = database(, HASH, [SYMBOL, 10])
-	db = database(dbName, COMPO, [db1, db2], , "TSDB")
-	db = database(dbName)
-	name = `SecurityID`TradeTime`TradePrice`TradeQty`TradeAmount`BuyNo`SellNo`ChannelNo`TradeIndex`TradeBSFlag`BizIndex
-	type = `SYMBOL`TIMESTAMP`DOUBLE`INT`DOUBLE`INT`INT`INT`INT`SYMBOL`INT
-	schemaTable = table(1:0, name, type)
-	db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`TradeTime`SecurityID, compressMethods={TradeTime:"delta"}, sortColumns=`SecurityID`TradeTime, keepDuplicates=ALL)
+ if(existsDatabase(dbName)){
+  dropDatabase(dbName)
+ }
+ db1 = database(, VALUE, 2020.01.01..2021.01.01)
+ db2 = database(, HASH, [SYMBOL, 10])
+ db = database(dbName, COMPO, [db1, db2], , "TSDB")
+ db = database(dbName)
+ name = `SecurityID`TradeTime`TradePrice`TradeQty`TradeAmount`BuyNo`SellNo`ChannelNo`TradeIndex`TradeBSFlag`BizIndex
+ type = `SYMBOL`TIMESTAMP`DOUBLE`INT`DOUBLE`INT`INT`INT`INT`SYMBOL`INT
+ schemaTable = table(1:0, name, type)
+ db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`TradeTime`SecurityID, compressMethods={TradeTime:"delta"}, sortColumns=`SecurityID`TradeTime, keepDuplicates=ALL)
 }
 
 dbName="dfs://TSDB_tick"
@@ -172,7 +167,7 @@ scheduleJob(jobId=`test, jobDesc="test",jobFunc=scheduleLoad,scheduleTime=00:05m
 
 ### 3.3.2 部署 DataX-DolphinDBWriter 插件
 
-将 [DataX-DolphinDBWriter ](https://gitee.com/link?target=https%3A%2F%2Fgithub.com%2Fdolphindb%2Fdatax-writer)中源码的 *./dist/dolphindbwriter* 目录下所有内容拷贝到 *DataX/plugin/writer* 目录下。
+将 [DataX-DolphinDBWriter](https://gitee.com/link?target=https%3A%2F%2Fgithub.com%2Fdolphindb%2Fdatax-writer)中源码的 *./dist/dolphindbwriter* 目录下所有内容拷贝到 *DataX/plugin/writer* 目录下。
 
 ### 3.3.3 执行 DataX 任务
 
@@ -356,8 +351,6 @@ python datax.py ../../datax-writer-master/ddb_script/ocean.json
 | saveFunctionName | 否           | string       | 无         | 自定义数据处理函数。若未指定此配置，插件在接收到 reader 的数据后，会将数据提交到 DolphinDB 并通过 `tableInsert` 函数写入指定库表；如果定义此参数，则会用指定函数替换`tableInsert` 函数。 |
 | saveFunctionDef  | 否           | string       | 无         | 数据入库自定义函数。此函数指用 dolphindb 脚本来实现的数据入库过程。 此函数必须接受三个参数：*dfsPath*(分布式库路径), *tbName*(数据表名), *data* (从 DataX 导入的数据, table 格式) |
 
- 
-
 ### table 配置详解
 
 table 用于配置写入表的字段集合。内部结构为
@@ -394,8 +387,8 @@ table 用于配置写入表的字段集合。内部结构为
 
 ## 完整代码及测试数据
 
-DataX:  [OceanBase_tick.json](script/OceanBase_to_DolphinDB/OceanBase_tick.json) 
+DataX:  [OceanBase_tick.json](script/OceanBase_to_DolphinDB/OceanBase_tick.json)
 
-DolphinDB:  [mysql插件导入数据.dos](script/OceanBase_to_DolphinDB/mysql插件导入数据.dos), [createTable.dos](script/OceanBase_to_DolphinDB/createTable.dos) 
+DolphinDB:  [mysql插件导入数据.dos](script/OceanBase_to_DolphinDB/mysql插件导入数据.dos), [createTable.dos](script/OceanBase_to_DolphinDB/createTable.dos)
 
-模拟产生数据：  [genTickCsv.dos](script/OceanBase_to_DolphinDB/genTickCsv.dos) 
+模拟产生数据：  [genTickCsv.dos](script/OceanBase_to_DolphinDB/genTickCsv.dos)

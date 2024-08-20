@@ -1,6 +1,6 @@
 # DolphinDB Python API 离线安装
 
-出于安全考虑，通常生产环境与互联网隔离，因此无法使用 `pip install `在线安装 DolphinDB Python API（以下简称 Python API）。本文介绍如何离线安装 Python API 环境，包括 conda 环境和 wheel 安装两种方式。用户可根据生产环境的使用需求、应用场景自行选择。
+出于安全考虑，通常生产环境与互联网隔离，因此无法使用 `pip install`在线安装 DolphinDB Python API（以下简称 Python API）。本文介绍如何离线安装 Python API 环境，包括 conda 环境和 wheel 安装两种方式。用户可根据生产环境的使用需求、应用场景自行选择。
 
 - [DolphinDB Python API 离线安装](#dolphindb-python-api-离线安装)
   - [1 环境准备](#1-环境准备)
@@ -44,7 +44,7 @@
 
 推荐使用类似 virtual box 的虚拟化工具来制作环境。假设我们需要在 KyLin v10，x86-64, Python 3.8 的目标环境中安装 Python API，那么需要准备以下环境：
 
-* **在线环境**
+- **在线环境**
 
 操作系统：KyLin v10
 
@@ -54,7 +54,7 @@ CPU：Intel(R) Core(TM) i7-10700 CPU @ 2.90GHz
 
 网络：NetWork Bridge
 
-* **离线环境**
+- **离线环境**
 
 操作系统：KyLin v10
 
@@ -68,7 +68,7 @@ CPU：Intel(R) Core(TM) i7-10700 CPU @ 2.90GHz
 
 ### 1.2 Windows 环境准备
 
-Windows 环境可以准备两台机器（可以是 PC），一台用于在线获取资源，并禁用另一台机器的网络进行离线安装测试。有关 Windows 下安装和配置 Conda 环境，详见[ Windows 安装](#4-windows-conda-安装)。
+Windows 环境可以准备两台机器（可以是 PC），一台用于在线获取资源，并禁用另一台机器的网络进行离线安装测试。有关 Windows 下安装和配置 Conda 环境，详见[Windows 安装](#4-windows-conda-安装)。
 
 ## 2 Linux conda 安装
 
@@ -209,6 +209,7 @@ six-1.16.0-py2.py3-none-any.whl
 ```
 
 ### 3.2 离线环境安装 wheel 包
+
 ```
 pip install *.whl
 ```
@@ -225,6 +226,7 @@ Processing ./six-1.16.0-py2.py3-none-any.whl
 Installing collected packages: pytz, six, numpy, future, python-dateutil, pandas, dolphindb
 Successfully installed dolphindb-1.30.19.2 future-0.18.2 numpy-1.22.3 pandas-1.5.0 python-dateutil-2.8.2 pytz-2022.2.1 six-1.16.0
 ```
+
 ### 3.3 安装后验证
 
 分别验证一下 whl 包和 Python API。
@@ -263,7 +265,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 能正常生成 session 就说明安装成功。
 
-## 4 Windows conda 安装 
+## 4 Windows conda 安装
 
 分别在离线环境、在线环境安装并配置好 miniconda 环境。并通过在线环境构建
 
@@ -303,7 +305,7 @@ conda 4.12.0
 D:\pythonApi>conda config --add pkgs_dirs D:\pkgs
 ```
 
-### 4.3 在线环境下载包 
+### 4.3 在线环境下载包
 
 参考4.2，在在线环境中配置好包路径，并下载 DolphinDB 相关依赖包
 
@@ -352,6 +354,7 @@ s.connect("192.168.1.157", 8848, "admin", "123456")
 s.run("print(\"Welcome to DolphinDB!\")")
 s.close()
 ```
+
 ```
 D:\pythonApi>python hello_ddb.py
 Welcome to DolphinDB!
@@ -406,6 +409,7 @@ pip freeze dolphindb > requirements.txt
 ```
 pip install -r requirements.txt
 ```
+
 ```
 D:\pythonApi>pip install -r requirements.txt
 Processing d:\pythonapi\dolphindb-1.30.19.2-cp38-cp38-win_amd64.whl
@@ -450,6 +454,7 @@ s.connect("192.168.1.157", 8848, "admin", "123456")
 s.run("print(\"Welcome to DolphinDB!\")")
 s.close()
 ```
+
 ```
 D:\pythonApi>python hello_ddb.py
 Welcome to DolphinDB!
@@ -511,7 +516,7 @@ PackagesNotFoundError: The following packages are not available from current cha
   - numpy
 ```
 
-**A:** 检查下 `pkgs_dirs ` 是否设置正确，以及在该目录下是否有提示信息中的包。不能有任何中间目录，例如设置 conda 的包目录为 pkgs，那么 pkgs/pkgs/numpy 是无法被 conda 找到的。
+**A:** 检查下 `pkgs_dirs` 是否设置正确，以及在该目录下是否有提示信息中的包。不能有任何中间目录，例如设置 conda 的包目录为 pkgs，那么 pkgs/pkgs/numpy 是无法被 conda 找到的。
 
 **Q:** wheel 包未安装
 
@@ -523,7 +528,7 @@ error: invalid command 'bdist_wheel'
 
 ```
 pip install wheel
-``` 
+```
 
 **Q:** future 包缺失
 
@@ -573,4 +578,4 @@ pip debug --verbose
 
 2. 尝试安装更名后的 whl 包。
 
-若执行完上述操作后，仍无法安装或导入，可在 [DolphinDB 社区](https://ask.dolphindb.net/) 中进行反馈。 
+若执行完上述操作后，仍无法安装或导入，可在 [DolphinDB 社区](https://ask.dolphindb.net/) 中进行反馈。

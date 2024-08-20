@@ -28,8 +28,6 @@
   - [5.2 API 使用 SQL 方言](#52-api-使用-sql-方言)
 - [6 总结](#6-总结)
 
-
-
 ## 1 与标准 SQL 的兼容性
 
 在脚本层面，自 1.30.22 / 2.00.10 版本起，DolphinDB SQL 开始支持：
@@ -301,15 +299,13 @@ DolphinDB 还提供了一些辅助 SQL 查询的 HINT 关键字：
 
 数据文件：
 
-- [COUNTRIES.csv](data/Standard_SQL_in_DolphinDB/COUNTRIES.csv) 
-- [DEPARTMENTS.csv](data/Standard_SQL_in_DolphinDB/DEPARTMENTS.csv) 
-- [EMPLOYEES.csv](data/Standard_SQL_in_DolphinDB/EMPLOYEES.csv) 
-- [JOB_HISTORY.csv](data/Standard_SQL_in_DolphinDB/JOB_HISTORY.csv) 
-- [JOBS.csv](data/Standard_SQL_in_DolphinDB/JOBS.csv) 
-- [LOCATIONS.csv](data/Standard_SQL_in_DolphinDB/LOCATIONS.csv) 
-- [REGIONS.csv](data/Standard_SQL_in_DolphinDB/REGIONS.csv) 
-
-
+- [COUNTRIES.csv](data/Standard_SQL_in_DolphinDB/COUNTRIES.csv)
+- [DEPARTMENTS.csv](data/Standard_SQL_in_DolphinDB/DEPARTMENTS.csv)
+- [EMPLOYEES.csv](data/Standard_SQL_in_DolphinDB/EMPLOYEES.csv)
+- [JOB_HISTORY.csv](data/Standard_SQL_in_DolphinDB/JOB_HISTORY.csv)
+- [JOBS.csv](data/Standard_SQL_in_DolphinDB/JOBS.csv)
+- [LOCATIONS.csv](data/Standard_SQL_in_DolphinDB/LOCATIONS.csv)
+- [REGIONS.csv](data/Standard_SQL_in_DolphinDB/REGIONS.csv)
 
 ### 2.2 建库建表
 
@@ -325,18 +321,18 @@ create database "dfs://hr" partitioned by HASH([INT, 10])
 
 此处以创建表 "job_history" 为例进行说明。完整的建表脚本见附件：
 
-[create_db_table_sql.txt](script/Standard_SQL_in_DolphinDB/create_db_table_sql.txt) 
+[create_db_table_sql.txt](script/Standard_SQL_in_DolphinDB/create_db_table_sql.txt)
 
 STEP 1：创建分布式表
 
 ```
 // 通过标准 SQL 的方式创建
 create table "dfs://hr"."job_history" (
-	EMPLOYEE_ID INT,
-	START_DATE DATE,
-	END_DATE DATE,
-	JOB_ID SYMBOL,
-	DEPARTMENT_ID INT
+ EMPLOYEE_ID INT,
+ START_DATE DATE,
+ END_DATE DATE,
+ JOB_ID SYMBOL,
+ DEPARTMENT_ID INT
 )
 partitioned by EMPLOYEE_ID
 ```
@@ -500,8 +496,6 @@ select * from departments where MANAGER_ID is not null
 select * from employees where COMMISSION_PCT is null
 ```
 
-
-
 ### 3.2 distinct
 
 distinct 关键字添加在 select / exec 语句后，用于去除重复值并返回唯一值（distinct value）。
@@ -529,8 +523,6 @@ select count(distinct JOB_ID) from employees // output: 19
 select distinct DEPARTMENT_ID, MANAGER_ID from employees
 ```
 
-
-
 ### 3.3 any / all
 
 支持使用 any / all 进行谓词比较，谓词包括：=, !=, >, <, <=,  >=.
@@ -550,8 +542,6 @@ order by employee_id
 
 <img src="./images/Standard_SQL_in_DolphinDB/3_2.png" width="70%">
 
-
-
 - all
 
 查询薪水大于等于 IT 部门的最低薪水的员工信息。
@@ -565,9 +555,7 @@ order by employee_id
 
 <img src="./images/Standard_SQL_in_DolphinDB/3_3.png" width="70%">
 
-**注**：目前不支持形如 ` ALL (1400, 3000)` 这样的比较。
-
-
+**注**：目前不支持形如 `ALL (1400, 3000)` 这样的比较。
 
 ### 3.4 order by 支持 nulls first / last
 
@@ -708,7 +696,7 @@ where a.employee_id <> b.employee_id
 
 职工表自关联，获取职工、经理 ID 信息。
 
-1. SQL92 
+1. SQL92
 
 ```
 select e1.employee_id, e1.manager_id
@@ -853,7 +841,7 @@ order by employee_id
 
 ## 5 SQL 方言(dialect)兼容
 
-Oracle、MySQL 等传统数据库在遵循 SQL 规范的前提下，都有各自的扩展特性，并且存在行为不一致的同名函数。以 `substr`/`concat` 函数为例： 
+Oracle、MySQL 等传统数据库在遵循 SQL 规范的前提下，都有各自的扩展特性，并且存在行为不一致的同名函数。以 `substr`/`concat` 函数为例：
 
 - MySQL 执行 `select substr('HelloWorld',0,4)` 会返回空值，Oracle 执行 `select substr('HelloWorld',0,4) from dual` 返回 "Hell"，两者输入一致，但是输出不一致。
 - MySQL 中 `concat` 可以拼接多个字符串，`select concat('my', 's', 'ql', '8')`，Oracle 中 `concat` 只能拼接两个字符串，两者函数名称一致，但是签名不一样。
@@ -939,13 +927,13 @@ spring.datasource.driver-class-name=com.dolphindb.jdbc.Driver
 
 DolphinDB自1.30.22 / 2.00.10 版本起，对标准 SQL 的常用语法和关键字实现了兼容，包括：
 
-- 大小写兼容：SQL 关键字支持全大写或全小写，字段名大小写不敏感，但数据库名/表名还是大小写敏感； 
+- 大小写兼容：SQL 关键字支持全大写或全小写，字段名大小写不敏感，但数据库名/表名还是大小写敏感；
 - SQL 语句换行解析：支持在 SQL 语句中任意位置的换行；
 - 支持谓词：支持的关键字有 (not) in, (not) like, (not ) between and, (not) exists, is (not) null
 - distinct 支持多列：distinct 支持对多个字段一起去重，暂不支持与 group by, context by, pivot by 联用；
-- order by 支持 nulls first/last 
+- order by 支持 nulls first/last
 - 支持 with as 语句
-- 支持 is null, is not null 
+- 支持 is null, is not null
 - 支持 union、union all
 - 支持 any、all
 - 支持多表 join：支持的 join 包括 cross join, inner join, left join, right join, full join, left semi join（left semijoin 也支持） 。
@@ -955,5 +943,3 @@ DolphinDB自1.30.22 / 2.00.10 版本起，对标准 SQL 的常用语法和关键
 - 支持 join 对象是子查询：支持多分区表的 join（以前只能支持两分区表的 join），支持子查询。 join 的表可以是内存表、分区表、维度表、单表子查询、多表 join 的子查询。暂不支持子查询使用父查询的字段；
 
 另外针对 Oracle、MySQL 等传统数据库在遵循 SQL 规范的前提下，都有各自的扩展特性、特别是有同名函数但行为不一致的情况，DolphinDB 开发了一整套框架，使得用户可以为每个会话(session)选择兼容的 SQL 方言，目前在 Oracle 模式下，已经实现了一系列的 Oracle 函数。 后续版本 DolphinDB 会继续进行 SQL 标准化的开发，进一步提升兼容率。例如对于在 SQL-2003 标准中引入的开窗函数，将会在下个主要版本（2.00.11）支持。
-
- 

@@ -27,9 +27,9 @@
     - [5.3. DDBDataLoader 性能测试](#53-ddbdataloader-性能测试)
   - [6. 总结](#6-总结)
 
-
 ## 1. 总体架构
 
+<img src="./
 <img src="images/DolphinDB_AI_DataLoader_for_Deep_Learning/DolphinDB_AI_DataLoader_for_Deep_Learning_1.png" width="550">
 
 **主要包括以下功能模块:**
@@ -45,7 +45,7 @@
 
 ## 2. 工作原理
 
-在构造时，`DDBDataLoader` 接收用户提供的 SQL 查询语句，并将其拆分为多个子查询组。`DDBDataLoader ` 使用后台线程从服务端获取数据，并将其处理为 PyTorch Tensor 格式的批量数据。
+在构造时，`DDBDataLoader` 接收用户提供的 SQL 查询语句，并将其拆分为多个子查询组。`DDBDataLoader` 使用后台线程从服务端获取数据，并将其处理为 PyTorch Tensor 格式的批量数据。
 
 DDBDataLoader 提供了 *groupCol* 和 *groupScheme* 参数，用于将单个查询 SQL 分成多组查询。其中，每一个组定义了一个时间序列，例如一支股票的交易数据。若不指定，则认为所有的数据定义了一个时间序列。例如，一种典型的情况是表里的数据包含了全部的股票，而我们在训练模型的时候只希望每支股票仅利用自己的历史数据来对未来进行预测。在这种情况下，我们需要将 *groupCol* 设置为股票标的列，将 *groupScheme* 设置为所有的股票标的，也即每一个组是一支股票的交易数据。换言之，假如原始的查询 SQL 为：
 
@@ -313,7 +313,7 @@ tensor([[[4, 5, 6],
   - [prepare_index.py](script/DolphinDB_AI_DataLoader_for_Deep_Learning/prepare/prepare_index.py)：PytorchDataLoader 测试索引数据
 - test：
   - [net.py](script/DolphinDB_AI_DataLoader_for_Deep_Learning/test/net.py)：定义神经网络
-  - [test_wide_new.py](script/DolphinDB_AI_DataLoader_for_Deep_Learning/test/test_wide_new.py): DDBDataLoader 方式测试 
+  - [test_wide_new.py](script/DolphinDB_AI_DataLoader_for_Deep_Learning/test/test_wide_new.py): DDBDataLoader 方式测试
   - [test_wide_old.py](script/DolphinDB_AI_DataLoader_for_Deep_Learning/test/test_wide_old.py): 传统 PytorchDataLoader 方式测试
 
 ### 5.1. 环境准备
@@ -344,14 +344,14 @@ tensor([[[4, 5, 6],
 
 - **性能测试工具**
 
-    使用 `Python ` 中的第三方库 ` line_profiler （4.0.3）`，将待测试代码封装为函数后添加 `@profile` 装饰器，在终端执行 `kernprof -l -v test.py` 进行性能测试。
+    使用 `Python` 中的第三方库 `line_profiler （4.0.3）`，将待测试代码封装为函数后添加 `@profile` 装饰器，在终端执行 `kernprof -l -v test.py` 进行性能测试。
 
 - **测试数据**
 
     快照 3 秒频因子数据，生成总数据约为 277G，测试数据生成脚本如下：
-    
-    在 DolphinDB 客户端执行，指定 `Datetime ` 和 `Symbol ` 为分区列和排序列，在数据库 `dfs://test_ai_dataloader` 中创建分区表 `wide_factor_table`。表中包含 `Datetime ` 时间列和 `Symbol ` 股票名称列，以及 1000 列因子列（名称从 f000001 到 f001000）。类型分别为 `DATETIME ` 和 `SYMBOL`，因子列类型全部使用 `DOUBLE`。详细代码见工程代码中 *[ddb_scripts.dos](script/DolphinDB_AI_DataLoader_for_Deep_Learning/prepare/ddb_scripts.dos)*，核心代码如下：
-    
+
+    在 DolphinDB 客户端执行，指定 `Datetime` 和 `Symbol` 为分区列和排序列，在数据库 `dfs://test_ai_dataloader` 中创建分区表 `wide_factor_table`。表中包含 `Datetime` 时间列和 `Symbol` 股票名称列，以及 1000 列因子列（名称从 f000001 到 f001000）。类型分别为 `DATETIME` 和 `SYMBOL`，因子列类型全部使用 `DOUBLE`。详细代码见工程代码中 *[ddb_scripts.dos](script/DolphinDB_AI_DataLoader_for_Deep_Learning/prepare/ddb_scripts.dos)*，核心代码如下：
+
     ```
     dbName = "dfs://test_ai_dataloader"
     tbName = "wide_factor_table"
@@ -374,13 +374,13 @@ tensor([[[4, 5, 6],
     colTypes = [DATETIME, SYMBOL] join take(DOUBLE, numFactors)
     schema = table(1:0, colNames, colTypes)
     ```
-    
+
     写入完成后，使用下面的脚本打印 SQL 查询结果，确认已经写入成功。
-    
+
     ```
     select DateTime, Symbol, f000001 from loadTable("dfs://test_ai_dataloader", "wide_factor_table") where Symbol=`000001.SH, date(DateTime)=2020.01.31
     ```
-    
+
     示例数据如下：
 
     ![img](images/DolphinDB_AI_DataLoader_for_Deep_Learning/DolphinDB_AI_DataLoader_for_Deep_Learning_4.png)
@@ -465,18 +465,18 @@ if __name__ == "__main__":
 
 1. **定义 DDBDataLoader**
 
-    在 Python 客户端执行以下代码，使用已建立的数据库表执行 SQL 查询后的结果作为数据集。该数据集指定了目标列为 \["f000001"]，并排除了 `Symbol ` 列和 `DateTime ` 列的数据。此外，还配置了以下参数：
-    
+    在 Python 客户端执行以下代码，使用已建立的数据库表执行 SQL 查询后的结果作为数据集。该数据集指定了目标列为 \["f000001"]，并排除了 `Symbol` 列和 `DateTime` 列的数据。此外，还配置了以下参数：
+
     - `batchSize=64` 表示 一批数据大小为 64。
-    - `windowSize=[200, 1], windowStride=[1, 1], offset=200 ` 分别表示输入数据和目标数据的滑动窗口大小分别为 200 和 1，滑动窗口步长分别为1和1，offset为200。
+    - `windowSize=[200, 1], windowStride=[1, 1], offset=200` 分别表示输入数据和目标数据的滑动窗口大小分别为 200 和 1，滑动窗口步长分别为1和1，offset为200。
     - `shuffle=True` 表示数据打乱设置为 True，使用随机种子 `seed=0`。
-    - 使用每支股票的时序数据进行训练，指定 ` groupCol="Symbol"` 和 `groupScheme=symbols`，其中 `symbols` 是包含所有股票名称的字符串列表。
-    - 为了降低数据分块粒度，指定 `repartitionCol="date(DateTime)"` 和 ` repartitionScheme=times`，其中 times 是包含 2020.01.01到2020.01.31 所有日期的列表。
+    - 使用每支股票的时序数据进行训练，指定 `groupCol="Symbol"` 和 `groupScheme=symbols`，其中 `symbols` 是包含所有股票名称的字符串列表。
+    - 为了降低数据分块粒度，指定 `repartitionCol="date(DateTime)"` 和 `repartitionScheme=times`，其中 times 是包含 2020.01.01到2020.01.31 所有日期的列表。
     - 训练将在 GPU上进行，指定 `device="cuda"`，将 `torch.Tensor` 创建到 GPU 上。
     - `prefetchBatch=5, prepartitionNum=3` 表示预准备 5 批数据，配置每组查询预载3个子查询的结果。
-    
+
     这些配置将有助于提高训练效果并充分利用 GPU 和后台线程资源。
-    
+
     ```
     import dolphindb as ddb
     from dolphindb_tools.dataloader import DDBDataLoader
@@ -503,12 +503,10 @@ if __name__ == "__main__":
     )
     ```
 
- 
-
 2. **定义网络并训练**
 
     下述代码在 Python 客户端执行，它定义了一个简单的 CNN 神经网络结构，并定义了损失函数和优化器。最后像使用 torch 中 DataLoader 一样，迭代 DDBDataLoader 获取数据，输入到网络中进行训练，核心代码如下，详细见 *test_wide_new.py*：
-    
+
     ```
     
     model = SimpleNet()
@@ -532,7 +530,6 @@ if __name__ == "__main__":
 
     通过将数据直接转换为 `torch.Tensor` 并使用 DDBDataLoader 管理数据，可以更高效地获取和使用训练数据，从而提高深度学习模型的训练效率。这种方法减少了数据传输和存储的开销，并使训练过程更加灵活和高效。此种方式总耗时为 25 分钟。
 
-
 从比对结果可以看到，本次测试中，对比了传统方式（PyTorch DataLoader）和 DDBDataLoader，DDBDataLoader 一体化集成 PyTorch 耗时约为 25分钟，内存占用约为 0.8 GB，代码行数约为 70 行， PyTorch DataLoader 总耗时 112 分钟，内存占用约为 4GB，代码行数约为 200 多行。考虑两种方式的特点，原因大概如下：
 
 - **性能提升**：在数据准备以及迭代取数耗时方面，DDBDataLoader 耗时明显低于传统方式。这主要是因为 DDBDataLoader 可以直接从 DolphinDB 中直接获得数据，将每个分区（数据源）的数据整体打乱后提供给客户端进行处理。传统方式通常将数据集和 DataLoader 处理逻辑分开，需要先将数据导出成磁盘上的文件，然后再提供给客户端使用，这会对性能产生较大影响。所以，DDBDataLoader 最终相比传统方法有显著性能提升。
@@ -550,4 +547,3 @@ DDBDataLoader 是 DolphinDB 在深度学习和数据库结合方面的一次探�
 - DDBDataLoader 采用即时查询的方式直接从数据库获取数据，可以灵活得操作数据、提高效率且降低开发运维成本。
 
 综上所述，将 DolphinDB 和 DDBDataLoader 集成到因子数据管理流程中，有助于更好地满足量化投资策略的需求，充分发挥深度学习模型的潜力。这种集成方式能够提高效率，降低成本，并提供更强大的因子数据管理和应用能力。
-

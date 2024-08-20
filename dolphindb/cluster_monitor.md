@@ -21,7 +21,6 @@
 - [5.4 钉钉告警与预警](#54-钉钉告警与预警)
 - [5.5 Prometheus+Alertmanager 企业微信告警与预警](#55-prometheusalertmanager-企业微信告警与预警)
 
-
 # 1. 监控方案概述
 
 本套教程实现了以下三套监控方案：
@@ -57,7 +56,7 @@ NodeExporter 是 Prometheus 提供的一个可以采集到服务器信息的应�
 ​将其拖拽到服务器上解压，解压后进入对应的安装目录运行 NodeExporter,可通过 `web.listen-address` 指定端口：
 
 ```
-$ nohup ./node_exporter --web.listen-address IP:Port &
+nohup ./node_exporter --web.listen-address IP:Port &
 ```
 
 ​ 访问 `http://IP:Port/metrics`,可看到当前 NodeExporter 获取到的当前服务器的所有监控数据，如下所示：
@@ -87,7 +86,7 @@ $ nohup ./node_exporter --web.listen-address IP:Port &
 进入 Prometheus 安装目录，通过以下命令后台启动 Prometheus 服务：
 
 ```
-$ nohup ./prometheus --config.file=prometheus.yml &
+nohup ./prometheus --config.file=prometheus.yml &
 ```
 
 ​在浏览器地址栏输入 `http://IP:Port` 可进入 prometheus UI 界面：
@@ -163,7 +162,7 @@ DolphinDB 服务、Prometheus 服务和 NodeExporter 服务已启动，但此时
 ​将其拖拽到服务器上解压，解压后进入对应的 bin 目录并运行 Grafana
 
 ```
-$ nohup ./grafana-server web &
+nohup ./grafana-server web &
 ```
 
 ​访问 `http://IP:Port`，进入到 Grafana 登录页面：
@@ -232,6 +231,7 @@ $ nohup ./grafana-server web &
 ```
 allow_loading_unsigned_plugins = dolphindb-datasource
 ```
+
 <img src="./images/cluster_monitor/2-18.png" width=70%>
 
 ​修改配置文件之后，需要重启Grafana服务。重启后，在Grafana中添加dolphindb-datasource数据源，在搜索框输入`DolphinDB`，然后点击下方出现的结果，如下图所示：
@@ -592,16 +592,15 @@ Grafana中的 `Alert` 模块提供了告警和预警功能，使用告警和预�
 
 ![](/images/cluster_monitor/4-16.png)
 
-*   `Name`，设置告警名称
-    
-*   `Contact point type`，设置告警通知方式。常用项为 Email 和钉钉。
-    
-    *   `Address`，当 Contact point type 设置为 Email 时可用，用于设置 Email 地址。
-        
-    *   `URL`，当 Contact point type 设置为钉钉时可用，用于填写钉钉群中告警机器人的 webhook。
-        
-*   `Notification settings`，用于在告警恢复时设置是否发送恢复通知。默认为发送。如需禁用，选择 `Disable resolved message`，并点击 S 保存。
-    
+- `Name`，设置告警名称
+
+- `Contact point type`，设置告警通知方式。常用项为 Email 和钉钉。
+
+  - `Address`，当 Contact point type 设置为 Email 时可用，用于设置 Email 地址。
+
+  - `URL`，当 Contact point type 设置为钉钉时可用，用于填写钉钉群中告警机器人的 webhook。
+
+- `Notification settings`，用于在告警恢复时设置是否发送恢复通知。默认为发送。如需禁用，选择 `Disable resolved message`，并点击 S 保存。
 
 此外，Grafana 可以根据告警标签设置更加复杂的发送策略，比如不同的告警发给不同的组员、设置特定时间段屏蔽告警等，详情请参考[附录5.3](53-grafana告警的进阶使用)。
 

@@ -1,6 +1,7 @@
 # DolphinDB 开源项目贡献指南
 
 本文档用于指导社区用户参与开源项目贡献，以及 PMC（Project Management Committee）管理项目开发与协作。
+
 - [1 如何参与](#1-如何参与)
   - [1.1 项目组织结构](#11-项目组织结构)
   - [1.2  贡献形式](#12--贡献形式)
@@ -10,15 +11,13 @@
   - [2.2 操作流程](#22-操作流程)
   - [2.3 项目管理者](#23-项目管理者)
 
-
 ## 1 如何参与
 
 ### 1.1 项目组织结构
 
 DolphinDB 的开源项目由 PMC（Project Management Committee） 统一管理，通常由项目的最初开发者组成，并逐步接纳优秀的社区成员。项目相关参与者包括：用户、贡献者、提交者、维护者。
 
-<img src="images/DolphinDB_Open_Source_Project_Contribution/1_1.png" alt="项目组织结构" title="项目组织结构" width=60% />
-
+<img src="./images/DolphinDB_Open_Source_Project_Contribution/1_1.png" alt="项目组织结构" title="项目组织结构" width=60% />
 
 **PMC**
 
@@ -89,15 +88,13 @@ DolphinDB 的开源项目由 PMC（Project Management Committee） 统一管理�
 | web              | web 图形化工具                                               | [GitHub - dolphindb/web: DolphinDB database web management interface](https://github.com/dolphindb/web) | 主开发分支：main                                             |
 | vscode-extension | VSCode 插件，可以编写调试 DolphinDB 脚本                     | [GitHub - dolphindb/vscode-extension: DolphinDB VSCode Extension](https://github.com/dolphindb/vscode-extension) | 主开发分支：main                                             |
 
- 
-
 ## 2 项目协作流程
 
 ### 2.1 开发者
 
 大部分简单的事务可以先从 [GitHub Discussion](https://github.com/apache/airflow/discussions) 开始进行必要的讨论。如果相关行为得到确认，例如确实发现了一个 bug，能稳定复现，可以进一步提交 [issue](https://github.com/apache/airflow/issues/new/choose)。Issue 得到项目 PMC 回复后可以着手相关开发工作。最终通过提交 pr 解决问题。总体流程如图：
 
-<img src="images/DolphinDB_Open_Source_Project_Contribution/2_1.png" width=70%>
+<img src="./images/DolphinDB_Open_Source_Project_Contribution/2_1.png" width=70%>
 
 这里解释下几个关键行为：
 
@@ -130,7 +127,7 @@ pull request，完成相关内容开发后，向项目提交 pr。pr 应该具�
 
 在 issue 界面中，提交具体问题，标题以 [label] xxx 形式，label 包括：bug，help wanted, question, enhancement 等。
 
-<img src="images/DolphinDB_Open_Source_Project_Contribution/2_2.png" width=80%>
+<img src="./images/DolphinDB_Open_Source_Project_Contribution/2_2.png" width=80%>
 
 提交 issue 后，耐心等待项目 Maintainer 回复，持续交流至问题解决，解决后由 Maintainer 关闭。
 
@@ -140,9 +137,7 @@ pull request，完成相关内容开发后，向项目提交 pr。pr 应该具�
 
 fork 项目至个人仓库。点击 **fork** → **Create a new fork** 即可。
 
-<img src="images/DolphinDB_Open_Source_Project_Contribution/2_3.png" width=80%>
-
- 
+<img src="./images/DolphinDB_Open_Source_Project_Contribution/2_3.png" width=80%>
 
 2. clone 至本地
 
@@ -164,7 +159,7 @@ git commit -a -m "add a document about xxx." && git push
 
 在 dolphindb / DolphinDBPlugin 项目中，切换至 Pull requests 页面，点击 **New pull request** → **compare across forks**，选择个人仓库的分支即可。
 
-<img src="images/DolphinDB_Open_Source_Project_Contribution/2_4.png" width=70%>
+<img src="./images/DolphinDB_Open_Source_Project_Contribution/2_4.png" width=70%>
 
 在描述中详细说明提交的内容及必要性。输入 “#” 可以关联相关的 issue，以便 maintainer 能更好地 review。
 
@@ -174,15 +169,13 @@ git commit -a -m "add a document about xxx." && git push
 
 - pr review
 
-<img src="images/DolphinDB_Open_Source_Project_Contribution/2_5.png" width=75%>
+<img src="./images/DolphinDB_Open_Source_Project_Contribution/2_5.png" width=75%>
 
 在 **File changes** 选项中 review 相关代码，并提交 review 意见：
 
 **Approve**，接受合并。
 
 **Request changes**，退回合并请求，给出意见并要求整改。
-
-
 
 - pr test
 
@@ -209,7 +202,7 @@ curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo 
 
 在 pr 列表中找到相应内容，并复制命令：
 
-<img src="images/DolphinDB_Open_Source_Project_Contribution/2_6.png" width=80%>
+<img src="./images/DolphinDB_Open_Source_Project_Contribution/2_6.png" width=80%>
 
 ```
 gh pr checkout <PULL-REQUEST ID>

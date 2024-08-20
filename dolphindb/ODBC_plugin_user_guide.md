@@ -1,26 +1,27 @@
 # ODBC插件使用指南
-  - [1. ODBC 插件使用场景](#1-odbc-插件使用场景)
-  - [2. ODBC 插件使用步骤](#2-odbc-插件使用步骤)
-  - [3. ODBC 插件接口介绍](#3-odbc-插件接口介绍)
-    - [3.1 odbc::connect(connStr, \[dataBaseType\])](#31-odbcconnectconnstr-databasetype)
-    - [3.2 odbc::query(connHandle|connStr, querySql, \[t\], \[batchSize\], \[transform\])](#32-odbcqueryconnhandleconnstr-querysql-t-batchsize-transform)
-    - [3.3 odbc::append(connHandle, tableData, tablename,\[createTableIfNotExist\], \[insertIgnore\])](#33-odbcappendconnhandle-tabledata-tablenamecreatetableifnotexist-insertignore)
-    - [3.4 odbc::execute(connHandle or connStr, SQLstatements)](#34-odbcexecuteconnhandle-or-connstr-sqlstatements)
-  - [4. odbc插件导入导出 Oracle 数据示例](#4-odbc插件导入导出-oracle-数据示例)
-    - [4.1 下载 Oracle 的 ODBC 驱动并安装](#41-下载-oracle-的-odbc-驱动并安装)
-    - [4.2 配置 ODBC 驱动文件](#42-配置-odbc-驱动文件)
-    - [4.3 添加 DolphinDB 启动时的环境变量，并重启 DolphinDB 服务](#43-添加-dolphindb-启动时的环境变量并重启-dolphindb-服务)
-    - [4.4 使用 ODBC 插件把表数据写到 Oracle、并查询返回到 DolphinDB 中。](#44-使用-odbc-插件把表数据写到-oracle并查询返回到-dolphindb-中)
-  - [5. ODBC 插件使用注意事项和常见问题](#5-odbc-插件使用注意事项和常见问题)
-    - [5.1 odbc::connect 失败时，可以先用 `isql` 命令先连接目标数据库进行排查](#51-odbcconnect-失败时可以先用-isql-命令先连接目标数据库进行排查)
-    - [5.2 `isql` 命令连接正常，使用 `odbc::connect` 失败](#52-isql-命令连接正常使用-odbcconnect-失败)
-    - [5.3 `odbc::append` 时报错](#53-odbcappend-时报错)
-    - [5.4 `odbc::execute` 或者 `odbc::query` 失败](#54-odbcexecute-或者-odbcquery-失败)
-    - [5.5 ODBC 驱动与 DolphinDB 冲突](#55-odbc-驱动与-dolphindb-冲突)
-    - [5.6 中文字符乱码](#56-中文字符乱码)
-    - [5.7 常见系统各数据库的ODBC 驱动推荐列表](#57-常见系统各数据库的odbc-驱动推荐列表)
 
-## 1. ODBC 插件使用场景                            
+- [1. ODBC 插件使用场景](#1-odbc-插件使用场景)
+- [2. ODBC 插件使用步骤](#2-odbc-插件使用步骤)
+- [3. ODBC 插件接口介绍](#3-odbc-插件接口介绍)
+  - [3.1 odbc::connect(connStr, \[dataBaseType\])](#31-odbcconnectconnstr-databasetype)
+  - [3.2 odbc::query(connHandle|connStr, querySql, \[t\], \[batchSize\], \[transform\])](#32-odbcqueryconnhandleconnstr-querysql-t-batchsize-transform)
+  - [3.3 odbc::append(connHandle, tableData, tablename,\[createTableIfNotExist\], \[insertIgnore\])](#33-odbcappendconnhandle-tabledata-tablenamecreatetableifnotexist-insertignore)
+  - [3.4 odbc::execute(connHandle or connStr, SQLstatements)](#34-odbcexecuteconnhandle-or-connstr-sqlstatements)
+- [4. odbc插件导入导出 Oracle 数据示例](#4-odbc插件导入导出-oracle-数据示例)
+  - [4.1 下载 Oracle 的 ODBC 驱动并安装](#41-下载-oracle-的-odbc-驱动并安装)
+  - [4.2 配置 ODBC 驱动文件](#42-配置-odbc-驱动文件)
+  - [4.3 添加 DolphinDB 启动时的环境变量，并重启 DolphinDB 服务](#43-添加-dolphindb-启动时的环境变量并重启-dolphindb-服务)
+  - [4.4 使用 ODBC 插件把表数据写到 Oracle、并查询返回到 DolphinDB 中。](#44-使用-odbc-插件把表数据写到-oracle并查询返回到-dolphindb-中)
+- [5. ODBC 插件使用注意事项和常见问题](#5-odbc-插件使用注意事项和常见问题)
+  - [5.1 odbc::connect 失败时，可以先用 `isql` 命令先连接目标数据库进行排查](#51-odbcconnect-失败时可以先用-isql-命令先连接目标数据库进行排查)
+  - [5.2 `isql` 命令连接正常，使用 `odbc::connect` 失败](#52-isql-命令连接正常使用-odbcconnect-失败)
+  - [5.3 `odbc::append` 时报错](#53-odbcappend-时报错)
+  - [5.4 `odbc::execute` 或者 `odbc::query` 失败](#54-odbcexecute-或者-odbcquery-失败)
+  - [5.5 ODBC 驱动与 DolphinDB 冲突](#55-odbc-驱动与-dolphindb-冲突)
+  - [5.6 中文字符乱码](#56-中文字符乱码)
+  - [5.7 常见系统各数据库的ODBC 驱动推荐列表](#57-常见系统各数据库的odbc-驱动推荐列表)
+
+## 1. ODBC 插件使用场景
 
 在使用 DolphinDB 的业务场景中，我们有从其他数据源和 DolphinDB 之间同步数据的需求。比如从 Oracle 读数据写入到 DolphinDB，或者从 DolphinDB 写数据到 Oracle 数据库。 按照频率的不同，数据同步可以分为实时和离线同步两种。本文介绍如何使用 ODBC 插件解决离线同步的需求。
 
@@ -28,20 +29,18 @@
 
 <img src="./images/ODBC_plugin_user_guide/1_1.png" width=70%>
 
- 
-
 ## 2. ODBC 插件使用步骤
 
-1.  使用 `loadPlugin` 函数加载 ODBC 插件。
-2.  使用 `odbc::connect` 连接目标数据库。
-3.  从其他数据库导入数据到 DolphinDB，可以使用 `odbc::query` 方法。
+1. 使用 `loadPlugin` 函数加载 ODBC 插件。
+2. 使用 `odbc::connect` 连接目标数据库。
+3. 从其他数据库导入数据到 DolphinDB，可以使用 `odbc::query` 方法。
 4. 从 DolphinDB 导入到其他数据库，可以使用 `odbc::append` 方法。
 
 ## 3. ODBC 插件接口介绍
 
 有关 ODBC 插件使用的前置条件、编译方法、加载方式、类型支持等，参考 [ODBC 插件接口文档](https://dolphindb.net/dzhou/DolphinDBPlugin/-/blob/release200/odbc/README_CN.md) 。下面将介绍 ODBC 插件函数的基本功能以及一些注意事项。
 
-### 3.1 odbc::connect(connStr, [dataBaseType]) 
+### 3.1 odbc::connect(connStr, [dataBaseType])
 
 创建与数据库服务器的连接，返回数据库连接句柄，该句柄将在以后用于访问数据库服务器。
 
@@ -55,7 +54,7 @@
 
 如果需要写入到分布式表中，可以配置 *batchSize* 参数的大小来控制每次写入行数，可以通过配置 `transform` 函数来对查询过来的数据预处理，然后再写入到分布式表中。
 
-### 3.3 odbc::append(connHandle, tableData, tablename,[createTableIfNotExist], [insertIgnore]) 
+### 3.3 odbc::append(connHandle, tableData, tablename,[createTableIfNotExist], [insertIgnore])
 
 将 DolphinDB 的内存表的数据写入到目标数据库。
 
@@ -66,12 +65,14 @@
 ## 4. odbc插件导入导出 Oracle 数据示例
 
 下面将展示在 Linux 上部署 ODBC 插件，实现从 Oracle 导入数据到 DolphinDB ，并从 DolphinDB 导出数据到 Oracle 的完整过程。
+
 ### 4.1 下载 Oracle 的 ODBC 驱动并安装
 
 ```
 wget https://download.oracle.com/otn_software/linux/instantclient/217000/instantclient-basic-linux.x64-21.7.0.0.0dbru.zip
 wget https://download.oracle.com/otn_software/linux/instantclient/217000/instantclient-odbc-linux.x64-21.7.0.0.0dbru.zip
 ```
+
 ```
 //安装解压
 mkdir /usr/local/oracle          //存储oracle-client and oracle-odbc
@@ -81,6 +82,7 @@ unzip instantclient-odbc-linux.x64-21.7.0.0.0dbru.zip -d /usr/local/oracle/
 ```
 
 ### 4.2 配置 ODBC 驱动文件
+
 *odbcinst.ini* 文件用于设置 ODBC 的某个 Driver 要用到的 ODBC 驱动库的文件路径。
 需要在 /etc/odbcinst.ini 增加 :
 
@@ -138,7 +140,7 @@ nohup ./dolphindb -console 0 > single.nohup 2>&1 &
 
 重启 DolphinDB 服务，可以执行 `stopAllNode.sh` 先关闭当前系统上的 DolphinDB 所有节点。然后执行 `startAgent.sh` 启动代理节点，然后在 DolphinDB 的集群管理网页启动数据节点。如果当前机器还配置了控制节点，需要再执行 `startController.sh` 启动控制节点。
 
-### 4.4 使用 ODBC 插件把表数据写到 Oracle、并查询返回到 DolphinDB 中。
+### 4.4 使用 ODBC 插件把表数据写到 Oracle、并查询返回到 DolphinDB 中
 
 执行 DolphinDB 脚本加载插件
 
@@ -147,14 +149,14 @@ login("admin", "123456");
 loadPlugin("plugins/odbc/PluginODBC.txt");
 ```
 
-选择刚刚配置好的 Oracle ODBC 驱动，使用 `odbc::connect ` 连接 Oracle 数据库
+选择刚刚配置好的 Oracle ODBC 驱动，使用 `odbc::connect` 连接 Oracle 数据库
 
 ```
 conn=odbc::connect("Dsn=orac", `oracle);
 odbc::execute(conn, "create database test");//创建测试数据库
 ```
 
-准备写入数据，创建 DolphinDB 内存表，将数据写入到 Oracle 中 
+准备写入数据，创建 DolphinDB 内存表，将数据写入到 Oracle 中
 
 ```
 colNames="col"+string(1..13)
@@ -305,7 +307,7 @@ isql -v -k "Driver=MySQL ODBC 8.0 Unicode Driver;Server=192.168.1.38;Port=3306;U
 
 可以查看是否有该驱动文件和是否有该驱动文件的读权限。
 
-2、` isql: error while loading shared libraries: libltdl.so.7: cannot open shared object file: No such file or directory` 错误。
+2、`isql: error while loading shared libraries: libltdl.so.7: cannot open shared object file: No such file or directory` 错误。
 
 到对应 *ODBC Driver* 路径下，使用命令查看依赖库的缺少情况
 
@@ -444,7 +446,7 @@ __strcmp_avx2 () at ../sysdeps/x86_64/multiarch/strcmp-avx2.S:101
 
 #### **5.2.2 没有设置合适的环境变量**
 
-需要保证运行 DolphinDB 和 `isql` 执行的环境变量是一致的，可以通过在同一终端下执行 `isql` 和单节点的 DolphinDB 来进行验证。环境变量 `LD_LIBRARY_PATH` 用于指定运行时寻找动态依赖库的路径，同时所用到的 ODBC 驱动也可能会用到特殊的环境变量，如 Oracle 的 ODBC 驱动需要用到 `TNS_ADMIN `环境变量。
+需要保证运行 DolphinDB 和 `isql` 执行的环境变量是一致的，可以通过在同一终端下执行 `isql` 和单节点的 DolphinDB 来进行验证。环境变量 `LD_LIBRARY_PATH` 用于指定运行时寻找动态依赖库的路径，同时所用到的 ODBC 驱动也可能会用到特殊的环境变量，如 Oracle 的 ODBC 驱动需要用到 `TNS_ADMIN`环境变量。
 
 #### **5.2.3 使用 `LD_DEBUG` 检查环境**
 

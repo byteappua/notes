@@ -4,22 +4,20 @@
 
 - [1. 概览](#1-概览)
 - [2. 安装](#2-安装)
-	- [2.1 安装 Telegraf](#21-安装-telegraf)
-	- [2.2 安装 Grafana](#22-安装-grafana)
-	- [2.3 安装 DolphinDB](#23-安装-dolphindb)
+  - [2.1 安装 Telegraf](#21-安装-telegraf)
+  - [2.2 安装 Grafana](#22-安装-grafana)
+  - [2.3 安装 DolphinDB](#23-安装-dolphindb)
 - [3. Telegraf 采集数据到 DolphinDB](#3-telegraf-采集数据到-dolphindb)
-	- [3.1 下载/自行编译 telegraf-dolphindb-outputs 插件](#31-下载自行编译-telegraf-dolphindb-outputs-插件)
-	- [3.2 DolphinDB 环境准备](#32-dolphindb-环境准备)
-	- [3.3 配置文件准备](#33-配置文件准备)
-	- [3.4 配置说明](#34-配置说明)
-	- [3.5 启动 Telegraf](#35-启动-telegraf)
-	- [3.6 查询指标](#36-查询指标)
+  - [3.1 下载/自行编译 telegraf-dolphindb-outputs 插件](#31-下载自行编译-telegraf-dolphindb-outputs-插件)
+  - [3.2 DolphinDB 环境准备](#32-dolphindb-环境准备)
+  - [3.3 配置文件准备](#33-配置文件准备)
+  - [3.4 配置说明](#34-配置说明)
+  - [3.5 启动 Telegraf](#35-启动-telegraf)
+  - [3.6 查询指标](#36-查询指标)
 - [4. Grafana 可视化 DolphinDB 数据](#4-grafana-可视化-dolphindb-数据)
-	- [4.1 配置 Grafana](#41-配置-grafana)
+  - [4.1 配置 Grafana](#41-配置-grafana)
 - [5. 运维实例：用 Telegraf+DolphinDB+Grafana 监控预警 CPU 使用率](#5-运维实例用-telegrafdolphindbgrafana-监控预警-cpu-使用率)
 - [6. 附件](#6-附件)
-
-
 
 ## 1. 概览
 
@@ -45,8 +43,6 @@ Grafana 是由 Grafana Labs 公司开源的一个系统监测工具。
 
 **2.1.1 下载并安装**
 
-
-
 ```
 wget https://dl.influxdata.com/telegraf/releases/telegraf_-_1.24.4_linux_amd64.tar.gz
 tar xf telegraf-1.24.4_linux_amd64.tar.gz
@@ -60,8 +56,6 @@ tar xf telegraf-1.24.4_linux_amd64.tar.gz
 
 **2.2.1 下载并安装**
 
-
-
 ```
 wget https://dl.grafana.com/enterprise/release/grafana-enterprise-9.3.2-1.x86_64.rpm
 sudo yum install grafana-enterprise-9.3.2-1.x86_64.rpm
@@ -71,8 +65,6 @@ sudo yum install grafana-enterprise-9.3.2-1.x86_64.rpm
 
 1. 启动 Grafana 命令。
 
-
-
 ```
 systemctl start grafana-server
 systemctl enable grafana-server
@@ -80,16 +72,12 @@ systemctl enable grafana-server
 
 2. 防火墙开放 Grafana 端口号，Grafana 服务默认端口 3000。
 
-
-
 ```
 firewall-cmd --zone=public --add-port=3000/tcp --permanent 
 firewall-cmd --reload
 ```
 
 3. 本机打开 Grafana，检验是否安装成功。
-
-
 
 ```
 http://localhost:3000/
@@ -112,15 +100,11 @@ http://localhost:3000/
 
 1. 进入 server 目录，给 dolphindb 文件添加读写改权限。
 
-
-
 ```
 chmod +x dolphindb   
 ```
 
 2. 防火墙开放 8848 端口号（dolphindb 服务默认端口）。
-
-
 
 ```
 firewall-cmd --zone=public --add-port=8848/tcp --permanent 
@@ -128,8 +112,6 @@ firewall-cmd --reload
 ```
 
 3. 启动 DolphinDB。
-
-
 
 ```
 前台启动命令：
@@ -146,26 +128,24 @@ Telegraf 提供了插件运行的框架和标准，将所有 Input 收集到的�
 
 因此要实现将 Telegraf 的数据采集到 DolphinDB，只需要在 Telegraf 中制作数据输出存储为 DolphinDB 的 Output 插件即可，实现的 Output 插件只要符合 Telegraf 的插件接口和数据标准，即可接入 Telegraf。下面提供用 go 语言编写的 Output 接口标准：
 
-
-
 ```
 type Output interface {
-	PluginDescriber
+ PluginDescriber
 
-	// Connect to the Output; connect is only called once when the plugin starts
-	Connect() error
-	// Close any connections to the Output. Close is called once when the output
-	// is shutting down. Close will not be called until all writes have finished,
-	// and Write() will not be called once Close() has been, so locking is not
-	// necessary.
-	Close() error
-	// Write takes in group of points to be written to the Output
-	Write(metrics []Metric) error
+ // Connect to the Output; connect is only called once when the plugin starts
+ Connect() error
+ // Close any connections to the Output. Close is called once when the output
+ // is shutting down. Close will not be called until all writes have finished,
+ // and Write() will not be called once Close() has been, so locking is not
+ // necessary.
+ Close() error
+ // Write takes in group of points to be written to the Output
+ Write(metrics []Metric) error
 }
 
 type PluginDescriber interface {
-	// SampleConfig returns the default configuration of the Plugin
-	SampleConfig() string
+ // SampleConfig returns the default configuration of the Plugin
+ SampleConfig() string
 }
 ```
 
@@ -191,8 +171,6 @@ DolphinDB 基于 Telegraf 的 Output 插件将 Telegraf 采集并处理过的数
 
 2. 将插件文件 telegraf-dolphindb-outputs 授予可执行权限并移动至 $PATH 路径。
 
-
-
 ```
 export PATH=$PATH:/xxxx/
 source /etc/profile
@@ -211,15 +189,11 @@ source /etc/profile
 
 ③删除原环境自带的 go 环境，并解压下载的 go 压缩包到自行指定路径。
 
-
-
 ```
 rm -rf /usr/local/go && tar -C /usr/local -xzf go1.19.4.linux-amd64.tar.gz
 ```
 
 ④将 go 环境添加到系列变量。
-
-
 
 ```
 export PATH=$PATH:/usr/local/go/bin
@@ -227,8 +201,6 @@ source /etc/profile
 ```
 
 ⑤添加后，查看 go 版本检验是否添加成功。
-
-
 
 ```
  go version
@@ -242,15 +214,11 @@ source /etc/profile
 
 ②在 go-plugins 的根目录执行编译脚本。
 
-
-
 ```
 go build -mod mod -o telegraf-dolphindb-outputs cmd/telegraf-outputs/telegraf-outputs.go
 ```
 
 若执行脚本出错，显示错误：dial tcp 172.217.27.145:443: i/o timeout，请在 /etc/profile 中设置 GOPROXY 环境变量（改一下代理）, 之后启用 go module，用下面的命令：
-
-
 
 ```
 export GOPROXY=https://goproxy.io
@@ -258,8 +226,6 @@ export GO111MODULE=on
 ```
 
 ③将编译好的插件文件 telegraf-dolphindb-outputs 授予可执行权限并移动至 $PATH 路径（可将 go-plugins 的根目录添加到系统变量中）。
-
-
 
 ```
 export PATH=$PATH:/xxxx/go-plugins/
@@ -292,8 +258,6 @@ source /etc/profile
 
 **3.2.1 用 DolphinDB 脚本建库建表**
 
-
-
 ```
 //登录
 login(`admin,`123456)
@@ -321,8 +285,6 @@ db_system = createPartitionedTable(dbHandle = db_telegraf,table = system,tableNa
 
 1.修改本项目 test/dolphindb.go 文件中的变量 DefaultCfg。
 
-
-
 ```
 DefaultCfg = &outputs.Config{
     Address:      "localhost:8848", //单节点DolphinDB的地址
@@ -333,8 +295,6 @@ DefaultCfg = &outputs.Config{
 ```
 
 2.在本项目 test 路径下执行以下指令。
-
-
 
 ```
 go test -v dolphindb.go telegraf.go telegraf_test.go -test.run TestPreparePartitionedTableForTelegraf -count=1
@@ -350,8 +310,6 @@ go test -v dolphindb.go telegraf.go telegraf_test.go -test.run TestPrepareSecond
 **3.3.2 DolphinDB Output 配置文件准备**
 
 1. 创建 DolphinDB Output Disk 配置文件：/dolphindb/dolphindb-output-disk.conf，配置文件路径与 TelegrafConfig 中的 command 使用路径一致，dolphindb-output-disk.conf 示例如下：
-
-
 
 ```
 # Configuration for DolphinDB to send metrics to.
@@ -387,14 +345,10 @@ debug = true
 
 2. 创建 DolphinDB Output System 配置文件：/dolphindb/dolphindb-output-system.conf，配置文件路径与 TelegrafConfig 中的 command 使用路径一致。dolphindb-output-system.conf 与 dolphindb-output-disk.conf 内容一致，只需修改 table_name 为“system”和 metric_name 为“system” ，如下：
 
-
-
 ```
 # Name of the table to store metrics in.
 table_name = "system"
 ```
-
-
 
 ```
 # The name of the metrics.
@@ -421,23 +375,17 @@ metric_name = "system"
 
 1. 执行以下脚本启动，Telegraf 服务。
 
-
-
 ```
 telegraf --config $TelegrafConfig
 ```
 
 报错可能是 TelegrafConfig 存放路径有误，可在 TelegrafConfig 存放路径下执行以下脚本启动。
 
-
-
 ```
 telegraf --config TelegrafConfig
 ```
 
 2. 查看 telegraf 程序运行情况。
-
-
 
 ```
 ps -ef | grep telegraf
@@ -449,15 +397,11 @@ ps -ef | grep telegraf
 
 1. 连接并登录 DolphinDB，可以打开 localhost:8848，在线登录查看。
 
-
-
 ```
 http://localhost:8848/
 ```
 
 2. 查询指标。
-
-
 
 ```
 查询 disk 表 ：查询最近的100条指标数据
@@ -483,15 +427,11 @@ select top 100 * from system order by timestamp desc
 
 1. 在本机浏览器中打开地址。
 
-
-
 ```
 http://localhost:3000/
 ```
 
 2. 登陆账号，系统初始用户名密码为 admin/admin。
-
-
 
 ```
 username = admin
@@ -507,8 +447,6 @@ password = admin
 <img src="./images/DolphinDB_Telegraf_Grafana/4_2.png" width=70%>
 
 5. 在 Grafana 底部的代码输入栏中输入下方代码（按时间段分组，查询各时间段磁盘总量、使用量、可用量、使用百分比，4 个指标数据的平均情况）。
-
-
 
 ```
 dfs_disk = loadTable("dfs://telegraf","disk")
@@ -540,8 +478,6 @@ select timestamp,avg(total),avg(used),avg(free),avg(used_percent) from dfs_disk 
 <img src="./images/DolphinDB_Telegraf_Grafana/5_2.png" width=70%>
 
 2. 编写对应 [[outputs.execd]] 的配置文件 dolphindb-output-3.conf。这里直接注释掉 database，将 Telegraf 采集的数据导入到 DolphinDB 流表 cpu_stream 中。
-
-
 
 ```
 [[outputs.dolphindb]]
@@ -576,8 +512,6 @@ debug = true
 
 3. 修改 DolphinDB 配置文件，用于支持创建磁盘持久化流表。在 dolphindb.cfg 中设置持久化路径如下（<DolphinDBDir>是自定义的数据存放路径，可以与 server 保持同一目录）：
 
-
-
 ```
 volumes=<DolphinDBDir>/volumes 
 redoLogDir=<DolphinDBDir>/redoLog
@@ -588,8 +522,6 @@ persistenceOffsetDir=<DolphinDBDir>/streamlog
 ```
 
 4. 连接登录 DolphinDB，在 DolphinDB 中创建存储 CPU 指标数据的流表 cpu_stream。
-
-
 
 ```
 //登录
@@ -607,8 +539,6 @@ enableTableShareAndPersistence(table = streamTable(1000:0,cpuColnames,cpuColtype
 
 5. 在 DolphinDB 中订阅流表 cpu_stream 中的数据，一方面将流表中的数据导入到分布式表 dfs_cpu 中进行持久化存储，另一方面对流表中的数据进行流计算，预警统计 CPU 使用率大于 80% 的指标数据，并将统计的数据存入流表 cpu_warning_result 中。
 
-
-
 ```
 //创建分布表 dfs_cpu ，并订阅 cpu_stream 中的数据导入到 dfs_cpu 中。
 dbName = "dfs://telegraf"
@@ -623,22 +553,18 @@ enableTableShareAndPersistence(table = streamTable(1000:0,cpuColnames,cpuColtype
 def handler_cpu(mutable warning_result, msg)
 {
     t = select * from msg where usage_idle >= 80;
-	warning_result.append!(t)
+ warning_result.append!(t)
 }
 subscribeTable(tableName="cpu_stream", actionName="cpu_warning", offset=0, handler=handler_cpu{cpu_warning_result}, msgAsTable=true,batchSize=100000, throttle=1, reconnect=true)
 ```
 
 6. 启动 Telegraf 服务。
 
-
-
 ```
 telegraf --config $TelegrafConfig
 ```
 
 7. 查看 cpu_stream 中最近的 100 条 CPU 指标数据，查看 dfs_cpu 中最近的 100 条 CPU 指标数据，查看 cpu_warning_result 中最近的 100 条 预警数据。
-
-
 
 ```
 dbName = "dfs://telegraf"
@@ -659,4 +585,3 @@ select top 100 * from cpu_warning_result order by timestamp desc
 2. 编译源码：[telegraf.zip](script/DolphinDB_Telegraf_Grafana/telegraf.zip)
 
 3. TelegrafConfig：[TelegrafConfig](script/DolphinDB_Telegraf_Grafana/TelegrafConfig)
-

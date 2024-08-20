@@ -19,13 +19,11 @@ DolphinDB 是一种高效、分布式的数据管理和分析平台，它可以�
   - [table 配置详解](#table-配置详解)
   - [完整代码及测试数据](#完整代码及测试数据)
 
-
 ## 实现方法
+
 Oracle 迁移数据到 DolphinDB 的整体框架如下：
 
-<img src="images/Oracle_to_DolphinDB/Oracle_to_DolphinDB_1.png" width=70%>  
-
-
+<img src="./images/Oracle_to_DolphinDB/Oracle_to_DolphinDB_1.png" width=70%>  
 
 从 Oracle 迁移数据到 DolphinDB 的方法有以下二种：
 
@@ -47,8 +45,6 @@ DataX 是可扩展的数据同步框架，将不同数据源的同步抽象为�
 
 DolphinDB 提供基于 DataXReader 和 DataXWriter 的开源驱动。DolphinDBWriter 插件实现了向 DolphinDB 写入数据，使用 DataX 的现有 reader 插件结合 DolphinDBWriter 插件，即可实现从不同数据源向 DolphinDB 同步数据。用户可以在 Java 项目中包含 DataX 的驱动包，开发从 Oracle 数据源到 DolphinDB 的数据迁移软件。
 
-
-
 ## 应用需求
 
 很多之前存储在 Oracle 的业务数据，可以通过上述的两种方式将数据同步到 DolphinDB 中。本文的实践案例基于 2021.01.04 号一天的逐笔成交数据，数据量约 2721 万。其部分数据示例如下：
@@ -65,8 +61,6 @@ DolphinDB 提供基于 DataXReader 和 DataXWriter 的开源驱动。DolphinDBWr
 | 600020     | 2021.01.04T09:25:00.630 | 3.39       | 100      | 339.        | 42283  | 38902  | 19726      | 1         | N           | 123720   |
 | 600020     | 2021.01.04T09:25:00.630 | 3.39       | 3883     | 13,163.37   | 42283  | 45597  | 19727      | 1         | N           | 123721   |
 | 600020     | 2021.01.04T09:25:00.630 | 3.39       | 12000    | 40,680.     | 42283  | 168862 | 19728      | 1         | N           | 123722   |
-
-
 
 ## 迁移案例与操作步骤
 
@@ -90,18 +84,16 @@ DolphinDB 提供基于 DataXReader 和 DataXWriter 的开源驱动。DolphinDBWr
 
 如果想自行编译，请参考： [ODBC/README_CN.md](https://gitee.com/dolphindb/DolphinDBPlugin/blob/release200/odbc/README_CN.md) 文章中的第2章。
 
-
-
-###  建库建表
+### 建库建表
 
 Oracle 建表语句如下：
 
 ```
 create table ticksh(
   SecurityID         varchar2(20) ,
-  TradeTime       	 TIMESTAMP,
+  TradeTime         TIMESTAMP,
   TradePrice         FLOAT,
-  TradeQty 	         NUMBER(38),
+  TradeQty           NUMBER(38),
   TradeAmount        NUMBER(38,4),
   BuyNo              NUMBER(38),
   SellNo             NUMBER(38),
@@ -118,17 +110,17 @@ create table ticksh(
 
 ```
 def createTick(dbName, tbName){
-	if(existsDatabase(dbName)){
-		dropDatabase(dbName)
-	}
-	db1 = database(, VALUE, 2020.01.01..2021.01.01)
-	db2 = database(, HASH, [SYMBOL, 10])
-	db = database(dbName, COMPO, [db1, db2], , "TSDB")
-	db = database(dbName)
-	name = `SecurityID`TradeTime`TradePrice`TradeQty`TradeAmount`BuyNo`SellNo`ChannelNo`TradeIndex`TradeBSFlag`BizIndex
-	type = `SYMBOL`TIMESTAMP`DOUBLE`INT`DOUBLE`INT`INT`INT`INT`SYMBOL`INT
-	schemaTable = table(1:0, name, type)
-	db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`TradeTime`SecurityID, compressMethods={TradeTime:"delta"}, sortColumns=`SecurityID`TradeTime, keepDuplicates=ALL)
+ if(existsDatabase(dbName)){
+  dropDatabase(dbName)
+ }
+ db1 = database(, VALUE, 2020.01.01..2021.01.01)
+ db2 = database(, HASH, [SYMBOL, 10])
+ db = database(dbName, COMPO, [db1, db2], , "TSDB")
+ db = database(dbName)
+ name = `SecurityID`TradeTime`TradePrice`TradeQty`TradeAmount`BuyNo`SellNo`ChannelNo`TradeIndex`TradeBSFlag`BizIndex
+ type = `SYMBOL`TIMESTAMP`DOUBLE`INT`DOUBLE`INT`INT`INT`INT`SYMBOL`INT
+ schemaTable = table(1:0, name, type)
+ db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`TradeTime`SecurityID, compressMethods={TradeTime:"delta"}, sortColumns=`SecurityID`TradeTime, keepDuplicates=ALL)
 }
 
 dbName="dfs://TSDB_tick"
@@ -152,8 +144,6 @@ createTick(dbName, tbName)
 | 成交方向            | TradeBSFlag     | VARCHAR2(10)        | 成交方向               | TradeBSFlag        | SYMBOL                 |
 | 业务序列号          | BizIndex        | INTEGER             | 业务序列号             | BizIndex           | INT                    |
 
-
-
 ### 通过 ODBC 迁移
 
 #### 安装 ODBC 驱动
@@ -175,8 +165,6 @@ yum install unixODBC unixODBC-devel
 # 安装 unixODBC 库
 apt-get install unixodbc unixodbc-dev
 ```
-
-
 
 2. 下载 Oracle 的 ODBC 驱动并安装
 
@@ -202,8 +190,6 @@ mkdir /etc/oracle                //存储 tnsnames.ora
 unzip instantclient-basic-linux.x64-21.7.0.0.0dbru.zip -d /usr/local/oracle/
 unzip instantclient-odbc-linux.x64-21.7.0.0.0dbru.zip -d /usr/local/oracle/
 ```
-
-
 
 3. 配置 ODBC 配置文件
 
@@ -243,8 +229,6 @@ ORAC=
 ```
 
 **注意**：理论上 *tnsnames.ora* 的配置内容可以直接放到 *odbc.ini* 配置文件中，不影响 ODBC 连接 Oracle 数据库，但是根据实践来看，Oracle 的 ODBC 某些接口仍然会使用到 *tnsnames.ora* 配置文件，所以该文件必须配置。
-
-
 
 4. 测试 ODBC 连接
 
@@ -288,8 +272,6 @@ export TNS_ADMIN=/etc/oracle
 export NLS_LANG='AMERICAN_AMERICA.AL32UTF8'
 ```
 
- 
-
 5. 可能缺少的文件
 
 安装 Oracle Instant Client 时，如果是使用离线安装的，可能会提示缺少 libsqora 、libodbcinst 、libnsl 等，这里提供相关的安装命令，也可以从网上下载到需要的 lib 并手工传到服务器上，命令如下：
@@ -302,8 +284,6 @@ ln -s libodbcinst.so.2.0.0 libodbcinst.so.1
 ```
 
 其他常见问题，可参考 [ODBC_plugin_user_guide.md](https://gitee.com/dolphindb/Tutorials_CN/blob/master/ODBC_plugin_user_guide.md#5-odbc-插件使用注意事项和常见问题)  文章中的第五章注意事项和常见问题。
-
- 
 
 #### 同步数据
 
@@ -323,20 +303,20 @@ conn = odbc::connect("Dsn=orac", `Oracle)
 
 ```
 def transForm(mutable msg){
-	msg.replaceColumn!(`TradeQty, int(msg[`TradeQty]))
-	msg.replaceColumn!(`BuyNo, int(msg[`BuyNo]))
-	msg.replaceColumn!(`SellNo, int(msg[`SellNo]))
-	msg.replaceColumn!(`ChannelNo, int(msg[`ChannelNo]))
-	msg.replaceColumn!(`TradeIndex, int(msg[`TradeIndex]))
-	msg.replaceColumn!(`BizIndex, int(msg[`BizIndex]))
-	return msg
+ msg.replaceColumn!(`TradeQty, int(msg[`TradeQty]))
+ msg.replaceColumn!(`BuyNo, int(msg[`BuyNo]))
+ msg.replaceColumn!(`SellNo, int(msg[`SellNo]))
+ msg.replaceColumn!(`ChannelNo, int(msg[`ChannelNo]))
+ msg.replaceColumn!(`TradeIndex, int(msg[`TradeIndex]))
+ msg.replaceColumn!(`BizIndex, int(msg[`BizIndex]))
+ return msg
 }
 
 def syncData(conn, dbName, tbName, dt){
-	sql = "select SecurityID, TradeTime, TradePrice, TradeQty, TradeAmount, BuyNo, SellNo, ChannelNo, TradeIndex, TradeBSFlag, BizIndex from ticksh"
-	if(!isNull(dt)) {
-		sql = sql + " WHERE trunc(TradeTime) = TO_DATE('"+dt+"', 'yyyy.MM.dd')"
-	}
+ sql = "select SecurityID, TradeTime, TradePrice, TradeQty, TradeAmount, BuyNo, SellNo, ChannelNo, TradeIndex, TradeBSFlag, BizIndex from ticksh"
+ if(!isNull(dt)) {
+  sql = sql + " WHERE trunc(TradeTime) = TO_DATE('"+dt+"', 'yyyy.MM.dd')"
+ }
     odbc::query(conn,sql, loadTable(dbName,tbName), 100000, transForm)
 }
 
@@ -353,13 +333,11 @@ syncData(conn, dbName, tbName, NULL)
 
 ```
 for(dt in 2021.01.04..2021.01.05){
-	submitJob(`syncOracTick, `syncOracTick, syncData, conn, dbName, tbName, dt)
+ submitJob(`syncOracTick, `syncOracTick, syncData, conn, dbName, tbName, dt)
 }
 // 查看后台任务
 select * from getRecentJobs() where jobDesc = `syncOracTick
 ```
-
- 
 
 ### 通过 DataX 迁移
 
@@ -369,7 +347,7 @@ select * from getRecentJobs() where jobDesc = `syncOracTick
 
 #### 部署 DataX-DolphinDBWriter 插件
 
-将 [DataX-DolphinDBWriter ](https://gitee.com/link?target=https%3A%2F%2Fgithub.com%2Fdolphindb%2Fdatax-writer)中源码的 *./dist/dolphindbwriter* 目录下所有内容拷贝到 *DataX/plugin/writer* 目录下，即可使用。
+将 [DataX-DolphinDBWriter](https://gitee.com/link?target=https%3A%2F%2Fgithub.com%2Fdolphindb%2Fdatax-writer)中源码的 *./dist/dolphindbwriter* 目录下所有内容拷贝到 *DataX/plugin/writer* 目录下，即可使用。
 
 #### 执行 DataX 任务
 
@@ -486,8 +464,6 @@ python datax.py --jvm="-Xms1g -Xmx8g" ../../datax-writer-master/ddb_script/oracl
 读写失败总数                    :                   0
 ```
 
-
-
 ## 基准性能
 
 分别使用 ODBC 插件和 DataX 驱动进行数据迁移， 数据量 2721 万条，迁移耗时对比如下表所示：
@@ -502,8 +478,6 @@ python datax.py --jvm="-Xms1g -Xmx8g" ../../datax-writer-master/ddb_script/oracl
 - DataX 需要编写复杂的导入配置，但是其扩展灵活，方便监控，社区支持丰富。
 
 用户可以根据自己数据量的大小以及工程化的便捷性选择合适的导入方式。
-
-
 
 ## 附录
 
@@ -521,8 +495,6 @@ python datax.py --jvm="-Xms1g -Xmx8g" ../../datax-writer-master/ddb_script/oracl
 | table            | 是           |              |            | 写入表的字段集合，具体参考后续 table 项配置详解              |
 | saveFunctionName | 否           | string       | 无         | 自定义数据处理函数。若未指定此配置，插件在接收到 reader 的数据后，会将数据提交到 DolphinDB 并通过 `tableInsert` 函数写入指定库表；如果定义此参数，则会用指定函数替换 `tableInsert` 函数。 |
 | saveFunctionDef  | 否           | string       | 无         | 数据入库自定义函数。此函数指用 DolphinDB 脚本来实现的数据入库过程。 此函数必须接受三个参数：*dfsPath* (分布式库路径), *tbName* (数据表名), *data* (从 DataX 导入的数据, table 格式) |
-
- 
 
 ### table 配置详解
 
@@ -558,15 +530,13 @@ table 用于配置写入表的字段集合。内部结构为
 | STRING         | DT_STRING       |
 | SYMBOL         | DT_SYMBOL       |
 
-
-
 ### 完整代码及测试数据
 
-DataX:  [oracleddb.json](script/Oracle_to_DolphinDB/oracleddb.json) 
+DataX:  [oracleddb.json](script/Oracle_to_DolphinDB/oracleddb.json)
 
-DolphinDB: 
+DolphinDB:
 
 1. [createTable.dos](script/Oracle_to_DolphinDB/createTable.dos)
-2. [迁移.txt](script/Oracle_to_DolphinDB/迁移.txt) 
+2. [迁移.txt](script/Oracle_to_DolphinDB/迁移.txt)
 
 测试数据：  [tick.csv](data/Oracle_to_DolphinDB/tick.csv)  （1万行）

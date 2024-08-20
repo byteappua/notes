@@ -2,21 +2,20 @@
 
 - [1. 地震波形数据预测业务场景说明](#1-地震波形数据预测业务场景说明)
 - [2. 波形数据异常检测相关算法介绍](#2-波形数据异常检测相关算法介绍)
-	- [2.1 模板匹配算法](#21-模板匹配算法)
-	- [2.2 线性趋势去除算法](#22-线性趋势去除算法)
-	- [2.3 sosBandpass 算法](#23-sosbandpass-算法)
+  - [2.1 模板匹配算法](#21-模板匹配算法)
+  - [2.2 线性趋势去除算法](#22-线性趋势去除算法)
+  - [2.3 sosBandpass 算法](#23-sosbandpass-算法)
 - [3. DolphinDB 解决方案](#3-dolphindb-解决方案)
 - [4. 环境准备](#4-环境准备)
-	- [4.1 加载插件](#41-加载插件)
-	- [4.2 流数据表环境清理](#42-流数据表环境清理)
+  - [4.1 加载插件](#41-加载插件)
+  - [4.2 流数据表环境清理](#42-流数据表环境清理)
 - [5. 方案实现](#5-方案实现)
-	- [5.1 波形实时数据模拟](#51-波形实时数据模拟)
-	- [5.2 一级异常检测](#52-一级异常检测)
-	- [5.3 二级异常检测](#53-二级异常检测)
+  - [5.1 波形实时数据模拟](#51-波形实时数据模拟)
+  - [5.2 一级异常检测](#52-一级异常检测)
+  - [5.3 二级异常检测](#53-二级异常检测)
 - [6. 附录](#6-附录)
-	- [插件及脚本文件](#插件及脚本文件)
-	- [表结构](#表结构)
-
+  - [插件及脚本文件](#插件及脚本文件)
+  - [表结构](#表结构)
 
 ## 1. 地震波形数据预测业务场景说明
 
@@ -160,12 +159,12 @@ if(existsDatabase("dfs://seis01")) dropDatabase("dfs://seis01");
 create database "dfs://seis01" partitioned by VALUE(1..10), engine='TSDB'
   //创建维度表
 create table "dfs://seis01"."tagInfo"(
-	xfdsn SYMBOL,
-	net SYMBOL,
-	sta SYMBOL,
-	loc SYMBOL,
-	chn SYMBOL,
-	id INT[compress="delta"]
+ xfdsn SYMBOL,
+ net SYMBOL,
+ sta SYMBOL,
+ loc SYMBOL,
+ chn SYMBOL,
+ id INT[compress="delta"]
 )
 sortColumns=[`id];
   //向维度表插入数据
@@ -178,7 +177,7 @@ locList = take(`40,150)
 chn = take(tmp,150)
 colt =   array(STRING)
 for(i in 0..(chn.size()-1)){
-	colt.append!( chn[i].split()[0] + "_" + chn[i].split()[1] + "_" +chn[i].split()[2] )
+ colt.append!( chn[i].split()[0] + "_" + chn[i].split()[1] + "_" +chn[i].split()[2] )
 }
 xfdsn = "XFDSN:"+netList+"_"+staList+"_"+locList+"_"+colt
 t = table(xfdsn,netList as net,staList as sta,locList as loc,chn,1..150 as id)
@@ -202,13 +201,13 @@ loadTable( "dfs://seis01","tagInfo").append!(t);
  * 模拟实时数据
  */
 def insertIntoDataStream(){
-	do{
-		tagidList = 1 2 3 4 5 6 7 8 9
-		ts = now()+(0..400)*10
-		t = table(stretch(tagidList,3600)as tagid,take(ts,3600) as ts,randNormal(-2500, 1000, 3600) as data)
-		objByName(`dataStream).append!(t)
-		sleep(3500)
-	}while(true)
+ do{
+  tagidList = 1 2 3 4 5 6 7 8 9
+  ts = now()+(0..400)*10
+  t = table(stretch(tagidList,3600)as tagid,take(ts,3600) as ts,randNormal(-2500, 1000, 3600) as data)
+  objByName(`dataStream).append!(t)
+  sleep(3500)
+ }while(true)
 }
 jobId = submitJob("simulate","simulate",insertIntoDataStream);
 //通过以下方式取消Job
@@ -230,7 +229,7 @@ step3：调用 `filterPicker::filerPicker(pickerPtr, timeCol, dataCol, [fixedSiz
 - dataCol：每一 tagid 对应的采样值；
 - fixedSize：批计算数据量大小，若数据不足 fixedSize，会累积到下次凑足 fixedSize 再进行计算
 
-其中，突峭点算法参考 [ALomax - FilterPicker - a general purpose, broad-band, phase detector and picker](http://alomax.free.fr/FilterPicker/) 
+其中，突峭点算法参考 [ALomax - FilterPicker - a general purpose, broad-band, phase detector and picker](http://alomax.free.fr/FilterPicker/)
 
 ```
 /*
@@ -239,21 +238,21 @@ step3：调用 `filterPicker::filerPicker(pickerPtr, timeCol, dataCol, [fixedSiz
  *返回值为突峭时间点和通道id
  */
 def pickerHandler(mutable pickerSt, mutable res, vz, msg){
-	tags=groups(msg[`tagid]) //按tagid分组
-	for (tag in tags.keys()){
-		re=res[tag]
-		if(re==NULL){
-			//创建filter handler
-			re= filterPicker::createFilterPicker()
-			res[tag]=re
-		}
-		//将数据传入filterPicker进行计算
-		vt=filterPicker::filterPicker(re,msg[tags[tag]][`ts], msg[tags[tag]][`data].float(), 1000)
-		if(vt.size()>0){
-			vid=take(tag,vt.size())
-			pickerSt.append!(table(vt as ts,vid as id))
-		}
-	}
+ tags=groups(msg[`tagid]) //按tagid分组
+ for (tag in tags.keys()){
+  re=res[tag]
+  if(re==NULL){
+   //创建filter handler
+   re= filterPicker::createFilterPicker()
+   res[tag]=re
+  }
+  //将数据传入filterPicker进行计算
+  vt=filterPicker::filterPicker(re,msg[tags[tag]][`ts], msg[tags[tag]][`data].float(), 1000)
+  if(vt.size()>0){
+   vid=take(tag,vt.size())
+   pickerSt.append!(table(vt as ts,vid as id))
+  }
+ }
 }
 
 vz=exec id from loadTable("dfs://seis01","tagInfo") where chn ilike("%z") //只需要计算Z分量的数据
@@ -318,52 +317,52 @@ step5：先对滤波数据进行归一化处理，然后调用 `tf::predict(mode
 
 ```
 def tensorHandler(mutable tensorSt, mutable infoTable, mutable model, mutable cache, msg){
-	if(msg.type()!=0) cache.append!(msg)	
-	if(cache.size()==0) return
-	currTime = now() - 2000
-	outed = select * from cache where timestamp  < currTime
-	for(s in outed){
-		//获取同个台站id信息
-		info = select net,sta,loc from infoTable where id == s[`id]
-		netInfo = info[`net][0]
-		staInfo = info[`sta][0]
-		bhzInfo = info[`loc][0]
-		bheId = exec id from infoTable where net == netInfo and sta == staInfo and loc == bhzInfo and ilike(chn,"%e")
-		bhnId = exec id from infoTable where net == netInfo and sta == staInfo and loc == bhzInfo and ilike(chn,"%n")
-		bhzId = exec id from infoTable where net == netInfo and sta == staInfo and loc == bhzInfo and ilike(chn,"%z")
-		//获取三个分量数据
-		begT = timestamp(s[`timestamp] - 2000)
-		endT = timestamp(s[`timestamp] + 1999)
-		ve = exec data from dataStream where tagid ==bheId[0] and ts between(begT:endT)
-		vn = exec data from dataStream where tagid ==bhnId[0] and ts between(begT:endT)
-		vz = exec data from dataStream where tagid ==bhzId[0] and ts between(begT:endT)
-		if(ve.size()==  400 && vn.size() ==  400 && vz.size() ==  400) {
-			//去趋势
-			tem = ols(vn, 0..399)
-			bhn = vn - (tem[0] + tem[1]*0..399)
-			tem = ols(ve, 0..399)
-			bhe = ve - (tem[0] + tem[1]*0..399)
-			tem = ols(vz, 0..399)
-			bhz = vz - (tem[0] + tem[1]*0..399)
-			//滤波
-			bhn = rtseis::sosBandPass(bhn,4,3.0,20.0,0,100.0,0.0);
-			bhe = rtseis::sosBandPass(bhe,4,3.0,20.0,0,100.0,0.0);
-			bhz = rtseis::sosBandPass(bhz,4,3.0,20.0,0,100.0,0.0);
-			m = matrix(bhn,bhe,bhz)
-			//矩阵数据归一化
-			m1 = m / max(max(abs(m)))
-			//输入模型进行预测, ts返回值为预测结果
-			ts = tf::predict(model, float(m1))
-			//prob_p 是P波的概率，prob_S是S波概率, prob_N是噪声的概率。
-			prob_P = ts[0]
-			prob_S = ts[1]
-			prob_N = ts[2]
-			if(prob_P > 0.90 || prob_S > 0.90){
-				tensorSt.append!(table(s[`timestamp] as timestamp, s[`id] as id))
-			}	
-		 }
-	}
-	delete from cache where timestamp  < currTime	
+ if(msg.type()!=0) cache.append!(msg) 
+ if(cache.size()==0) return
+ currTime = now() - 2000
+ outed = select * from cache where timestamp  < currTime
+ for(s in outed){
+  //获取同个台站id信息
+  info = select net,sta,loc from infoTable where id == s[`id]
+  netInfo = info[`net][0]
+  staInfo = info[`sta][0]
+  bhzInfo = info[`loc][0]
+  bheId = exec id from infoTable where net == netInfo and sta == staInfo and loc == bhzInfo and ilike(chn,"%e")
+  bhnId = exec id from infoTable where net == netInfo and sta == staInfo and loc == bhzInfo and ilike(chn,"%n")
+  bhzId = exec id from infoTable where net == netInfo and sta == staInfo and loc == bhzInfo and ilike(chn,"%z")
+  //获取三个分量数据
+  begT = timestamp(s[`timestamp] - 2000)
+  endT = timestamp(s[`timestamp] + 1999)
+  ve = exec data from dataStream where tagid ==bheId[0] and ts between(begT:endT)
+  vn = exec data from dataStream where tagid ==bhnId[0] and ts between(begT:endT)
+  vz = exec data from dataStream where tagid ==bhzId[0] and ts between(begT:endT)
+  if(ve.size()==  400 && vn.size() ==  400 && vz.size() ==  400) {
+   //去趋势
+   tem = ols(vn, 0..399)
+   bhn = vn - (tem[0] + tem[1]*0..399)
+   tem = ols(ve, 0..399)
+   bhe = ve - (tem[0] + tem[1]*0..399)
+   tem = ols(vz, 0..399)
+   bhz = vz - (tem[0] + tem[1]*0..399)
+   //滤波
+   bhn = rtseis::sosBandPass(bhn,4,3.0,20.0,0,100.0,0.0);
+   bhe = rtseis::sosBandPass(bhe,4,3.0,20.0,0,100.0,0.0);
+   bhz = rtseis::sosBandPass(bhz,4,3.0,20.0,0,100.0,0.0);
+   m = matrix(bhn,bhe,bhz)
+   //矩阵数据归一化
+   m1 = m / max(max(abs(m)))
+   //输入模型进行预测, ts返回值为预测结果
+   ts = tf::predict(model, float(m1))
+   //prob_p 是P波的概率，prob_S是S波概率, prob_N是噪声的概率。
+   prob_P = ts[0]
+   prob_S = ts[1]
+   prob_N = ts[2]
+   if(prob_P > 0.90 || prob_S > 0.90){
+    tensorSt.append!(table(s[`timestamp] as timestamp, s[`id] as id))
+   } 
+   }
+ }
+ delete from cache where timestamp  < currTime 
 }
 
   //导入模型
@@ -389,7 +388,6 @@ subscribeTable(tableName = "pickerStream",actionName="tensorFlowPredict", offset
 - [rtseis](https://docs.dolphindb.cn/zh/appendices/earthquake/rtseis.zip)
 - [tf](https://docs.dolphindb.cn/zh/appendices/earthquake/tf.zip)
 - [printTensorName.py](https://docs.dolphindb.cn/zh/appendices/earthquake/printTensorName.py)
-
 
 ### 表结构
 
@@ -425,5 +423,3 @@ tensorStream 表结构：
 | :------- | :--------------------- | :-------------------------- |
 | ts       | TIMESTAMP              | 采样时间                    |
 | id       | INT                    | 维度表中的 id，代表一个通道 |
-
- 

@@ -21,14 +21,11 @@
 - TSDB 存储引擎必须开启 cache engine 和 redo log
 - OLAP 存储引擎可以不开启 redo log，但启用了 redo log 之后必须启用 cache engine
 
-
 ## 1. redo log/cache engine相关概念
-
 
 ### 1.1 什么是 redo log
 
 在关系型数据库系统中，预写式日志 (write-ahead logging, WAL) 是用于提供原子性和持久性的一系列技术。DolphinDB 中的 redo log 与 WAL 的概念类似。简而言之，redo log 的核心思想是：只有在描述事务更改的日志记录刷新到持久化存储介质以后，才对数据库的数据文件进行修改。如果遵循这个过程，就不需要在每次提交事务时都将数据页刷新到磁盘上，因为在数据库发生宕机时，可以使用日志来恢复数据库，尚未应用的所有更改可以通过日志记录回放并重做。
-
 
 ### 1.2 什么是 cache engine
 
@@ -84,8 +81,6 @@ cache engine 大大减少了磁盘的写入次数，能够提升写入性能，�
 
 DolphinDB 采用列式存储，一个分区内的每一列数据单独存放在一个文件中。如果表的列数过多（比如物联网场景下同时记录几千个指标），每进行一次数据写入，就要对几千个物理文件进行操作（打开，写入，关闭等）。如果把多次少量的写入缓存起来，一次批量写入，就可以节省许多对文件进行打开和关闭带来的时间开销，从而在整体上提升系统的写入性能。
 
-
-
 ## 2. 配置说明
 
 ### 2.1 redo log 相关配置和函数
@@ -132,9 +127,6 @@ DolphinDB 采用列式存储，一个分区内的每一列数据单独存放在�
 - [getTSDBCacheEngineSize](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getTSDBCacheEngineSize.html?highlight=gettsdbcacheenginesize): 查看 TSDB 引擎 CacheEngine 许使用的内存上限。
 - [setTSDBCacheEngineSize](https://www.dolphindb.cn/cn/help/FunctionsandCommands/CommandsReferences/s/setTSDBCacheEngineSize.html?highlight=settsdb): 用于在线修改 TSDB 引擎的 CacheEngine 容量。
 
-
-
-
 ## 3. 性能的影响与优化建议
 
 ### 3.1 磁盘负载和内存使用
@@ -164,15 +156,15 @@ redo log 过大可能导致节点启动时间过长，可能有以下原因：
 >
 > chunkMetaDir: 数据节点元数据存储目录，设置到 SSD 磁盘，在 *cluster.cfg* 中设置。
 >
-> redoLogDir: 设置到 SSD 磁盘，在 *cluster.cfg* 中设置。 
+> redoLogDir: 设置到 SSD 磁盘，在 *cluster.cfg* 中设置。
 >
 > persistenceDir: 流数据的存储路径，建议设置到 SSD 磁盘。在 *cluter.cfg* 中设置。在集群模式中，需要保证同一机器上的数据节点配置了不同的 persistenceDir
 >
->  logFile: 各个节点的运行日志，记录节点的运行状态、错误信息等，可以写到 HDD 磁盘。在 *controller.cfg*, *agent.cfg*, *cluster.cfg* 中设置。
+> logFile: 各个节点的运行日志，记录节点的运行状态、错误信息等，可以写到 HDD 磁盘。在 *controller.cfg*, *agent.cfg*, *cluster.cfg* 中设置。
 >
 > batchJobDir: 批处理任务的日志目录，例如 submiJob 提交的任务日志，可以写到 HDD 磁盘。在 *cluster.cfg* 中设置。
 >
->  jobLogFile: 各个节点的 query 日志，记录各个 query 的执行情况，可以写到 HDD 磁盘。在 *cluster.cfg* 中设置。
+> jobLogFile: 各个节点的 query 日志，记录各个 query 的执行情况，可以写到 HDD 磁盘。在 *cluster.cfg* 中设置。
 
 2. 合理配置 redo log 的磁盘空间上限和垃圾回收周期，一般建议配置磁盘空间不超过 4GB，不低于 1GB，回收周期配置为 60 秒。
 3. 合理配置 cache engine 的内存大小，不宜过大或过小，最大不超过数据节点内存配置的 1/4，设置为 1~4GB 适合大部分情况。具体结合机器硬件与写入数据的速率来决定。

@@ -2,7 +2,6 @@
 
 在以往发布的文章中，包含了《WorldQuant 101 Alpha 因子的流批一体实现》和 《国泰君安 191 Alpha 因子的流批一体实现》，这两篇文章介绍了如何基于 DolphinDB 的 StreamEngineParser 实现金融因子的流批一体解决方案。StreamEngineParser 的主要功能是自动构建计算流水线，以及在流批一体计算场景中，将批计算因子翻译成流计算解决方案。本文将为大家详细介绍 StreamEngineParser 的计算规则和解析原理。
 
-
 - [1 StreamEngineParser 功能介绍](#1-streamengineparser-功能介绍)
 - [2 流计算引擎计算规则](#2-流计算引擎计算规则)
   - [2.1 流计算引擎支持类型](#21-流计算引擎支持类型)
@@ -15,9 +14,6 @@
     - [3.3.1 在类型匹配的 stage 中计算新增指标 或 为指标匹配 engine](#331-在类型匹配的-stage-中计算新增指标-或-为指标匹配-engine)
     - [3.3.2 检查指标](#332-检查指标)
     - [3.3.3 复检](#333-复检)
-
-
-
 
 # 1 StreamEngineParser 功能介绍
 
@@ -106,8 +102,6 @@ enum EngineType {
 - `rolling` 函数会被解析成 TIME_SERIES_ENGINE
 - 其他函数会被解析成 REACTIVE_STATE_ENGINE
 
- 
-
 某一个 stage 仅有一个 engine 实例，仅能计算某一种类型的计算任务，解析过程中当出现某一层的计算指标和当前层的 engine 类型不一致时则需要在当前 engine 的上游新建一个 stage，并将计算的结果以列引用的方式传递给当前 stage。如下图所示：
 
  <img src="./images/StreamEngineParser/3_1.png" width=70%>
@@ -146,7 +140,7 @@ streamEngine = streamEngineParser(name="alpha1ParserT", metrics=metrics, dummyTa
 
 在这个例子中，输入 Table 的 schema 为 `inputSchemaT`, 其中有一个 `close` 输入列，该列被 alpha1 因子作为参数引用。streamEngineParser 的输入指标为 `metrics`，`metrics` 中仅有两个指标分别用于 `SecurityID` 列引用，和 `alpha1(close)` 因子计算。输出 table 的为 `resultStream`，其中 `factor` 列的值是`alpha1(close)` 因子计算后的结果。
 
-alpha1因子有一个赋值表达式 
+alpha1因子有一个赋值表达式
 
 ```
 ts = mimax(pow(iif(ratios(close) - 1 < 0, mstd(ratios(close) - 1, 20), close), 2.0), 5)
@@ -160,7 +154,7 @@ ts = mimax(pow(iif(ratios(close) - 1 < 0, mstd(ratios(close) - 1, 20), close), 2
 rowRank(X=mimax(pow(iif(ratios(close) - 1 < 0, mstd(ratios(close) - 1, 20), close), 2.0), 5), percent=true) - 0.5
 ```
 
-第二步，展开后的引用变量最外层是一个表达式，左值为 `rowRank(X=mimax(pow(iif(ratios(close) - 1 < 0, mstd(ratios(close) - 1, 20), close), 2.0), 5), percent=true)`， 表达式计算符为：”-”,  右值为0.5。 
+第二步，展开后的引用变量最外层是一个表达式，左值为 `rowRank(X=mimax(pow(iif(ratios(close) - 1 < 0, mstd(ratios(close) - 1, 20), close), 2.0), 5), percent=true)`， 表达式计算符为：”-”,  右值为0.5。
 
 表达式可以在任意类型的 engine 中计算，因为当前的 stage 中还没有 stage，则创建一个初始的 NONE_STAGE，这个 stage 是万能 stage，后续遇到第一个函数计算时可以将其 NoneEngine 类型转换成对应的 engine 类型。如下图：
 
@@ -174,7 +168,7 @@ rowRank(X=mimax(pow(iif(ratios(close) - 1 < 0, mstd(ratios(close) - 1, 20), clos
 
 第四步，接下来解析 `rowRank` 的参数， `rowRank` 的参数分别为 `mimax(pow(iif(ratios(close) - 1 < 0, mstd(ratios(close) - 1, 20), close), 2.0), 5)` 和 `percent=true`.
 
-先解析 `mimax(pow(iif(ratios(close) - 1 < 0, mstd(ratios(close) - 1, 20), close), 2.0), 5)`,  `mimax ` 函数既不是以 "row" 开头，也不是 `byrow` 高阶函数调用或 `rolling` 的高阶函数调用，则应该解析成 `REACTIVE_STATE_ENGINE`， 因为当前层是 CROSS_SECTIONAL_ENGINE，无法计算 REACTIVE_STATE_ENGINE 类型的指标，需要新增一个 stage，并将当前 stage 设置成新增的 stage。如图：
+先解析 `mimax(pow(iif(ratios(close) - 1 < 0, mstd(ratios(close) - 1, 20), close), 2.0), 5)`,  `mimax` 函数既不是以 "row" 开头，也不是 `byrow` 高阶函数调用或 `rolling` 的高阶函数调用，则应该解析成 `REACTIVE_STATE_ENGINE`， 因为当前层是 CROSS_SECTIONAL_ENGINE，无法计算 REACTIVE_STATE_ENGINE 类型的指标，需要新增一个 stage，并将当前 stage 设置成新增的 stage。如图：
 
 <img src="./images/StreamEngineParser/3_5.png" width=70%>
 
@@ -184,7 +178,7 @@ rowRank(X=mimax(pow(iif(ratios(close) - 1 < 0, mstd(ratios(close) - 1, 20), clos
 
 <img src="./images/StreamEngineParser/3_6.png" width=70%>
 
-流水线仅有两个 stage， stage1 是一个 ReactiveStateEngine 计算 `mimax(pow(iif(ratios(close) - 1 < 0, mstd(ratios(close) - 1, 20), close), 2.0) ` 这个指标，输出到 table 中对应的列为 "col_0"。stage2 是一个 CrossSectionalEngine, 输入表为 stage1 的输出表， 原来的计算指标
+流水线仅有两个 stage， stage1 是一个 ReactiveStateEngine 计算 `mimax(pow(iif(ratios(close) - 1 < 0, mstd(ratios(close) - 1, 20), close), 2.0)` 这个指标，输出到 table 中对应的列为 "col_0"。stage2 是一个 CrossSectionalEngine, 输入表为 stage1 的输出表， 原来的计算指标
 
 ```
 rowRank(X=mimax(pow(iif(ratios(close) - 1 < 0, mstd(ratios(close) - 1, 20), close), 2.0), 5), percent=true) - 0.5
@@ -213,8 +207,6 @@ ReactiveEngine 支持嵌套计算，所以当 ReactinveEngine 的函数指标的
 假设当前 stage 是 stage3，解析的一个指标是 ratios(close), 和当前 stage 的 engine 类型不匹配，需要新增一个 reactiveStateEngine 来计算这个指标，但我们检查到上游 stage 中已有了 ReactiveStateEngine 则可以将这个指标在 stage1 中计算，并将结果透传给 stage3. 如下图所示:
 
 <img src="./images/StreamEngineParser/3_8.png" width=60%>
-
- 
 
 ### 3.3.2 检查指标
 

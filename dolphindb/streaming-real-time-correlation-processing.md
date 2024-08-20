@@ -27,7 +27,6 @@ DolphinDB 2.00.8 及以上版本支持本篇所有代码。此外，1.30.20 及�
 - [5. 总结](#5-总结)
 - [附录](#附录)
 
-
 # 1. 流数据实时关联
 
 本章从 DolphinDB 中批计算的表关联语法 join 讲起，介绍实时数据流关联面临的挑战。
@@ -72,8 +71,6 @@ DolphinDB 提供了 [createAsofJoinEngine](https://www.dolphindb.cn/cn/help/Func
 
 以下代码是 1.1 小节中的 asof join SQL 的流计算实现的脚本，首先创建 2 个流数据表作为输入、1 个流数据表作为输出，然后通过函数 createAsofJoinEngine 创建流计算引擎，之后通过函数 subscribeTable 分别订阅 2 个流数据表并将数据实时注入流计算引擎的左、右表。之后当数据不断写入两个流数据表时，输出结果表 output 中的记录数会相应地增加。流数据订阅功能更详细的介绍见 [流数据订阅](https://gitee.com/dolphindb/Tutorials_CN/blob/master/streaming_tutorial.md#22_流数据订阅) 。
 
-
-
 ```
 // create table
 share streamTable(1:0, `Sym`Time`Price, [SYMBOL, TIME, DOUBLE]) as trade
@@ -88,9 +85,7 @@ subscribeTable(tableName="trade", actionName="joinLeft", offset=0, handler=getLe
 subscribeTable(tableName="snapshot", actionName="joinRight", offset=0, handler=getRightStream(ajEngine), msgAsTable=true)
 ```
 
-以下代码构造输入数据并写入 2 个流数据表，查看结果表 output 将看到引擎计算的结果。 
-
-
+以下代码构造输入数据并写入 2 个流数据表，查看结果表 output 将看到引擎计算的结果。
 
 ```
 // generate data
@@ -186,7 +181,7 @@ Left Semi Join 引擎的连接机制类似于 SQL 中的 equi join ，按连接�
 
 DolphinDB 中流计算连接引擎是结合各类实际业务场景而设计的，本章将从 6 个实际应用案例出发介绍各个连接引擎适用的具体场景。为了便于解释关联效果，下文案例中均以少量的模拟数据依次注入右表、左表来模拟数据流输入。
 
-流计算脚本开发和调试过程中推荐使用 [getStreamingStat](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getStreamingStat.html) 函数监控流订阅的状态，[getStreamEngineStat ](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getStreamEngineStat.html)函数监控流数据引擎的状态。此外，文末[附录](#附录)中提供了清理流数据环境的通用脚本，用于一键清理所有的流数据表、取消所有的订阅、释放所有的流引擎。
+流计算脚本开发和调试过程中推荐使用 [getStreamingStat](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getStreamingStat.html) 函数监控流订阅的状态，[getStreamEngineStat](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getStreamEngineStat.html)函数监控流数据引擎的状态。此外，文末[附录](#附录)中提供了清理流数据环境的通用脚本，用于一键清理所有的流数据表、取消所有的订阅、释放所有的流引擎。
 
 ## 3.1 用 Asof Join 引擎计算个股交易成本
 
@@ -216,8 +211,6 @@ subscribeTable(tableName="snapshot", actionName="appendRightStream", handler=get
 
 构造数据写入作为原始输入的 2 个流数据表，先写入右表，再写入左表：
 
-
-
 ```
 // generate data: trade
 t1 = table(`A`A`B`A`B`B as Sym, 10:00:02.000+(1..6)*700 as TradeTime,  (3.4 3.5 7.7 3.5 7.5 7.6) as TradePrice)
@@ -244,8 +237,6 @@ trades.append!(t1)
 
 注意，1.30 版本的 DolphinDB 不支持 array vector 数据形式，以下脚本包含 array vector 功能，因此仅支持 2.00 版本。
 
-
-
 ```
 // create table
 share streamTable(1:0, `Sym`TradeTime`Side`TradeQty, [SYMBOL, TIME, INT, LONG]) as trades
@@ -269,8 +260,6 @@ subscribeTable(tableName="trades", actionName="appendRightStream", handler=getRi
 - 引擎参数 nullFill 为可选参数，表示如何填充输出表中的空值，本例中结合实际场景，对于表示价格的字段如 Open 等都指定将空值填充为0。注意，nullFill 为元组，必须和输出表列字段等长且类型一一对应。
 
 构造数据写入作为原始输入的 2 个流数据表，先写入右表，再写入左表：
-
-
 
 ```
 // generate data: snapshot
@@ -325,8 +314,6 @@ subscribeTable(tableName="snapshot", actionName="minAggr", handler=tsEngine2, ms
 
 构造数据写入作为原始输入的 2 个流数据表：
 
-
-
 ```
 // generate data: snapshot
 t1 = table(`A`B`A`B`A`B as Sym, 10:00:52.000+(3 3 6 6 9 9)*1000 as Time, (3.5 7.6 3.6 7.6 3.6 7.6) as Bid1Price, (1000 2000 500 1500 400 1800) as Bid1Qty)
@@ -347,8 +334,6 @@ snapshot.append!(t1)
 
 这个场景的特征是，每条快照记录到达后要求立刻关联输出，如果日频数据里没有对应的股票，输出结果对应的字段为空，输出与原始输入中的每一条行情快照记录一一对应。同时，日频指标并非实时数据，而是一个以较低频率更新的有主键的离线数据集。以下脚本用 Lookup Join 引擎来实现此场景。
 
-
-
 ```
 // create table
 share streamTable(1:0, `Sym`Time`Open`High`Low`Close, [SYMBOL, TIME, DOUBLE, DOUBLE, DOUBLE, DOUBLE]) as snapshot
@@ -366,8 +351,6 @@ subscribeTable(tableName="snapshot", actionName="appendLeftStream", handler=getL
 - 引擎会在内部维护一个最新的右表，在创建引擎时会查询右表 historicalData 并缓存在引擎内部。参数 checkTimes=10s 表示之后的每 10s 引擎会再次查询右表 historicalData 并更新一次内部的缓存。
 
 构造数据写入作为引擎左表输入的流数据表 snapshot：
-
-
 
 ```
 // generate data: snapshot
@@ -387,11 +370,9 @@ snapshot.append!(t1)
 
 逐笔成交数据中包含买卖双方的原始委托订单号，本例通过股票代码和订单号去关联逐笔委托数据，以达到在成交数据的基础上丰富其原始委托信息的目的。
 
-这个场景的特征是，对于每条逐笔成交都应该找到对应的委托单，输出与原始输入中的逐笔成交记录一一对应。在找到对应的委托单前，该条逐笔成交记录暂时不输出。 
+这个场景的特征是，对于每条逐笔成交都应该找到对应的委托单，输出与原始输入中的逐笔成交记录一一对应。在找到对应的委托单前，该条逐笔成交记录暂时不输出。
 
 以下脚本用两个 Left Semi Join 引擎级联的方式，对成交表 trades 中的卖方委托单、买方委托单依次进行了关联。多个引擎之间采用了引擎级联的方式处理，引擎级联更详细的介绍见 [流数据教程：4.1 流水线处理](https://gitee.com/dolphindb/Tutorials_CN/blob/master/streaming_tutorial.md#41_流水线处理) 。
-
-
 
 ```
 // create table
@@ -417,8 +398,6 @@ subscribeTable(tableName="orders", actionName="appendRightStreamForBuy", handler
 
 构造数据写入作为原始输入的 2 个流数据表：
 
-
-
 ```
 // generate data: trade
 t1 = table(`A`B`B`A as Sym, [2, 5, 5, 6] as BuyNo, [4, 1, 3, 4] as SellNo, [7.6, 3.5, 3.5, 7.6]as TradePrice, [10, 100, 20, 50]as TradeQty, 10:00:00.000+(400 500 500 600) as TradeTime)
@@ -443,8 +422,6 @@ trades.append!(t1)
 
 这个场景的特征是，两个数据流的时间戳频率一致，全部股票都需要关联同一支指数，输出与原始输入中的股票数据一一对应。 以下脚本用 Left Semi Join 引擎来实现此关联场景。
 
-
-
 ```
 // create table
 share streamTable(1:0, `Sym`Time`Close, [SYMBOL, TIME, DOUBLE]) as stockKline
@@ -460,8 +437,8 @@ ljEngine1 = createLeftSemiJoinEngine(name="leftJoinIndex1", leftTable=stockKline
 
 // subscribe topic
 def appendIndex(engineName, indexName, msg){
-	tmp = select * from msg where Sym = indexName
-	getRightStream(getStreamEngine(engineName)).append!(tmp)
+ tmp = select * from msg where Sym = indexName
+ getRightStream(getStreamEngine(engineName)).append!(tmp)
 }
 subscribeTable(tableName="indexKline", actionName="appendIndex1", handler=appendIndex{"leftJoinIndex1", "idx1"}, msgAsTable=true, offset=-1, hash=1)
 subscribeTable(tableName="stockKline", actionName="appendStock", handler=getLeftStream(ljEngine1), msgAsTable=true, offset=-1, hash=0)
@@ -472,8 +449,6 @@ subscribeTable(tableName="stockKline", actionName="appendStock", handler=getLeft
 - 订阅指数数据 indexKline 时指定 handler 为自定义函数 appendIndex ，是指不断地收到 indexKline 数据后，首先过滤出指数数据中指数名为 idx1 的数据，然后再注入连接引擎的右表。
 
 构造数据写入作为原始输入的 2 个流数据表：
-
-
 
 ```
 // generate data: stock Kline

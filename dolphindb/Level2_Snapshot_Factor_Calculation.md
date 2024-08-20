@@ -10,7 +10,6 @@
 
 基于这一平台，开发人员无需再转写代码，因子投研和生产只需一套系统、一种脚本即可无缝切换，极大降低了开发运维成本，提高了因子投产的全流程效率。
 
-
 - [快速搭建 Level-2 快照数据流批一体因子计算平台最佳实践](#快速搭建-level-2-快照数据流批一体因子计算平台最佳实践)
   - [1. 概述](#1-概述)
   - [2. Level-2 快照数据流批一体因子计算平台](#2-level-2-快照数据流批一体因子计算平台)
@@ -29,7 +28,6 @@
     - [4.2 响应式状态引擎计算复杂因子](#42-响应式状态引擎计算复杂因子)
   - [5. 路线图(Roadmap)](#5-路线图roadmap)
   - [附录](#附录)
-
 
 ## 1. 概述
 
@@ -73,6 +71,7 @@ DolphinDB 内置的时间序列流计算引擎可以满足 Level-2 快照数据�
 <img src="./images/Level2_Snapshot_Factor_Calculation/2_3.png" width=70%>
 
 **主要包括以下功能模块**
+
 - 实时数据低延时接入功能模块
   - DolphinDB API 实时数据写入接口：C++ API, Java API 等
   - DolphinDB 实时行情接入插件：amdQuote, Insight, NSQ 等
@@ -103,28 +102,31 @@ DolphinDB 内置的时间序列流计算引擎可以满足 Level-2 快照数据�
 下面我们以分钟 K 线计算和指定窗口内的买卖压力指标计算为例，说明增量计算的因子表达式编写方式和非增量计算的因子表达式编写方式。
 
 **增量计算因子表达式**：
+
 ```
 def High(){
-	return "max(LastPx)"
+ return "max(LastPx)"
 }
 ```
+
 函数名 `High` 对应因子名称，表示分钟 K 线的最高价，业务上的计算逻辑是对计算窗口内发生的所有价格求最大值，可以用 DolphinDB 内置的聚合算子 `max` 直接表达，所以用字符串 `max(LastPx)` 直接表示，`LastPx` 表示最新成交价格。因子计算平台会自动解析字符串 `max(LastPx)` 为元代码的格式 <max(LastPx)>，并传入时间序列引擎。
 同理，分钟 K 线的开盘价、收盘价和最低价可以这样表示：
+
 ```
 def Open(){
-	return "first(LastPx)"
+ return "first(LastPx)"
 }
 ```
 
 ```
 def Close(){
-	return "last(LastPx)"
+ return "last(LastPx)"
 }
 ```
 
 ```
 def Low(){
-	return "min(LastPx)"
+ return "min(LastPx)"
 }
 ```
 
@@ -132,19 +134,20 @@ def Low(){
 
 ```
 defg Press(BidPrice0,BidPrice1,BidPrice2,BidPrice3,BidPrice4,BidPrice5,BidPrice6,BidPrice7,BidPrice8,BidPrice9,BidOrderQty0,BidOrderQty1,BidOrderQty2,BidOrderQty3,BidOrderQty4,BidOrderQty5,BidOrderQty6,BidOrderQty7,BidOrderQty8,BidOrderQty9,OfferPrice0,OfferPrice1,OfferPrice2,OfferPrice3,OfferPrice4,OfferPrice5,OfferPrice6,OfferPrice7,OfferPrice8,OfferPrice9,OfferOrderQty0,OfferOrderQty1,OfferOrderQty2,OfferOrderQty3,OfferOrderQty4,OfferOrderQty5,OfferOrderQty6,OfferOrderQty7,OfferOrderQty8,OfferOrderQty9){
-	bidPrice = matrix(BidPrice0,BidPrice1,BidPrice2,BidPrice3,BidPrice4,BidPrice5,BidPrice6,BidPrice7,BidPrice8,BidPrice9)
-	bidQty = matrix(BidOrderQty0,BidOrderQty1,BidOrderQty2,BidOrderQty3,BidOrderQty4,BidOrderQty5,BidOrderQty6,BidOrderQty7,BidOrderQty8,BidOrderQty9)
-	offerPrice = matrix(OfferPrice0,OfferPrice1,OfferPrice2,OfferPrice3,OfferPrice4,OfferPrice5,OfferPrice6,OfferPrice7,OfferPrice8,OfferPrice9)
-	offerQty = matrix(OfferOrderQty0,OfferOrderQty1,OfferOrderQty2,OfferOrderQty3,OfferOrderQty4,OfferOrderQty5,OfferOrderQty6,OfferOrderQty7,OfferOrderQty8,OfferOrderQty9)
-	wap = (bidPrice[0]*offerQty[0] + offerPrice[0]*bidQty[0])\(bidQty[0]+offerQty[0])
-	bidw=(1.0\(bidPrice-wap))
-	bidw=bidw\(bidw.rowSum())
-	offerw=(1.0\(offerPrice-wap))
-	offerw=offerw\(offerw.rowSum())
-	press = log((bidQty*bidw).rowSum())-log((offerQty*offerw).rowSum())
-	return avg(press)
+ bidPrice = matrix(BidPrice0,BidPrice1,BidPrice2,BidPrice3,BidPrice4,BidPrice5,BidPrice6,BidPrice7,BidPrice8,BidPrice9)
+ bidQty = matrix(BidOrderQty0,BidOrderQty1,BidOrderQty2,BidOrderQty3,BidOrderQty4,BidOrderQty5,BidOrderQty6,BidOrderQty7,BidOrderQty8,BidOrderQty9)
+ offerPrice = matrix(OfferPrice0,OfferPrice1,OfferPrice2,OfferPrice3,OfferPrice4,OfferPrice5,OfferPrice6,OfferPrice7,OfferPrice8,OfferPrice9)
+ offerQty = matrix(OfferOrderQty0,OfferOrderQty1,OfferOrderQty2,OfferOrderQty3,OfferOrderQty4,OfferOrderQty5,OfferOrderQty6,OfferOrderQty7,OfferOrderQty8,OfferOrderQty9)
+ wap = (bidPrice[0]*offerQty[0] + offerPrice[0]*bidQty[0])\(bidQty[0]+offerQty[0])
+ bidw=(1.0\(bidPrice-wap))
+ bidw=bidw\(bidw.rowSum())
+ offerw=(1.0\(offerPrice-wap))
+ offerw=offerw\(offerw.rowSum())
+ press = log((bidQty*bidw).rowSum())-log((offerQty*offerw).rowSum())
+ return avg(press)
 }
 ```
+
 函数名 `Press` 对应因子名，表示买卖压力指标，`BidPrice`, `BidOrderQty`, `OfferPrice`, `OfferOrderQty` 表示买卖方向的十档量价，其函数表达式如下：
 
 <img src="./images/Level2_Snapshot_Factor_Calculation/2_4.png" width=60%>
@@ -168,10 +171,10 @@ defg Press(BidPrice0,BidPrice1,BidPrice2,BidPrice3,BidPrice4,BidPrice5,BidPrice6
 ```
 @state
 def MACD(Close, SHORT_ = 12, LONG_ = 26, M = 9) {
-	DIF = ewmMean(Close, span = SHORT_, adjust = false) - ewmMean(Close, span = LONG_, adjust = false)
-	DEA = ewmMean(DIF, span = M, adjust = false)
-	MACD = (DIF - DEA) * 2
-	return round(DIF, 3), round(DEA, 3), round(MACD, 3)
+ DIF = ewmMean(Close, span = SHORT_, adjust = false) - ewmMean(Close, span = LONG_, adjust = false)
+ DEA = ewmMean(DIF, span = M, adjust = false)
+ MACD = (DIF - DEA) * 2
+ return round(DIF, 3), round(DEA, 3), round(MACD, 3)
 }
 ```
 
@@ -212,6 +215,7 @@ parallel = 2
 // 执行计算服务部署函数
 loadJsonConfig(jsonPath, parallel)
 ```
+
 执行成功后，可以在 DolphinDB GUI 的右下角变量栏看到流计算相应的入口和出口的表变量：
 
 <img src="./images/Level2_Snapshot_Factor_Calculation/3_3.png" width=40%>
@@ -345,6 +349,7 @@ saveTextFile(JsonFileString, jsonPath)
 - `paramsValue`：与 `FactorLevel1` 的长度相同，与 `barMinutesLevel2` 对应，如 `[[24], [30]]` 对应 `barMinutesLevel2[0]`，即 `[1, 1]`，表示对 RSI 做两个 1 分钟频率的计算，其窗口大小分别是 24 和 30。
 
 执行完毕后，会在 DolphinDB server 部署目录生成一个 Json 格式的配置文件 *test.json*，内容如下：
+
 ```
 [{"factor": "Close", "isInc": true, "barMinute": 1, "level": 1, "useSystemTime": false}, {"factor": "High", "isInc": true, "barMinute": 1, "level": 1, "useSystemTime": false}, {"factor": "Low", "isInc": true, "barMinute": 1, "level": 1, "useSystemTime": false}, {"factor": "Close", "isInc": true, "barMinute": 5, "level": 1, "useSystemTime": false}, {"factor": "High", "isInc": true, "barMinute": 5, "level": 1, "useSystemTime": false}, {"factor": "Low", "isInc": true, "barMinute": 5, "level": 1, "useSystemTime": false}, {"factor": "RSI", "level": 2, "colName": `R_1, "barMinute": 1, "N": 24}, {"factor": "RSI", "level": 2, "colName": `R_2, "barMinute": 1, "N": 30}, {"factor": "MACD", "level": 2, "colName": `DIF_1`DEA_1`MACD_1, "barMinute": 1, "SHORT_": 18, "LONG_": 30, "M": 10}, {"factor": "RSI", "level": 2, "colName": `R_1, "barMinute": 5, "N": 24}, {"factor": "MACD", "level": 2, "colName": `DIF_1`DEA_1`MACD_1, "barMinute": 5, "SHORT_": 9, "LONG_": 25, "M": 6}]
 ```
@@ -352,6 +357,7 @@ saveTextFile(JsonFileString, jsonPath)
 **第三步**
 
 在 DolphinDB GUI 的 *scripts* 目录创建脚本文件，执行下述代码，部署计算服务：
+
 ```
 // 初始化流计算环境
 use DolphinDBModules::ops
@@ -369,6 +375,7 @@ loadJsonConfig(jsonPath, parallel)
 **第四步**
 
 把测试的 csv 数据文件放到 DolphinDB server 端服务器的指定位置，例如本教程放在 */hdd/hdd9/tutorials/SnapshotFactorCalculationPlatform/test.csv*，测试的 csv 数据可在教程附录下载。然后在 DolphinDB GUI 的 *scripts* 目录创建脚本文件，执行下述代码，把 csv 数据按照流的方式回放进来：
+
 ```
 use DolphinDBModules::SnapshotFactorCalculationPlatform::snapshotReplay
 csvPath = "/hdd/hdd9/tutorials/SnapshotFactorCalculationPlatform/test.csv"
@@ -392,6 +399,7 @@ snapshotCsvReplayJob(csvPath, snapshotStream)
 **第一步**
 
 导入依赖的 Python 包，并与 DolphinDB server 建立连接：
+
 ```
 import dolphindb as ddb
 import numpy as np
@@ -402,6 +410,7 @@ s = ddb.session(host="localhost", port=8892, userid='admin', password='123456',e
 **第二步**
 
 部署因子计算服务：
+
 ```
 jsonPath = "./modules/DolphinDBModules/SnapshotFactorCalculationPlatform/testConfig.dos"
 parallel = 1
@@ -420,6 +429,7 @@ s.run(scripts)
 **第三步**
 
 执行数据回放服务：
+
 ```
 csvPath = "/hdd/hdd9/tutorials/SnapshotFactorCalculationPlatform/test.csv"
 scripts = """
@@ -434,6 +444,7 @@ s.run(scripts)
 **第四步**
 
 查询数据至 python 客户端：
+
 ```
 queryDate = "2021.12.01"
 SecurityID = "600000"
@@ -448,9 +459,10 @@ resultdf
 
 <img src="./images/Level2_Snapshot_Factor_Calculation/3_9.png" width=70%>
 
-**第五步** 
+**第五步**
 
 Python 客户端订阅 DolphinDB server 端的结果表：
+
 ```
 s.enableStreaming(0)
 def handler(lst):
@@ -463,11 +475,13 @@ s.subscribe(host="localhost", port=8892, handler=handler, tableName="aggr1Min", 
 <img src="./images/Level2_Snapshot_Factor_Calculation/3_10.png" width=70%>
 
 如果想取消订阅，可以执行下述代码：
+
 ```
 s.unsubscribe(host="localhost", port=8892,tableName="aggr1Min",actionName="sub1min")
 ```
 
 调试完毕后，建议手动关闭 Python 客户端会话：
+
 ```
 s.close()
 ```
@@ -479,6 +493,7 @@ s.close()
 DolphinDB server 计算的结果，也可以实时推送到客户本地的低延时消息总线。本教程以推送至 Kafka 为例。开始调试下述功能的前提条件是在 Kafka 中创建好 `aggr1Min` 的 topic，同时 DolphinDB server 已经加载 Kafka 插件。
 
 在 DolphinDB GUI 的 *scripts* 目录创建脚本文件，执行下述代码，把 1 分钟因子计算结果表中的数据推送至 Kafka：
+
 ```
 use DolphinDBModules::SnapshotFactorCalculationPlatform::resultToKafka
 
@@ -544,6 +559,7 @@ DolphinDB 也允许用户用插件来开发自己的状态函数，注册后即�
 - **在一次响应计算过程中，如果计算 1000 个因子，这 1000 个因子依赖一个共同的中间变量，如何避免重复计算？**
 
 比如在上述因子计算平台的复杂因子计算处，有两个因子，分别叫 factor1 和 factor2，表达式如下：
+
 ```
 @state
 def factor1(price) {
@@ -563,7 +579,9 @@ def factor2(price) {
     return  mavg(tmp, 10)
 }
 ```
+
 可以看到，两个因子的计算都依赖了相同的中间变量 `tmp`。如果要避免中间变量 `tmp` 的重复计算，可以先定义一个 `tmpFactor` 的函数，表达式如下：
+
 ```
 @state
 def tmpFactor(price) {
@@ -575,6 +593,7 @@ def tmpFactor(price) {
 ```
 
  然后把 factor1 和 factor2 的表达式用如下方式表示：
+
 ```
 @state
 def factor1(price) {
@@ -603,13 +622,8 @@ DolphinDB 内置的响应式状态引擎在解析复杂因子的计算表达式�
 
 ## 附录
 
+功能模块源码： [SnapshotFactorCalculationPlatform](script/Level2_Snapshot_Factor_Calculation/DolphinDBModules/SnapshotFactorCalculationPlatform)
 
-功能模块源码： [SnapshotFactorCalculationPlatform](script/Level2_Snapshot_Factor_Calculation/DolphinDBModules/SnapshotFactorCalculationPlatform) 
+按照教程，把module内容同步到server后，测试所需脚本： [test_scripts.zip](script/Level2_Snapshot_Factor_Calculation/test_scripts.zip)
 
-按照教程，把module内容同步到server后，测试所需脚本： [test_scripts.zip](script/Level2_Snapshot_Factor_Calculation/test_scripts.zip) 
-
-测试的 csv 数据： [Level2_Snapshot_Factor_Calculation](https://www.dolphindb.cn/downloads/docs/Level2_Snapshot_Factor_Calculation.zip) 
-
-
-
- 
+测试的 csv 数据： [Level2_Snapshot_Factor_Calculation](https://www.dolphindb.cn/downloads/docs/Level2_Snapshot_Factor_Calculation.zip)

@@ -26,7 +26,7 @@
 
 对数据库进行合理的分区可以显著降低系统响应延迟，提高数据吞吐量。合理的分区设计需要综合考虑数据分布的特征、查询和计算的典型场景、数据更新的频率等方方面面。
 
-本文为入门级教程，针对几种常见的金融数据给出了较为通用的分区方案和示例脚本，以帮助初次体验 DolphinDB 的用户快速完成建库建表。 
+本文为入门级教程，针对几种常见的金融数据给出了较为通用的分区方案和示例脚本，以帮助初次体验 DolphinDB 的用户快速完成建库建表。
 
 本文全部代码适用于 2.00.10 及以上版本。
 
@@ -60,7 +60,6 @@
 | 银行间债券   | ESP 成交                 | TSDB         | 按天分区                          | 创建日期            | 债券代码 + 创建时间              |
 | 银行间债券   | QB 报价                  | TSDB         | 按天分区                          | 市场时间            | 债券代码 + 市场时间              |
 | 银行间债券   | QB 成交                  | TSDB         | 按天分区                          | 市场时间            | 债券代码 + 市场时间              |
-
 
 ### 因子库窄表存储方案
 
@@ -112,7 +111,7 @@
 
 如果您希望将通联数据导入 DolphinDB 数据库，可以参考如下教程，使用封装好的模块即可完成建库建表和 Level-2 行情数据导入：
 
-- [DolphinDBModules::easyTLDataImport 通联历史数据自动化导入功能模块使用教程](https://gitee.com/dolphindb/DolphinDBModules/blob/master/easyTLDataImport/README.md) 
+- [DolphinDBModules::easyTLDataImport 通联历史数据自动化导入功能模块使用教程](https://gitee.com/dolphindb/DolphinDBModules/blob/master/easyTLDataImport/README.md)
 
 下面将根据是否将沪深交易所分开存储介绍不同建库建表的分区规则。
 
@@ -380,7 +379,7 @@ partitioned by VALUE(2020.01.01..2021.01.01), HASH([SYMBOL, 50])
 engine='TSDB'
 
 create table "dfs://merge_TB"."merge_snapshotTB"(
-	Market SYMBOL
+ Market SYMBOL
     TradeDate DATE[comment="交易日期", compress="delta"]   
     TradeTime TIME[comment="交易时间", compress="delta"]
     MDStreamID SYMBOL
@@ -528,15 +527,15 @@ partitioned by RANGE(2000.01M + (0..30)*12)
 engine='OLAP'
 
 create table "dfs://k_day_level"."k_day"(
-	securityid SYMBOL  
-	tradetime TIMESTAMP
-	open DOUBLE        
-	close DOUBLE       
-	high DOUBLE        
-	low DOUBLE
-	vol INT
-	val DOUBLE
-	vwap DOUBLE
+ securityid SYMBOL  
+ tradetime TIMESTAMP
+ open DOUBLE        
+ close DOUBLE       
+ high DOUBLE        
+ low DOUBLE
+ vol INT
+ val DOUBLE
+ vwap DOUBLE
 )
 partitioned by tradetime
 ```
@@ -551,15 +550,15 @@ partitioned by VALUE(2020.01.01..2021.01.01)
 engine='OLAP'
 
 create table "dfs://k_minute_level"."k_minute"(
-	securityid SYMBOL  
-	tradetime TIMESTAMP
-	open DOUBLE        
-	close DOUBLE       
-	high DOUBLE        
-	low DOUBLE
-	vol INT
-	val DOUBLE
-	vwap DOUBLE
+ securityid SYMBOL  
+ tradetime TIMESTAMP
+ open DOUBLE        
+ close DOUBLE       
+ high DOUBLE        
+ low DOUBLE
+ vol INT
+ val DOUBLE
+ vwap DOUBLE
 )
 partitioned by tradetime
 ```
@@ -678,15 +677,15 @@ partitioned by RANGE(2000.01M + (0..30)*12)
 engine='OLAP'
 
 create table "dfs://ctp_k_day_level"."ctp_k_day"(
-	securityid SYMBOL  
-	tradetime TIMESTAMP
-	open DOUBLE        
-	close DOUBLE       
-	high DOUBLE        
-	low DOUBLE
-	vol INT
-	val DOUBLE
-	vwap DOUBLE
+ securityid SYMBOL  
+ tradetime TIMESTAMP
+ open DOUBLE        
+ close DOUBLE       
+ high DOUBLE        
+ low DOUBLE
+ vol INT
+ val DOUBLE
+ vwap DOUBLE
 )
 partitioned by tradetime
 ```
@@ -701,15 +700,15 @@ partitioned by RANGE(2000.01M + (0..30)*12)
 engine='OLAP'
 
 create table "dfs://ctp_k_day_level"."ctp_k_day"(
-	securityid SYMBOL  
-	tradetime TIMESTAMP
-	open DOUBLE        
-	close DOUBLE       
-	high DOUBLE        
-	low DOUBLE
-	vol INT
-	val DOUBLE
-	vwap DOUBLE
+ securityid SYMBOL  
+ tradetime TIMESTAMP
+ open DOUBLE        
+ close DOUBLE       
+ high DOUBLE        
+ low DOUBLE
+ vol INT
+ val DOUBLE
+ vwap DOUBLE
 )
 partitioned by tradetime
 ```
@@ -933,28 +932,28 @@ partitioned by VALUE(2023.10.01..2023.10.31)
 engine='TSDB'
 
 create table "dfs://QB_QUOTE"."qbTable"(
-	SENDINGTIME TIMESTAMP
-	CONTRIBUTORID SYMBOL
-	MARKETDATATIME TIMESTAMP
-	SECURITYID SYMBOL
-	BONDNAME SYMBOL
-	DISPLAYLISTEDMARKET SYMBOL
-	BIDQUOTESTATUS INT
-	BIDYIELD DOUBLE
-	BIDPX DOUBLE
-	BIDPRICETYPE INT
-	BIDPRICE DOUBLE
-	BIDDIRTYPRICE DOUBLE
-	BIDVOLUME INT
-	BIDPRICEDESC STRING
-	ASKQUOTESTATUS INT
-	ASKYIELD DOUBLE
-	OFFERPX DOUBLE
-	ASKPRICETYPE INT
-	ASKPRICE DOUBLE
-	ASKDIRTYPRICE DOUBLE
-	ASKVOLUME INT
-	ASKPRICEDESC STRING
+ SENDINGTIME TIMESTAMP
+ CONTRIBUTORID SYMBOL
+ MARKETDATATIME TIMESTAMP
+ SECURITYID SYMBOL
+ BONDNAME SYMBOL
+ DISPLAYLISTEDMARKET SYMBOL
+ BIDQUOTESTATUS INT
+ BIDYIELD DOUBLE
+ BIDPX DOUBLE
+ BIDPRICETYPE INT
+ BIDPRICE DOUBLE
+ BIDDIRTYPRICE DOUBLE
+ BIDVOLUME INT
+ BIDPRICEDESC STRING
+ ASKQUOTESTATUS INT
+ ASKYIELD DOUBLE
+ OFFERPX DOUBLE
+ ASKPRICETYPE INT
+ ASKPRICE DOUBLE
+ ASKDIRTYPRICE DOUBLE
+ ASKVOLUME INT
+ ASKPRICEDESC STRING
 )
 partitioned by MARKETDATATIME,
 sortColumns=[`SECURITYID,`MARKETDATATIME]
@@ -970,22 +969,22 @@ partitioned by VALUE(2023.10.01..2023.10.31)
 engine='TSDB'
 
 create table "dfs://QB_TRADE"."lastTradeTable"(
-	SECURITYID SYMBOL
-	BONDNAME SYMBOL
-	SENDINGTIME TIMESTAMP
-	CONTRIBUTORID SYMBOL
-	MARKETDATATIME TIMESTAMP
-	MODIFYTIME SECOND
-	DISPLAYLISTEDMARKET SYMBOL
-	EXECID STRING
-	DEALSTATUS INT
-	TRADEMETHOD INT
-	YIELD DOUBLE
-	TRADEPX DOUBLE
-	PRICETYPE INT
-	TRADEPRICE DOUBLE
-	DIRTYPRICE DOUBLE
-	SETTLSPEED STRING
+ SECURITYID SYMBOL
+ BONDNAME SYMBOL
+ SENDINGTIME TIMESTAMP
+ CONTRIBUTORID SYMBOL
+ MARKETDATATIME TIMESTAMP
+ MODIFYTIME SECOND
+ DISPLAYLISTEDMARKET SYMBOL
+ EXECID STRING
+ DEALSTATUS INT
+ TRADEMETHOD INT
+ YIELD DOUBLE
+ TRADEPX DOUBLE
+ PRICETYPE INT
+ TRADEPRICE DOUBLE
+ DIRTYPRICE DOUBLE
+ SETTLSPEED STRING
 )
 partitioned by MARKETDATATIME,
 sortColumns=[`SECURITYID,`MARKETDATATIME]
@@ -1169,8 +1168,8 @@ sortKeyMappingFunction=[hashBucket{, 500}]
 
 本文扩展阅读：
 
-- [DolphinDB教程：分区数据库](https://gitee.com/dolphindb/Tutorials_CN/blob/master/database.md) 
-- [TSDB 存储引擎详解](https://gitee.com/dolphindb/Tutorials_CN/blob/master/tsdb_explained.md) 
+- [DolphinDB教程：分区数据库](https://gitee.com/dolphindb/Tutorials_CN/blob/master/database.md)
+- [TSDB 存储引擎详解](https://gitee.com/dolphindb/Tutorials_CN/blob/master/tsdb_explained.md)
 
 ## 常见问题与解答（FAQ）
 

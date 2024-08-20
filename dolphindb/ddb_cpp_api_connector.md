@@ -72,12 +72,12 @@ DolphinDB C++ API 支持多种数据写入方法，涵盖多样化的写入场�
 
 | **写入方式**         | **特点**                                                                                            |
 | -------------------------- | --------------------------------------------------------------------------------------------------------- |
-| MTW                        | - 官方推荐用法`` - 按行接收数据`` - 内置数据缓冲队列`` - 多线程异步并发写入`` |
-| tableInsert                | - 方便简单，速度快`` - 事务机制下，同一分区不能同时写入两条数据，因此不建议写入分布式表``   |
-| PTA                        | - 按表写入`` - 内置连接池`` - 自动按分区同步并行写入``                               |
-| AFTA                       | - 自动转换字段类型写入`` - 适用于历史数据整表落盘，追加写入`` - 单线程同步写入``     |
+| MTW                        | - 官方推荐用法``- 按行接收数据`` - 内置数据缓冲队列``- 多线程异步并发写入`` |
+| tableInsert                | - 方便简单，速度快``- 事务机制下，同一分区不能同时写入两条数据，因此不建议写入分布式表``   |
+| PTA                        | - 按表写入``- 内置连接池`` - 自动按分区同步并行写入``                               |
+| AFTA                       | - 自动转换字段类型写入``- 适用于历史数据整表落盘，追加写入`` - 单线程同步写入``     |
 | AFTU                       | AFTA 更新写的版本                                                                                         |
-| BatchTableWriter（旧版本） | - 因兼容性而保留的旧版函数`` - 实时数据落盘，数据按行写入`` - 单线程同步写入``       |
+| BatchTableWriter（旧版本） | - 因兼容性而保留的旧版函数``- 实时数据落盘，数据按行写入`` - 单线程同步写入``       |
 
 具体而言，
 
@@ -154,7 +154,7 @@ t.join();
 MultithreadedTableWriter::Status status;
 writer.getStatus(status);
 if (status.hasError()) {
-	cout << "error in writing: " << status.errorInfo << endl;
+ cout << "error in writing: " << status.errorInfo << endl;
 }
 ```
 
@@ -325,22 +325,22 @@ MultithreadedTableWriter::Status status;  // 保存 writer 状态
 // 模拟接受批量数据，创建单线程写入数据
 // bt 模拟接收消息中间件发送的数据，按设备（每台设备1000条数据）遍历采集数据
 for(int i=0;i < (bt->rows())/1000;i++){
-	system_clock::duration begin = system_clock::now().time_since_epoch();
-	milliseconds milbegin = duration_cast<milliseconds>(begin);
-	// 每台数据共1000个测点，写入1000行
-	for(int j=i*1000;j<(i+1)*1000;j++){
-		ErrorCodeInfo pErrorInfo;
-		// 模拟对单条数据6个字段的写入
-		writer.insert(pErrorInfo,
-			datas[i*6+0], datas[i*6+1], datas[i*6+2], datas[i*6+3], datas[i*6+4], datas[i*6+5]
-		)
-	}
-	system_clock::duration end = system_clock::now().time_since_epoch();
-	milliseconds milend = duration_cast<milliseconds>(end);
-	if((milend.count()-milbegin.count())<5000){
-		// 控制模拟写入的频率
-		sleep_for(std::chrono::milliseconds(5000-(milend.count()-milbegin.count())));
-	}
+ system_clock::duration begin = system_clock::now().time_since_epoch();
+ milliseconds milbegin = duration_cast<milliseconds>(begin);
+ // 每台数据共1000个测点，写入1000行
+ for(int j=i*1000;j<(i+1)*1000;j++){
+  ErrorCodeInfo pErrorInfo;
+  // 模拟对单条数据6个字段的写入
+  writer.insert(pErrorInfo,
+   datas[i*6+0], datas[i*6+1], datas[i*6+2], datas[i*6+3], datas[i*6+4], datas[i*6+5]
+  )
+ }
+ system_clock::duration end = system_clock::now().time_since_epoch();
+ milliseconds milend = duration_cast<milliseconds>(end);
+ if((milend.count()-milbegin.count())<5000){
+  // 控制模拟写入的频率
+  sleep_for(std::chrono::milliseconds(5000-(milend.count()-milbegin.count())));
+ }
 }
 ```
 
@@ -368,15 +368,15 @@ MultithreadedTableWriter newWriter("192.168.0.61", 8848, "admin", "123456", "dfs
 ErrorCodeInfo errorInfo;
 // 插入获取到的未写入数据  
 if (newWriter.insertUnwrittenData(unwrittenData, errorInfo)) {
-	// 等待写入完成后检查状态
-	newWriter.waitForThreadCompletion();
-	newWriter.getStatus(status);
-	if (status.hasError()) {
-		cout << "error in write again: " << status.errorInfo << endl;
-	}
+ // 等待写入完成后检查状态
+ newWriter.waitForThreadCompletion();
+ newWriter.getStatus(status);
+ if (status.hasError()) {
+  cout << "error in write again: " << status.errorInfo << endl;
+ }
 }
 else {
-	cout << "error in write again: " << errorInfo.errorInfo << endl;
+ cout << "error in write again: " << errorInfo.errorInfo << endl;
 }
 ```
 

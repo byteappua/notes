@@ -45,7 +45,7 @@ DolphinDB 作为集成了高容量高速度流数据分析系统和强大编程�
 ### 2.1. 安装部署
 
 1. 下载官网社区最新版，建议 2.00.10 及以上版本。下载链接：[DolphinDB 下载](https://www.dolphindb.cn/product#downloads)
-2. Windows 操作系统下的解压路径不能包含空格，避免安装到 Program Files 路径下。详细步骤可以参考官网教程：[单节点部署与升级](https://docs.dolphindb.cn/zh/tutorials/standalone_server.html) 
+2. Windows 操作系统下的解压路径不能包含空格，避免安装到 Program Files 路径下。详细步骤可以参考官网教程：[单节点部署与升级](https://docs.dolphindb.cn/zh/tutorials/standalone_server.html)
 3. 本次测试使用免费的社区版，[企业版 license](https://dolphindb.cn/product#downloads) 可申请免费试用。
 
 安装及测试过程中，有任何问题，可添加 DolphinDB 小助手微信号13306510479咨询。
@@ -150,7 +150,6 @@ timer t=select ts,deviceid,mavg(v1,30) as val from pt where deviceid=deviceid , 
 <img src="./images/high_freq_data_storage_and_analysis/02.png" width="700"/>
 
 <img src="./images/high_freq_data_storage_and_analysis/03.png" width="700"/>
-
 
 #### 2.3.3. 数据导出和导入
 

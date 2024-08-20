@@ -1,4 +1,5 @@
 # TSDB 存储引擎详解
+
 ## 阅读指南
 
 - 如果需要进行引擎间的迁移或希望了解 OLAP 引擎和 TSDB 引擎的区别，推荐阅读第 1 章。
@@ -34,7 +35,6 @@
     - [7.3 常见问题 Q \& A](#73-常见问题-q--a)
     - [7.4 案例脚本](#74-案例脚本)
 
-
 时序数据是一种按照时间顺序排列的数据集合，例如传感器数据、金融市场数据、网络日志等。由于时序数据具有时间上的连续性和大量的时间戳，传统的关系型数据库或通用数据库在处理大规模时序数据时可能效率较低。因此，针对时序数据进行优化的专用数据库——TSDB 变得越来越重要。
 
 为了更好地支持时序数据的分析和存储，DolphinDB 于 2.0 版本推出了”时序数据存储引擎“（Time Series Database Engine，以下简称 TSDB）。
@@ -43,7 +43,7 @@
 
 ## 1. TSDB vs OLAP
 
-关于 TSDB 和 OLAP 适用场景的描述性说明，请参照教程：[TSDB 存储引擎介绍](https://docs.dolphindb.cn/zh/tutorials/tsdb_engine.html) 
+关于 TSDB 和 OLAP 适用场景的描述性说明，请参照教程：[TSDB 存储引擎介绍](https://docs.dolphindb.cn/zh/tutorials/tsdb_engine.html)
 
 为了便于用户由浅入深地进行学习，本文开头提供了一个 TSDB 和 OLAP 引擎的区别表，以帮助用户对两者的区别有一个概括性的认识。除了列出区别点外，表格中标注了一些使用上的注意点；表格中的术语请参照表尾的术语对照表。
 
@@ -81,7 +81,7 @@ TSDB 引擎是 DolphinDB 基于 Log Structured Merge Tree (以下简称 LSM-Tree
 
 LSM-Tree 是一种分层、有序、面向磁盘的数据结构，主要用于处理写入密集型的工作负载，如日志系统、实时分析系统和数据库等。其实现的核心思想是利用磁盘批量顺序写入大幅提高写入性能。其工作流程图如下所示：
 
-<img src="images/tsdb_explained/LSM_Tree.png" width=80%>
+<img src="./images/tsdb_explained/LSM_Tree.png" width=80%>
 
 - **LSM-Tree 的数据写入流程：**
 
@@ -100,14 +100,14 @@ LSM-Tree 是一种分层、有序、面向磁盘的数据结构，主要用于�
 
 相较于传统的 B+ 树而言，LSM-Tree 的优势在于高吞吐写入与较低的随机写延迟，这非常契合 DolphinDB 海量数据高性能写入的设计诉求。虽然没有 B+ 树那样高效的随机读和范围查询性能，LSM-Tree 依靠键值排序使得单个 SSTable 文件的范围查询也十分高效。
 
-> 参考资料：[Principle of LSM Tree](https://www.sobyte.net/post/2022-04/lsm-tree/) 
+> 参考资料：[Principle of LSM Tree](https://www.sobyte.net/post/2022-04/lsm-tree/)
 
 DolphinDB 的 TSDB 引擎是基于 LSM-Tree 架构进行开发的，因此大部分内部的流程机制也和 LSM-Tree 类似，但在某些步骤进行了优化：
 
 - **写入：** 与 LSM-Tree 直接写入一个有序的数据结构不同，DolphinDB TSDB 引擎在写入数据到内存时，会先按写入顺序存储在一个写缓冲区域（unsorted write Buffer），当数据量累积到一定程度，再进行排序转化为一个 sorted buffer。
 - **查询：** DolphinDB TSDB 引擎会预先遍历 Level File （对应 LSM-Tree 的 SSTable 文件），读取查询涉及的分区下所有 Level File 尾部的索引信息到内存的索引区域（一次性读，常驻内存）。后续查询时，系统会先查询内存中的索引，若命中，则可以快速定位到对应 Level File 的数据块，无需再遍历磁盘上的文件。
 
-  <img src="images/tsdb_explained/read_write.png" width=60%>
+  <img src="./images/tsdb_explained/read_write.png" width=60%>
 
 ### 2.2 TSDB 引擎 CRUD 流程
 
@@ -115,7 +115,7 @@ DolphinDB 的 TSDB 引擎是基于 LSM-Tree 架构进行开发的，因此大部
 
 #### 2.2.1 写入流程
 
-TSDB 引擎写入整体上和 OLAP 一致，都是通过两阶段协议进行提交。写入时，先写 Redo Log（每个写事务都会产生一个 Redo Log），并写入 Cache Engine 缓存，最后 由后台线程异步批量写入磁盘。需要注意的是，TSDB 引擎和 OLAP 引擎各自单独维护 Redo 以及 Cache Engine，用户需要通过不同的配置项去设置两个引擎的 Cache Engine 大小，分别为 OLAPCacheEngineSize 和 TSDBCacheEngineSize。[功能配置](https://docs.dolphindb.cn/zh/DatabaseandDistributedComputing/Configuration/ConfigParamRef.html) 
+TSDB 引擎写入整体上和 OLAP 一致，都是通过两阶段协议进行提交。写入时，先写 Redo Log（每个写事务都会产生一个 Redo Log），并写入 Cache Engine 缓存，最后 由后台线程异步批量写入磁盘。需要注意的是，TSDB 引擎和 OLAP 引擎各自单独维护 Redo 以及 Cache Engine，用户需要通过不同的配置项去设置两个引擎的 Cache Engine 大小，分别为 OLAPCacheEngineSize 和 TSDBCacheEngineSize。[功能配置](https://docs.dolphindb.cn/zh/DatabaseandDistributedComputing/Configuration/ConfigParamRef.html)
 
 **具体的写入流程如下：**
 
@@ -123,7 +123,7 @@ TSDB 引擎写入整体上和 OLAP 一致，都是通过两阶段协议进行提
 
 2. **写 Cache Engine：** 写 Redo Log 的同时，将数据写入 TSDB Cache Engine 的 CacheTable，并在 CacheTable 内部完成数据的排序过程。
 
-    <img src="images/tsdb_explained/cacheTable.png" width=60%>
+    <img src="./images/tsdb_explained/cacheTable.png" width=60%>
 
    CacheTable 分为两个部分：首先是 write buffer，数据刚写入时会追加到 write buffer 的尾部，该 buffer 的数据是未排序的。当 write buffer 超过 *TSDBCacheTableBufferThreshold* 的配置值（默认 16384 行），则按照 sortColumns 指定的列排序，转成一个 sorted buffer (该内存是 read only 的)，同时清空 write buffer。
 
@@ -159,11 +159,11 @@ TSDB 引擎写入整体上和 OLAP 一致，都是通过两阶段协议进行提
 
 **其中，具体索引流程：**
 
-<img src="images/tsdb_explained/index.png">
+<img src="./images/tsdb_explained/index.png">
 
 内存索引包含两个部分：sortKey 维护的 block 的偏移量信息（对应 Level File indexes 部分），zonemap 信息（对应 Level File zonemap 部分）。
 
-1. **查询 indexes 定位 sortKey：** indexes 中记录了每个 Level File 中每个 sortKey 值下每个字段的 block 的地址偏移量。若查询条件包含 sortKey 字段，则可以根据索引剪枝，缩窄查询范围。命中 sortKey 索引后，即可获取到对应 sortKey 下所有 block 的地址偏移量信息。 
+1. **查询 indexes 定位 sortKey：** indexes 中记录了每个 Level File 中每个 sortKey 值下每个字段的 block 的地址偏移量。若查询条件包含 sortKey 字段，则可以根据索引剪枝，缩窄查询范围。命中 sortKey 索引后，即可获取到对应 sortKey 下所有 block 的地址偏移量信息。
 
    例如，上图 sortColumns=\`deviceId\`location\`time，查询条件 deviceId = 0，则可以快速定位到所有 Level File 中 deviceId= 0 的 sortKey 及其对应所有字段的 block 数据。
 
@@ -181,7 +181,7 @@ TSDB 引擎的更新效率取决于 keepDuplicates 参数配置的去重机制�
 2. **查到内存更新：** 取出对应分区所有数据到内存后，更新数据。
 3. **写回更新后的分区数据到新目录：** 将更新后的数据重新写入数据库，系统会使用一个新的版本目录（默认是 “物理表名_cid”，见下图，其中 tick_2 是物理表名）来保存更新后的分区数据，旧版本的分区数据文件将被定时回收（默认 30 min）。
 
-    <img src="images/tsdb_explained/update.png" width=60%>
+    <img src="./images/tsdb_explained/update.png" width=60%>
 
 - keepDuplicates=LAST 时的更新流程：
 
@@ -191,7 +191,7 @@ TSDB 引擎的更新效率取决于 keepDuplicates 参数配置的去重机制�
 
 更新后的数据和旧的数据可能同时存储在磁盘上，但查询时，由于会按照 LAST 机制进行去重，因此可以保证不会查询出旧的数据。旧数据会在 Level File 合并操作时进行删除。
 
-若需要深入了解更新方法、更新流程以及不同策略的更新性能，请参考教程：[分布式表数据更新原理和性能介绍](https://docs.dolphindb.cn/zh/tutorials/dolphindb_update.html) 
+若需要深入了解更新方法、更新流程以及不同策略的更新性能，请参考教程：[分布式表数据更新原理和性能介绍](https://docs.dolphindb.cn/zh/tutorials/dolphindb_update.html)
 
 #### 2.2.4 删除流程
 
@@ -225,12 +225,11 @@ sortColumns 参数在 TSDB 引擎中起到三个作用：确定索引键值、�
 
 > **注：** 若 sortColumns 只有一列，则该列将作为 sortKey。
 
-<img src="images/tsdb_explained/indexing_mechanism.png">
-
+<img src="./images/tsdb_explained/indexing_mechanism.png">
 
 每个 sortKey 内部的数据仍然是按列存储的，其中每个列的数据又按记录数划分为多个 block（按固定行数划分，参见 Level File 层级示意图）。block 是内部最小的查询单元，也是数据压缩的单元，其内部数据按照时间列的顺序排序。
 
-查询时，若查询条件包含 sortColumns 指定的字段，系统会先定位到对应的 sortKey 的数据所在的位置，然后根据 block 内部**数据的有序性**以及**列之间 block 的对齐性**，通过时间列快速定位到对应的 block，将相关列的 block 读取到内存中。 
+查询时，若查询条件包含 sortColumns 指定的字段，系统会先定位到对应的 sortKey 的数据所在的位置，然后根据 block 内部**数据的有序性**以及**列之间 block 的对齐性**，通过时间列快速定位到对应的 block，将相关列的 block 读取到内存中。
 
 > **注：**
 >
@@ -275,7 +274,7 @@ TSDB 引擎存储的数据文件在 DolphinDB 中被称为 Level File（对应 L
 
 Level File 文件存储的内容可以划分为：
 
-<img src="images/tsdb_explained/levelFile.png" width=80%>
+<img src="./images/tsdb_explained/levelFile.png" width=80%>
 
 - header：记录了一些保留字段、表结构以及事务相关的信息。
 - sorted col data：按 sortKey 顺序排列，每个 sortKey 依次存储了每列的 block 数据块。
@@ -289,12 +288,11 @@ Level File 文件存储的内容可以划分为：
 
 Level File 层级间的组织形式如下图所示：
 
-<img src="images/tsdb_explained/level.png" width=80%>
-
+<img src="./images/tsdb_explained/level.png" width=80%>
 
 磁盘的 Level File 共分为 4 个层级， 即 Level 0, 1, 2, 3层。层级越高，Level File 文件大小越大，每个 Level File 中数据划分的 block 大小也越大。
 
-<img src="images/tsdb_explained/location.png" width=40%>
+<img src="./images/tsdb_explained/location.png" width=40%>
 
 #### 2.4.3 Level File 合并
 
@@ -345,9 +343,9 @@ db = database(directory=dbName, partitionType=COMPO, partitionScheme=[db1, db2],
        - 粒度过小：若采用了值分区可以考虑改成范围分区，例如按天改成按月；若采用了 HASH 分区，可以考虑改小 HASH 分区数。
        - 粒度过大：若采用了范围分区可以考虑改成值分区，例如按年改成按月；若采用了 HASH 分区，可以考虑改大 HASH 分区数；若是一级分区，可以考虑用组合分区，此时新增一级通常是 HASH 分区，例按天单分区，粒度过大，考虑二级按股票代码 HASH 分区。
 
-合理设置分区至关重要，如需了解详细的分区机制和如何设计合理的分区，可参见 [数据库分区](https://docs.dolphindb.cn/zh/tutorials/database.html) 
+合理设置分区至关重要，如需了解详细的分区机制和如何设计合理的分区，可参见 [数据库分区](https://docs.dolphindb.cn/zh/tutorials/database.html)
 
-- **是否允许并发写入同一分区：**　
+- **是否允许并发写入同一分区：**
 
   此外，为了支持用户多线程能够并发写数据且不会因写入分区冲突而失败，DolphinDB 在创建数据库时支持了一个特殊的配置参数 atomic（该参数是 OLAP 和 TSDB  引擎共有参数）：
 
@@ -649,7 +647,6 @@ Level File 的去重操作是在合并阶段完成的。若磁盘上存在较多
 | 地震波形数据存储         | [地震波形数据存储解决方案](https://docs.dolphindb.cn/zh/tutorials/waveform_data_storage.html) | 介绍地震波形数据的存储方案，包含分区方案和字段压缩方案。  | 引擎：TSDB <br>分区方案：设备 ID 值分区+ 按天值分区 <br>sortColumns：设备 ID + 时间戳 |
 | 实时数据异常预警：流数据入库存储 | [物联网实时数据异常率预警](https://docs.dolphindb.cn/zh/tutorials/knn_iot.html) | 数据预警场景，订阅数据持久化部分采用 TSDB 引擎存储。 | **消费数据入库：**<br>引擎：TSDB<br>分区方案：设备代码值分区+ 按小时值分区<br>sortColumns：设备代码 + 时间戳<br> **聚合计算结果入库：**<br>引擎：TSDB<br>分区方案：设备代码值分区+ 按天值分区<br>sortColumns：设备代码 + 时间戳 |
 
- 
 ## 6. 总结
 
 TSDB 引擎较 OLAP 引擎而言，内部实现机制更加复杂，对用户开放的配置也更多样。在使用时，需要根据用户的数据特性和查询场景，设置合理的去重机制和 sortColumns，才能够发挥 TSDB 的最佳性能。

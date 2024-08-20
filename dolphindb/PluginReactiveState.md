@@ -2,17 +2,15 @@
 
 - [1 引言](#1-引言)
 - [2 状态函数插件系统原理简介](#2-状态函数插件系统原理简介)
-	- [2.1 插件的加载](#21-插件的加载)
-	- [2.2 插件的使用](#22-插件的使用)
+  - [2.1 插件的加载](#21-插件的加载)
+  - [2.2 插件的使用](#22-插件的使用)
 - [3 状态函数插件的使用](#3-状态函数插件的使用)
 - [4 如何开发状态函数插件](#4-如何开发状态函数插件)
-	- [4.1 状态函数接口](#41-状态函数接口)
-	- [4.2 状态函数接口的实现](#42-状态函数接口的实现)
-	- [4.3 实现状态函数 `factory`](#43-实现状态函数-factory)
-	- [4.4 在初始化函数中注册状态函数 `factory`](#44-在初始化函数中注册状态函数-factory)
-	- [4.5 创建批处理函数原型并注册](#45-创建批处理函数原型并注册)
-
-
+  - [4.1 状态函数接口](#41-状态函数接口)
+  - [4.2 状态函数接口的实现](#42-状态函数接口的实现)
+  - [4.3 实现状态函数 `factory`](#43-实现状态函数-factory)
+  - [4.4 在初始化函数中注册状态函数 `factory`](#44-在初始化函数中注册状态函数-factory)
+  - [4.5 创建批处理函数原型并注册](#45-创建批处理函数原型并注册)
 
 ## 1 引言
 
@@ -93,18 +91,18 @@ select * from outputTable
 class MyReactiveState : public ReactiveState {
 public:
     MyReactiveState(/* ... */);
-	virtual ~MyReactiveState(){}
+ virtual ~MyReactiveState(){}
 
-	virtual IO_ERR snapshotState(const DataOutputStreamSP& out) override {
-		throw RuntimeException("not supported");
-	}
-	virtual IO_ERR restoreState(const DataInputStreamSP& in){
-		throw RuntimeException("not supported");
-	}
-	virtual void append(Heap* heap, const ConstantSP& keyIndex);
-	virtual void addKeys(int count);
-	virtual void removeKeys(const vector<int>& keyIndices);
-	virtual void getMemoryUsed(long long& fixedMemUsed, long long& variableMemUsedPerKey);
+ virtual IO_ERR snapshotState(const DataOutputStreamSP& out) override {
+  throw RuntimeException("not supported");
+ }
+ virtual IO_ERR restoreState(const DataInputStreamSP& in){
+  throw RuntimeException("not supported");
+ }
+ virtual void append(Heap* heap, const ConstantSP& keyIndex);
+ virtual void addKeys(int count);
+ virtual void removeKeys(const vector<int>& keyIndices);
+ virtual void getMemoryUsed(long long& fixedMemUsed, long long& variableMemUsedPerKey);
 private:
     // ...
 };
@@ -119,52 +117,52 @@ private:
 ```
 class StateMovingAvgReactiveState : public ReactiveState {
 public:
-	StateMovingAvgReactiveState(int window, int minPeriod, int inputColIndex, int outputColIndex) : window_(window), minPeriods_(minPeriod),
-		inputColIndex_(inputColIndex), outputColIndex_(outputColIndex){
-		compute_ = std::bind(&StateMovingAvgReactiveState::calculate, this, std::placeholders::_1, std::placeholders::_2);
-	}
+ StateMovingAvgReactiveState(int window, int minPeriod, int inputColIndex, int outputColIndex) : window_(window), minPeriods_(minPeriod),
+  inputColIndex_(inputColIndex), outputColIndex_(outputColIndex){
+  compute_ = std::bind(&StateMovingAvgReactiveState::calculate, this, std::placeholders::_1, std::placeholders::_2);
+ }
 
-	virtual IO_ERR snapshotState(const DataOutputStreamSP& out){
-		throw RuntimeException("not supported");
-	}
-	virtual IO_ERR restoreState(const DataInputStreamSP& in){
-		throw RuntimeException("not supported");
-	}
-	virtual void append(Heap* heap, const ConstantSP& keyIndex);
-	virtual void addKeys(int count);
-	virtual void removeKeys(const vector<int>& keyIndices);
-	virtual void getMemoryUsed(long long& fixedMemUsed, long long& variableMemUsedPerKey){
-		fixedMemUsed = sizeof(*this);
-		variableMemUsedPerKey = sizeof(CircularQueue<char>) + sizeof(double) * window_ + 16;
-	}
-	
-	static ReactiveStateSP createInstance(const vector<ObjectSP>& args, const vector<int>& inputColIndices, const vector<DATA_TYPE>& inputColTypes, const vector<int>& outputColIndices);
+ virtual IO_ERR snapshotState(const DataOutputStreamSP& out){
+  throw RuntimeException("not supported");
+ }
+ virtual IO_ERR restoreState(const DataInputStreamSP& in){
+  throw RuntimeException("not supported");
+ }
+ virtual void append(Heap* heap, const ConstantSP& keyIndex);
+ virtual void addKeys(int count);
+ virtual void removeKeys(const vector<int>& keyIndices);
+ virtual void getMemoryUsed(long long& fixedMemUsed, long long& variableMemUsedPerKey){
+  fixedMemUsed = sizeof(*this);
+  variableMemUsedPerKey = sizeof(CircularQueue<char>) + sizeof(double) * window_ + 16;
+ }
+ 
+ static ReactiveStateSP createInstance(const vector<ObjectSP>& args, const vector<int>& inputColIndices, const vector<DATA_TYPE>& inputColTypes, const vector<int>& outputColIndices);
 private:
-	double calculate(int index, double val);
+ double calculate(int index, double val);
 
 private:
-	int window_;
-	int inputColIndex_;
-	int outputColIndex_;
-	vector<double> sums_;
-	vector<int> counts_;
-	vector<CircularQueue<double>> data_;
+ int window_;
+ int inputColIndex_;
+ int outputColIndex_;
+ vector<double> sums_;
+ vector<int> counts_;
+ vector<CircularQueue<double>> data_;
 };
 ```
 
 在这里，我们选择不支持 snapshot 功能。另外，`getMemoryUsed` 实现起来也很简单，把类中成员变量所占据的内存空间相加即可。因此，本节主要介绍用于数据的输入和输出的 `append` 函数，以及有新增 key 和删除清理 key 时候的回调函数：`addKeys` 和 `removeKeys`。
 
-成员变量当中，window_ 是窗口长度参数，inputColIndex_ 和 outputColIndex_ 是引擎提供的输入输出列的编号，而 sums_ 、counts_ 以及 data_ 分别为各个 key 分组当前窗口中的元素的和、数量等数据状态。
+成员变量当中，window_是窗口长度参数，inputColIndex_ 和 outputColIndex_是引擎提供的输入输出列的编号，而 sums_ 、counts_以及 data_ 分别为各个 key 分组当前窗口中的元素的和、数量等数据状态。
 
 当有新增 key 的时候，需要为该 key 初始化状态：
 
 ```
 void StateMovingAvgReactiveState::addKeys(int count){
-	for(int i=0; i<count; ++i){
-		sums_.push_back(0);
-		counts_.push_back(0);
-		data_.emplace_back(window_);
-	}
+ for(int i=0; i<count; ++i){
+  sums_.push_back(0);
+  counts_.push_back(0);
+  data_.emplace_back(window_);
+ }
 }
 ```
 
@@ -172,9 +170,9 @@ void StateMovingAvgReactiveState::addKeys(int count){
 
 ```
 void StateMovingAvgReactiveState::removeKeys(const vector<int>& keyIndices){
-	removeElements<double>(sums_, keyIndices);
-	removeElements<int>(counts_, keyIndices);
-	removeElements<CircularQueue<double>>(data_, keyIndices);
+ removeElements<double>(sums_, keyIndices);
+ removeElements<int>(counts_, keyIndices);
+ removeElements<CircularQueue<double>>(data_, keyIndices);
 }
 ```
 
@@ -182,33 +180,33 @@ void StateMovingAvgReactiveState::removeKeys(const vector<int>& keyIndices){
 
 ```
 double StateMovingAvgReactiveState::calculate(int index, double val){
-	CircularQueue<double>& queue = data_[index];
+ CircularQueue<double>& queue = data_[index];
     if (val == DBL_NMIN) {
-		return val;
-	}
+  return val;
+ }
 
-	if(LIKELY(queue.size() >= window_)){
-		double v = queue.head();
-		if(v != DBL_NMIN){
-			sums_[index] -= v;
-			--counts_[index];
-		}
-	}
-	sums_[index] += val;
-	++counts_[index];
-	
-	double result;
-	// 若窗口中 X 的元素个数大于等于 window，则取输出字段前 window - 1 个值与当前 X 值求平均
-	if(counts_[index] >= window_)
-		result = sums_[index]/counts_[index];
-	// 否则直接输出 X
-	else
-		result = val;
-	
-	sums_[index] -= val;
-	sums_[index] += result;
-	queue.push(result);
-	return result;
+ if(LIKELY(queue.size() >= window_)){
+  double v = queue.head();
+  if(v != DBL_NMIN){
+   sums_[index] -= v;
+   --counts_[index];
+  }
+ }
+ sums_[index] += val;
+ ++counts_[index];
+ 
+ double result;
+ // 若窗口中 X 的元素个数大于等于 window，则取输出字段前 window - 1 个值与当前 X 值求平均
+ if(counts_[index] >= window_)
+  result = sums_[index]/counts_[index];
+ // 否则直接输出 X
+ else
+  result = val;
+ 
+ sums_[index] -= val;
+ sums_[index] += result;
+ queue.push(result);
+ return result;
 }
 ```
 
@@ -216,22 +214,22 @@ double StateMovingAvgReactiveState::calculate(int index, double val){
 
 ```
 void StateMovingAvgReactiveState::append(Heap* heap, const ConstantSP& keyIndex){
-	ConstantSP col = table_->getColumn(inputColIndex_);
-	INDEX start = 0;
-	INDEX len = keyIndex->size();
-	INDEX* pkeyIndex = keyIndex->getIndexArray();
-	double buf[Util::BUF_SIZE];
-	double bufR[Util::BUF_SIZE];
-	while(start < len){
-		int count = std::min(len - start, Util::BUF_SIZE);
-		col->getDouble(pkeyIndex + start, count, buf);
-		for(int i=0; i<count; ++i){
-			INDEX curIndex = pkeyIndex[start + i];
-			bufR[i] = calculate(curIndex, buf[i]);
-		}
-		setData<double>(outputColIndex_, pkeyIndex + start, count, bufR);
-		start += count;
-	}
+ ConstantSP col = table_->getColumn(inputColIndex_);
+ INDEX start = 0;
+ INDEX len = keyIndex->size();
+ INDEX* pkeyIndex = keyIndex->getIndexArray();
+ double buf[Util::BUF_SIZE];
+ double bufR[Util::BUF_SIZE];
+ while(start < len){
+  int count = std::min(len - start, Util::BUF_SIZE);
+  col->getDouble(pkeyIndex + start, count, buf);
+  for(int i=0; i<count; ++i){
+   INDEX curIndex = pkeyIndex[start + i];
+   bufR[i] = calculate(curIndex, buf[i]);
+  }
+  setData<double>(outputColIndex_, pkeyIndex + start, count, bufR);
+  start += count;
+ }
 }
 ```
 
@@ -255,12 +253,12 @@ typedef ReactiveStateSP(*StateFuncFactory)(
 
 ```
 ReactiveStateSP createMyReactiveState(const vector<ObjectSP>& args, const vector<int>& inputColIndices, const vector<DATA_TYPE>& inputColTypes, const vector<int>& outputColIndices, SQLContextSP& context, Heap* heap){
-	checkOutputColumn(outputColIndices,1,"myReactiveState");
-	string funcName = "myReactiveState";
-	string syntax = "Usage: genericStateIterate(X, initial, window, func). ";
+ checkOutputColumn(outputColIndices,1,"myReactiveState");
+ string funcName = "myReactiveState";
+ string syntax = "Usage: genericStateIterate(X, initial, window, func). ";
     // 检查参数的有效性并处理参数
     // ...
-	return new MyReactiveState(/* ... */);
+ return new MyReactiveState(/* ... */);
 }
 ```
 

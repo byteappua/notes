@@ -1,4 +1,5 @@
 # OOM 应对指南
+
 Out of Memory，简称 OOM，代表内存耗尽的一种异常状态。OOM 的表现形式千差万别，可能是服务异常终止，亦或是系统性能急剧下降。这一现象背后的根本问题在于内存的不足。造成 OOM 的原因有很多，其中包括数据量庞大、频繁的数据写入和查询操作，以及可能存在的内存泄漏问题。了解这些原因，能够帮助我们更好地规划、优化和维护系统，从而提高其稳定性和性能。
 
 本文将针对在使用 DolphinDB 时遇到 OOM 这一问题，对造成 OOM 的原因进行定位分析和归纳总结，并给出相应解决方案以及规避建议。
@@ -77,7 +78,7 @@ OS 内存压力是指在同一操作系统中，一个或多个应用程序共�
 若要诊断来自 DolphinDB 引擎内部组件的内存压力，请使用以下方法：
 
 - 使用函数查看内存使用情况：`getSessionMemoryStat()`，获取当前节点所有连接会话的内存占用状态，返回一张表包含以下字段：
-  - userId：用户 ID 或缓存类型的标识符（形如：__xxx__）。
+  - userId：用户 ID 或缓存类型的标识符（形如：**xxx**）。
   - sessionId：会话 ID。
   - memSize：会话所占用的内存，单位为字节。
   - remoteIP：发起会话的客户端的 IP。
@@ -85,31 +86,30 @@ OS 内存压力是指在同一操作系统中，一个或多个应用程序共�
   - createTime：会话创建的时间，为 TIMESTAMP 类型。
   - lastActiveTime：会话最近一次执行脚本的时间戳。
   
-  
     <img src="./images/oom/a.png" width="500">
-    
+
     缓存类型对应解释见下表：
-    
+
     **注意**：2.00.11 和 1.30.23 版本启用了维度表自动回收机制。
-    
+
     通过参数 warningMemSize 设置的定期内存检测机制，当内存使用超过该阈值时，会尝试释放部分维度表内存。
-    
+
     | 缓存类型                 | 含义                                                | 影响大小因素                                                 | 释放函数                     |
     | ------------------------ | --------------------------------------------------- | ------------------------------------------------------------ | ---------------------------- |
-    | __DimensionalTable__     | 维度表缓存，单位为 Bytes。                          | 维度表大小以及数据量                                         | clearCachedDatabase          |
-    | __SharedTable__          | 共享表缓存，单位为 Bytes。                          | 共享表大小以及数据量                                         | undef("sharedTable", SHARED) |
-    | __OLAPTablet__           | OLAP 引擎数据库表的缓存，单位为 Bytes。             | OLAP 数据缓存大小，一般都是 MB 级别                            | clearAllCache()              |
-    | __OLAPCacheEngine__      | OLAP 引擎 cache engine 的内存占用，单位为 Bytes。   | OLAP CacheEngine 参数有关                                    | flushOLAPCache()             |
-    | __OLAPCachedSymbolBase__ | OLAP 引擎 SYMBOL 类型字典编码的缓存，单位为 Bytes。 | OLAP,Symbol 数据类型大小，一般为 MB 级别                     | 无需释放                     |
-    | __DFSMetadata__          | 分布式存储的元数据缓存，单位为 Bytes。              | 分布式库数量以及大小，一般为 MB 级别                         | 无需释放                     |
-    | __TSDBCacheEngine__      | TSDB 引擎 cache engine 的内存占用，单位为 Bytes。   | TSDB CacheEngine 参数有关                                    | flushTSDBCache()             |
-    | __TSDBLevelFileIndex__   | TSDB 引擎 level file 索引的缓存，单位为 Bytes。     | TSDB 常驻索引大小 TSDBLevelFileIndexCacheSize 有关，默认为 5% * maxMemSize | invalidateLevelIndexCache()  |
-    | __TSDBCachedSymbolBase__ | TSDB 引擎 SYMBOL 类型字典编码的缓存，单位为 Bytes。 | TSDB,Symbol 数据类型大小，一般为 MB 级别                       | 无需释放                     |
-    | __StreamingPubQueue__    | 流数据发布队列里未处理的消息数。                    | maxPubQueueDepthPerSite 参数有关                             | 无需释放                     |
-    | __StreamingSubQueue__    | 流数据订阅队列里未处理的消息数。                    | 流数据队列内存大小，和引擎数量以及订阅数据有关               | 管理订阅以及引擎             |
-    
+    | **DimensionalTable**     | 维度表缓存，单位为 Bytes。                          | 维度表大小以及数据量                                         | clearCachedDatabase          |
+    | **SharedTable**          | 共享表缓存，单位为 Bytes。                          | 共享表大小以及数据量                                         | undef("sharedTable", SHARED) |
+    | **OLAPTablet**           | OLAP 引擎数据库表的缓存，单位为 Bytes。             | OLAP 数据缓存大小，一般都是 MB 级别                            | clearAllCache()              |
+    | **OLAPCacheEngine**      | OLAP 引擎 cache engine 的内存占用，单位为 Bytes。   | OLAP CacheEngine 参数有关                                    | flushOLAPCache()             |
+    | **OLAPCachedSymbolBase** | OLAP 引擎 SYMBOL 类型字典编码的缓存，单位为 Bytes。 | OLAP,Symbol 数据类型大小，一般为 MB 级别                     | 无需释放                     |
+    | **DFSMetadata**          | 分布式存储的元数据缓存，单位为 Bytes。              | 分布式库数量以及大小，一般为 MB 级别                         | 无需释放                     |
+    | **TSDBCacheEngine**      | TSDB 引擎 cache engine 的内存占用，单位为 Bytes。   | TSDB CacheEngine 参数有关                                    | flushTSDBCache()             |
+    | **TSDBLevelFileIndex**   | TSDB 引擎 level file 索引的缓存，单位为 Bytes。     | TSDB 常驻索引大小 TSDBLevelFileIndexCacheSize 有关，默认为 5% * maxMemSize | invalidateLevelIndexCache()  |
+    | **TSDBCachedSymbolBase** | TSDB 引擎 SYMBOL 类型字典编码的缓存，单位为 Bytes。 | TSDB,Symbol 数据类型大小，一般为 MB 级别                       | 无需释放                     |
+    | **StreamingPubQueue**    | 流数据发布队列里未处理的消息数。                    | maxPubQueueDepthPerSite 参数有关                             | 无需释放                     |
+    | **StreamingSubQueue**    | 流数据订阅队列里未处理的消息数。                    | 流数据队列内存大小，和引擎数量以及订阅数据有关               | 管理订阅以及引擎             |
+
     定位数据内存占用过大的具体对象，然后使用上表对应函数第四列对应函数进行释放，另外假设为 session 内变量占用内存过高，可以联系团队 DBA 使用函数 [closeSessions](https://docs.dolphindb.cn/zh/funcs/c/closeSessions.html) 关闭相应 session, 操作步骤如下:
-    
+
     ```
     closeSessions(getSessionMemoryStat().sessionId[11]);
     ```
@@ -144,13 +144,14 @@ select top 1000 * from xx
 
 - Linux 内核有个机制叫 OOM killer(Out Of Memory killer)，该机制会监控那些占用内存过大，尤其是瞬间占用很大内存的进程，为防止内存耗尽而自动把该进程杀掉。查看操作系统日志排查是否触发了 OOM Killer，操作步骤如下：
 
-    输入命令 
-    
+    输入命令
+
     ```
     dmesg -T|grep memory
     ```
+
     <img src="./images/oom/b.png">
-    
+
     如上图，若出现了“Out of memory: Kill process”，说明 DolphinDB 使用的内存超过了操作系统所剩余的空闲内存，导致操作系统杀死了 DolphinDB 进程。解决这种问题的办法是：通过参数 maxMemSize（单节点模式修改 dolphindb.cfg，集群模式修改 cluster.cfg）设定节点的最大内存使用量。需要合理设置该参数，设置太小会严重限制集群的性能；设置太大可能触发操作系统杀掉进程。若机器内存为 16GB，并且只部署 1 个节点，建议将该参数设置为 12GB(服务器内存的 80%-90% 之间) 左右。
 
 - 收集 DolphinDB 许可证 lic 内存限制信息，操作步骤如下
@@ -159,7 +160,7 @@ select top 1000 * from xx
     license().maxMemoryPerNode
     //8
     ```
-    
+
     如上所示，结果为 8，则当前 lic 限制最大使用内存为 8 GB (如果 lic 类型为社区版), DolphinDB 使用内存最大上限为 8GB，如果需要申请使用更多内存，请联系 DolphinDB 技术支持工程师。
 
 - 收集 DolphinDB 配置文件内存限制信息，操作步骤如下：
@@ -168,16 +169,16 @@ select top 1000 * from xx
     getConfig(`maxMemSize)
     //16
     ```
-    
+
     如上所示为系统配置内存上限，结果为 16，则当前 配置文件限制最大使用内存为 16 GB, DolphinDB 使用内存最大上限为 16 GB，如果需要申请使用更多内存，通过参数 maxMemSize（单节点模式修改 dolphindb.cfg，集群模式修改 cluster.cfg）设定节点的最大内存使用量。
-    
+
     **注意**：配置文件最大内存不可超过 DolphinDB 许可证限制的内存以及不能超过服务器内存的 90%
-    
+
     ```
     getMemLimitOfQueryResult()
     //8
     ```
-    
+
     如上所示为查询内存上限配置，结果为 8，则当前 配置文件限制最大单次查询结果占用的内存上限为 8 GB，如果需要增大单次查询的上限，通过函数 [setMemLimitOfQueryResult](https://docs.dolphindb.cn/zh/funcs/s/setMemLimitOfQueryResult.html) 进行修改。
 
 - 收集 Linux 操作系统对 DolphinDB 限制内存信息，操作步骤如下：
@@ -185,14 +186,14 @@ select top 1000 * from xx
     ```
     ulimit -a
     ```
-    
+
     | **参数**        | **描述**                       |
     | --------------- | ------------------------------ |
     | max memory size | 一个任务的常驻物理内存的最大值 |
     | virtual memory  | 限制进程的最大地址空间         |
-    
+
     <img src="./images/oom/c.png">
-    
+
     如上图所示，操作系统会限制 DolphinDB 进程的资源上限，图上代表为不限制进程最大使用内存，如果需要修改，修改方式见 [ulimit 修改方式](https://blog.csdn.net/yjkhtddx/article/details/109166147)。
 
 - 查看应用程序事件日志中与应用程序相关的内存问题。解决不太重要的应用程序或服务的任何代码或配置问题，以减少其内存使用量，操作步骤如下：
@@ -200,9 +201,9 @@ select top 1000 * from xx
     ```
     top
     ```
-    
+
     <img src="./images/oom/d.png">
-    
+
     如上图所示，有其他进程占用 操作系统资源，需要将其关闭，以减少其内存使用量。
 
 ## 4. 规避建议
@@ -235,12 +236,12 @@ select top 1000 * from xx
 ### 4.5 分批次写入数据
 
 - **避免大事务写入**：数据写入时，当数据量较大时，批量数据如 10G 左右进行 [append！](https://docs.dolphindb.cn/zh/funcs/a/append!.html?hl=append)或者 [tableInsert](https://docs.dolphindb.cn/zh/funcs/t/tableInsert.html?hl=tableinsert) 会导致大事务的写入内存长时间占用内存，导致内存无法释放。
-  - 可以使用 [loadTextEx](https://docs.dolphindb.cn/zh/funcs/l/loadTextEx.html?hl=loadtextex) 接口代替原先 [loadText ](https://docs.dolphindb.cn/zh/funcs/l/loadText.html?hl=loadtext)+ [append！](https://docs.dolphindb.cn/zh/funcs/a/append!.html?hl=append)的方式写入数据
+  - 可以使用 [loadTextEx](https://docs.dolphindb.cn/zh/funcs/l/loadTextEx.html?hl=loadtextex) 接口代替原先 [loadText](https://docs.dolphindb.cn/zh/funcs/l/loadText.html?hl=loadtext)+ [append！](https://docs.dolphindb.cn/zh/funcs/a/append!.html?hl=append)的方式写入数据
   - API 端提供 tableAppender 接口自动切分大数据分批次写入
 
     **注意**：此类接口由于将大数据切分为多块小数据写入，没办法保证一批大数据的写入的原子性。
 
-##  5. 总结
+## 5. 总结
 
 分布式数据库 DolphinDB 的设计十分复杂，发生 OOM 的情况各有不同。若发生节点 OOM，请按本文所述一步步排查：
 

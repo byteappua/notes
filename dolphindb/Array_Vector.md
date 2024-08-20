@@ -64,7 +64,7 @@ Array Vector 和矩阵（Matrix）都可以组织二维的结构化数据，但�
 - **Fast Array Vector (数组向量)**
 
     1. 通过 [array](../funcs/a/array.dita) 或  [bigarray](../funcs/b/bigarray.dita) 函数定义空的数组向量，并通过 `append!` 添加数据
-    
+
         ```
         x = array(INT[], 0).append!([1 2 3, 4 5, 6 7 8, 9 10])
         /* x
@@ -73,7 +73,7 @@ Array Vector 和矩阵（Matrix）都可以组织二维的结构化数据，但�
         ```
 
     1. 通过 [fixedLengthArrayVector](../funcs/f/fixedLengthArrayVector.dita) 将多个向量/元组/矩阵或表拼接成数组向量。
-    
+
         ```
         vec = 1 2 3
         tp = [4 5 6, 7 8 9]
@@ -86,7 +86,7 @@ Array Vector 和矩阵（Matrix）都可以组织二维的结构化数据，但�
         ```
 
     1. 通过 [arrayVector](../funcs/a/arrayVector.dita) 将单个向量拆分成数组向量。
-    
+
         ```
         x = arrayVector(3 5 8 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
         /* x
@@ -97,7 +97,7 @@ Array Vector 和矩阵（Matrix）都可以组织二维的结构化数据，但�
 - **Columnar Tuple (列式元组)**
 
     通过 [setColumnarTuple!](../funcs/s/setColumnarTuple_.dita) 函数将一个普通元组转换成列式元组。
-    
+
     ```
     x = [[1,2,3],[4,5],[6,7,8],[9,10]].setColumnarTuple!()
     /* x
@@ -110,9 +110,9 @@ Array Vector 和矩阵（Matrix）都可以组织二维的结构化数据，但�
 1. 创建 Array Vector 类型的变量，将其指定为表中的一列。
 
     Fast Array Vector 的变量在表中的列类型是 "XXX\[]"，比如 "INT\[]"、"DOUBLE\[]" 等；
-    
+
     Columnar Tuple 的变量在表中为 ”ANY“ 类型。
-    
+
     ```
     x = array(INT[], 0).append!([1 2 3, 4 5, 6 7 8, 9 10])
     y = [1 2 3, 4 5, 6 7 8, 9 10].setColumnarTuple!()
@@ -169,11 +169,11 @@ Array Vector 和矩阵（Matrix）都可以组织二维的结构化数据，但�
     ```
 
     **注意事项**：
-    
+
     因为 `toArray` 生成的结果是 Fast Array Vector 类型的数据，Fast Array Vector 暂时不支持 SYMBOL 和 STRING 类型，所以 `toArray` 函数暂时也不支持对 SYMBOL 和 STRING 的列使用。
-    
+
     在 group by 的时候，如果需要将 SYMBOL 和 STRING 类型的数据组合，建议使用字符串拼接，比如
-    
+
     ```
     t = table(1 1 3 4 as group_id, `a1`a2`a3`a4 as name)
     new_t = select concat(name, ";") as name from t group by group_id 
@@ -185,9 +185,9 @@ Array Vector 和矩阵（Matrix）都可以组织二维的结构化数据，但�
     4        a4        
     */
     ```
-    
+
     使用的时候，用 `split` 函数再将字符串拆分，比如
-    
+
     ```
     select *, name.split(";")[0] as name0 from new_t
     /*
@@ -208,17 +208,17 @@ Array Vector 和矩阵（Matrix）都可以组织二维的结构化数据，但�
     t = table(1 2 as id, x as value) 
     saveText(t, "./test.csv")
     ```
-    
+
     "./test.csv" 内的文本内容
-    
+
     ```
     id,value
     1,"1,3,5"
     2,"2,7,9"
     ```
-    
+
     针对上面的 csv，读文本数据时，*schema* 中设置 value 列的类型为 “INT\[]”，*arrayDelimiter* 设置为逗号 “,“。
-    
+
     ```
     t = loadText("./test.csv", schema=table(`id`value as name, ["INT", "INT[]"] as type), arrayDelimiter=",")
     /* t
@@ -773,13 +773,13 @@ Fast Array Vector 和 Columnar Tuple 之间不能直接计算。
 1. Array Vector 支持 [行计算系列（row 系列）](../funcs/themes/rowFunctions.dita)。
 
     为了满足用户逐行计算的需求，DolphinDB 设计了 row 系列函数。
-    
+
     row 系列函数以 “rowFunc“ 的格式命名，例如 `rowSum`、`rowAlign` 等函数。
-    
+
     row 系列函数的输入的参数可以是向量 / 向量元组 / 矩阵 / Array Vector。
 
     - 单目函数示例：按行求和
-    
+
         ```
         x = array(INT[], 0).append!([1 2 3, 4 5, 6 7 8, 9 10])
         z = rowSum(x)
@@ -804,9 +804,9 @@ Fast Array Vector 和 Columnar Tuple 之间不能直接计算。
         4  [9,10]  [9,10]  19    19   
         */
         ```
-    
+
     - 双目函数示例（Array Vector 和向量）：按行求加权平均
-    
+
         ```
         x = array(INT[], 0).append!([1 2 3, 4 5 6, 6 7 8, 9 10 11])
         z = rowWavg(x, [1, 1, 2])
@@ -831,9 +831,9 @@ Fast Array Vector 和 Columnar Tuple 之间不能直接计算。
         4  [9,10,11] [9,10,11] 10.25 10.25
         */
         ```
-    
+
     - 双目函数示例（Array Vector 和 Array Vector）：按行求相关系数
-    
+
         ```
         x = array(INT[], 0).append!([1 2 3, 4 5, 6 7 8, 9 10])
         xx = array(INT[], 0).append!([3 1 2, 3 1, 1 2 3, 0 1])
@@ -860,39 +860,39 @@ Fast Array Vector 和 Columnar Tuple 之间不能直接计算。
         4  [9,10]  [0,1]   [9,10]  [0,1]   1     1       
         */
         ```
-    
+
     - 特殊双目函数示例：按行对齐
-    
+
         针对金融场景的存在的特殊的数据对齐规则，DolphinDB 开发了 `rowAlign` 和 `rowAt` 函数。
-        
+
         [rowAlign(left, right, how)](../funcs/r/rowAlign.dita)：实现 left 和 right 的数据对齐。输入参数 *left*、*right* 是数组向量，表示需要对齐的数据；*how* 是字符串，表述对齐的方式；最终返回一个长度为 2 的元组，分别表示对齐后数据在原数据中的索引。
-        
-        <img src="images/Array_Vector/Array_Vector_1.png">
-        
+
+        <img src="./images/Array_Vector/Array_Vector_1.png">
+
         [rowAt(X, Y)](../funcs/r/rowAt.dita)：实现按行从 X 中取出 Y 索引的元素。输入参数 X 是矩阵或数组向量；当 Y 是和 X 行数相等的向量时，返回一个与 Y 长度相同的向量；当 Y 是和 X 行数相等的数组向量时，返回一个与 Y 维度相同的数组向量。
-        
+
         下面以 *how*="bid" 为例，说明具体的 `rowAlign` 对齐结果。
-        
+
         假设 *left* 是某个时刻的五档买价，*right* 是上一时刻的五档买价，都是严格单调减的序列
-        
-        <img src="images/Array_Vector/Array_Vector_2.png" width=40%>
-        
+
+        <img src="./images/Array_Vector/Array_Vector_2.png" width=40%>
+
         根据买价的值，按行进行数据对齐
-        
-        <img src="images/Array_Vector/Array_Vector_3.png" width=55%>
-        
+
+        <img src="./images/Array_Vector/Array_Vector_3.png" width=55%>
+
         根据 *how* 指定的对齐规则，保留满足条件的数据。*how*="bid" 时，最大值为 max(max(left), max(right)) = max(8.99, 9.00) = 9.00；最小值为 max(min(left), min(right)) = max(8.91, 8.95) = 8.95。【下图蓝色部分为删除部分】
-        
-        <img src="images/Array_Vector/Array_Vector_4.png" width=55%>
-        
+
+        <img src="./images/Array_Vector/Array_Vector_4.png" width=55%>
+
         获取剩余数据在原来向量中的索引，没有数据的位置用 -1 填充。
-        
-        <img src="images/Array_Vector/Array_Vector_5.png" width=40%>
-        
+
+        <img src="./images/Array_Vector/Array_Vector_5.png" width=40%>
+
         下面以上图 *left* 和 *leftIndex* 为例，说明具体的 `rowAt(left, leftIndex)` 取数结果。
-        
-        <img src="images/Array_Vector/Array_Vector_6.png" width=80%>
-        
+
+        <img src="./images/Array_Vector/Array_Vector_6.png" width=80%>
+
         ```
         left = array(DOUBLE[], 0).append!([9.00 8.98 8.97 8.96 8.95, 8.99 8.97 8.95 8.93 8.91])
         right = prev(left)
@@ -918,7 +918,7 @@ Fast Array Vector 和 Columnar Tuple 之间不能直接计算。
 1. Fast Array Vector 支持调用高阶函数 [byRow](../funcs/ho_funcs/byRow.dita)，对数组向量的每行元素进行计算。
 
     - 窗口函数示例：求每行的累计和
-    
+
         ```
         x = array(INT[], 0).append!([1 2 3, 4 5, 6 7 8, 9 10])
         z = byRow(cumsum, x)
@@ -937,12 +937,12 @@ Fast Array Vector 和 Columnar Tuple 之间不能直接计算。
         4  [9,10]  [9,19]   
         */
         ```
-        
+
         **注意事项**：
-        
+
         - `byRow` 只支持 Fast Array Vector
         - 使用 `byRow` 函数时，自定义函数 func 的返回值只能是**标量**（defg 定义的聚合函数）或者和 Fast Array Vector 每行**等长的向量**（类似窗口函数）。
-    
+
         ```
         // 返回值是标量
         defg foo1(v){
@@ -977,12 +977,12 @@ Fast Array Vector 和 Columnar Tuple 之间不能直接计算。
 1. Array Vector 支持调用高阶函数 [each](../funcs/ho_funcs/each.dita) 和 [loop](../funcs/ho_funcs/loop.dita)，对 Array Vector 的每行元素进行计算。
 
     和 `byRow` 函数使用方式类似，都是将自定义函数作用在 Array Vector 的每一行上。
-    
+
     - 两者的区别是：
       - `byRow` 只支持 Fast Array Vector；`each` 和 `loop` 支持 Fast Array Vector 和 Columnar Tuple。
       - `each` 和 `loop` 的自定义函数 func，返回值没有限制，可以是和每行元素不同长度的向量。自定义函数 func 返回值是向量时，返回的结果是 tuple 类型，对应表中的列是 Columnar Tuple 类型。
       - `byRow` 的自定义函数 func 返回值是向量时，`byRow` 返回的结果是 Fast Array Vector 类型，对应表中的列也是 Fast Array Vector 类型。
-    
+
     ```
     // 返回值可以是和 v 不等长的向量
     def foo3(v){
@@ -1071,7 +1071,7 @@ std::cout<<"------ check data ------"<<std::endl;
 std::cout<<result->getString()<<std::endl;
 ```
 
-<img src="images/Array_Vector/Array_Vector_7.png">
+<img src="./images/Array_Vector/Array_Vector_7.png">
 
 #### 2.4.2. Java API
 
@@ -1133,7 +1133,7 @@ t = (BasicTable)conn.run("select * from loadTable('dfs://testDB','test')");
 System.out.println(t.getString());
 ```
 
-<img src="images/Array_Vector/Array_Vector_8.png">
+<img src="./images/Array_Vector/Array_Vector_8.png">
 
 #### 2.4.3. Python API
 
@@ -1167,7 +1167,7 @@ t = s.run("select * from myTable")
 print(t)
 ```
 
-<img src="images/Array_Vector/Array_Vector_9.png">
+<img src="./images/Array_Vector/Array_Vector_9.png">
 
 ## 3. Array Vector 在 level2 快照数据中的应用
 
@@ -1179,14 +1179,14 @@ level 2 的快照数据包含买卖十档价格、十档成交量、十档实际
 
 - **多档多列存储**
 
-    <img src="images/Array_Vector/Array_Vector_10.png" title="多档多列存储，共 194 列">
+    <img src="./images/Array_Vector/Array_Vector_10.png" title="多档多列存储，共 194 列">
 
 - **Array Vector 存储**
 
-    <img src="images/Array_Vector/Array_Vector_11.png" title="Array Vector 存储，共 42 列">
-    
+    <img src="./images/Array_Vector/Array_Vector_11.png" title="Array Vector 存储，共 42 列">
+
     以上交所 level 2 的快照数据为例，进行具体的说明。下面是本教程中的存储的分布式表结构。
-    
+
     | **字段名称**          | **数据类型** | **数据说明**         |
     | :-------------------- | :----------- | :------------------- |
     | SecurityID            | SYMBOL       | 证券代码             |
@@ -1231,87 +1231,87 @@ level 2 的快照数据包含买卖十档价格、十档成交量、十档实际
     | ETFSellNumber         | INT          | ETF 赎回笔数         |
     | ETFSellAmount         | INT          | ETF 赎回数量         |
     | ETFSellMoney          | DOUBLE       | ETF 赎回金额         |
-    
+
     其中，买卖十档价格（BidPrice / OfferPrice）、十档成交量（BidOrderQty / OfferOrderQty）、十档实际总委托笔数（BidNumOrders / OfferNumOrders）、前 50 笔买卖订单（BidOrders / OfferOrders）这 8 个字段都采用 Array Vector 的格式存储。在建表时，通过 “DOUBLE\[]” 和 “INT\[]” 的方式指定列的类型为 Array Vector。下面是对应的建表语句。
-    
+
     ```
     dbName = "dfs://SH_TSDB_snapshot_ArrayVector"
     tbName = "snapshot"
     if(existsDatabase(dbName)){
-    	dropDatabase(dbName)
+     dropDatabase(dbName)
     }
     db1 = database(, VALUE, 2020.01.01..2021.01.01)
     db2 = database(, HASH, [SYMBOL, 20])
     db = database(dbName, COMPO, [db1, db2], , "TSDB")
     schemaTable = table(
-    	array(SYMBOL, 0) as SecurityID,
-    	array(TIMESTAMP, 0) as DateTime,
-    	array(DOUBLE, 0) as PreClosePx,
-    	array(DOUBLE, 0) as OpenPx,
-    	array(DOUBLE, 0) as HighPx,
-    	array(DOUBLE, 0) as LowPx,
-    	array(DOUBLE, 0) as LastPx,
-    	array(INT, 0) as TotalVolumeTrade,
-    	array(DOUBLE, 0) as TotalValueTrade,
-    	array(SYMBOL, 0) as InstrumentStatus,
-    	array(DOUBLE[], 0) as BidPrice,
-    	array(INT[], 0) as BidOrderQty,
-    	array(INT[], 0) as BidNumOrders,
-    	array(INT[], 0) as BidOrders,
-    	array(DOUBLE[], 0) as OfferPrice,
-    	array(INT[], 0) as OfferOrderQty,
-    	array(INT[], 0) as OfferNumOrders,
-    	array(INT[], 0) as OfferOrders,
-    	array(INT, 0) as NumTrades,
-    	array(DOUBLE, 0) as IOPV,
-    	array(INT, 0) as TotalBidQty,
-    	array(INT, 0) as TotalOfferQty,
-    	array(DOUBLE, 0) as WeightedAvgBidPx,
-    	array(DOUBLE, 0) as WeightedAvgOfferPx,
-    	array(INT, 0) as TotalBidNumber,
-    	array(INT, 0) as TotalOfferNumber,
-    	array(INT, 0) as BidTradeMaxDuration,
-    	array(INT, 0) as OfferTradeMaxDuration,
-    	array(INT, 0) as NumBidOrders,
-    	array(INT, 0) as NumOfferOrders,
-    	array(INT, 0) as WithdrawBuyNumber,
-    	array(INT, 0) as WithdrawBuyAmount,
-    	array(DOUBLE, 0) as WithdrawBuyMoney,
-    	array(INT, 0) as WithdrawSellNumber,
-    	array(INT, 0) as WithdrawSellAmount,
-    	array(DOUBLE, 0) as WithdrawSellMoney,
-    	array(INT, 0) as ETFBuyNumber,
-    	array(INT, 0) as ETFBuyAmount,
-    	array(DOUBLE, 0) as ETFBuyMoney,
-    	array(INT, 0) as ETFSellNumber,
-    	array(INT, 0) as ETFSellAmount,
-    	array(DOUBLE, 0) as ETFSellMoney
+     array(SYMBOL, 0) as SecurityID,
+     array(TIMESTAMP, 0) as DateTime,
+     array(DOUBLE, 0) as PreClosePx,
+     array(DOUBLE, 0) as OpenPx,
+     array(DOUBLE, 0) as HighPx,
+     array(DOUBLE, 0) as LowPx,
+     array(DOUBLE, 0) as LastPx,
+     array(INT, 0) as TotalVolumeTrade,
+     array(DOUBLE, 0) as TotalValueTrade,
+     array(SYMBOL, 0) as InstrumentStatus,
+     array(DOUBLE[], 0) as BidPrice,
+     array(INT[], 0) as BidOrderQty,
+     array(INT[], 0) as BidNumOrders,
+     array(INT[], 0) as BidOrders,
+     array(DOUBLE[], 0) as OfferPrice,
+     array(INT[], 0) as OfferOrderQty,
+     array(INT[], 0) as OfferNumOrders,
+     array(INT[], 0) as OfferOrders,
+     array(INT, 0) as NumTrades,
+     array(DOUBLE, 0) as IOPV,
+     array(INT, 0) as TotalBidQty,
+     array(INT, 0) as TotalOfferQty,
+     array(DOUBLE, 0) as WeightedAvgBidPx,
+     array(DOUBLE, 0) as WeightedAvgOfferPx,
+     array(INT, 0) as TotalBidNumber,
+     array(INT, 0) as TotalOfferNumber,
+     array(INT, 0) as BidTradeMaxDuration,
+     array(INT, 0) as OfferTradeMaxDuration,
+     array(INT, 0) as NumBidOrders,
+     array(INT, 0) as NumOfferOrders,
+     array(INT, 0) as WithdrawBuyNumber,
+     array(INT, 0) as WithdrawBuyAmount,
+     array(DOUBLE, 0) as WithdrawBuyMoney,
+     array(INT, 0) as WithdrawSellNumber,
+     array(INT, 0) as WithdrawSellAmount,
+     array(DOUBLE, 0) as WithdrawSellMoney,
+     array(INT, 0) as ETFBuyNumber,
+     array(INT, 0) as ETFBuyAmount,
+     array(DOUBLE, 0) as ETFBuyMoney,
+     array(INT, 0) as ETFSellNumber,
+     array(INT, 0) as ETFSellAmount,
+     array(DOUBLE, 0) as ETFSellMoney
     )
     db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`DateTime`SecurityID, compressMethods={DateTime:"delta"}, sortColumns=`SecurityID`DateTime, keepDuplicates=ALL)
     ```
-    
+
     导入数据时，可以通过 `fixedLengthArrayVector` 函数将多档的数据合并成一列 Array Vector。下面是对应的导入数据脚本。
-    
+
     ```
      def transform(data){
-    	t = select SecurityID, DateTime, PreClosePx, OpenPx, HighPx, LowPx, LastPx, TotalVolumeTrade, TotalValueTrade, InstrumentStatus,
-    		      fixedLengthArrayVector(BidPrice0, BidPrice1, BidPrice2, BidPrice3,  BidPrice4, BidPrice5, BidPrice6, BidPrice7, BidPrice8, BidPrice9) as BidPrice,
-    		      fixedLengthArrayVector(BidOrderQty0, BidOrderQty1, BidOrderQty2, BidOrderQty3,  BidOrderQty4, BidOrderQty5, BidOrderQty6, BidOrderQty7, BidOrderQty8, BidOrderQty9) as BidOrderQty,
-    		      fixedLengthArrayVector(BidNumOrders0, BidNumOrders1, BidNumOrders2, BidNumOrders3,  BidNumOrders4, BidNumOrders5, BidNumOrders6, BidNumOrders7, BidNumOrders8, BidNumOrders9) as BidNumOrders,
-    		      fixedLengthArrayVector(BidOrders0, BidOrders1, BidOrders2, BidOrders3,  BidOrders4, BidOrders5, BidOrders6, BidOrders7, BidOrders8, BidOrders9, BidOrders10, BidOrders11, BidOrders12, BidOrders13,  BidOrders14, BidOrders15, BidOrders16, BidOrders17, BidOrders18, BidOrders19, BidOrders20, BidOrders21, BidOrders22, BidOrders23,  BidOrders24, BidOrders25, BidOrders26, BidOrders27, BidOrders28, BidOrders29, BidOrders30, BidOrders31, BidOrders32, BidOrders33,  BidOrders34, BidOrders35, BidOrders36, BidOrders37, BidOrders38, BidOrders39, BidOrders40, BidOrders41, BidOrders42, BidOrders43,  BidOrders44, BidOrders45, BidOrders46, BidOrders47, BidOrders48, BidOrders49) as BidOrders,
-    		      fixedLengthArrayVector(OfferPrice0, OfferPrice1, OfferPrice2, OfferPrice3,  OfferPrice4, OfferPrice5, OfferPrice6, OfferPrice7, OfferPrice8, OfferPrice9) as OfferPrice,
-    		      fixedLengthArrayVector(OfferOrderQty0, OfferOrderQty1, OfferOrderQty2, OfferOrderQty3,  OfferOrderQty4, OfferOrderQty5, OfferOrderQty6, OfferOrderQty7, OfferOrderQty8, OfferOrderQty9) as OfferOrderQty,
-    		      fixedLengthArrayVector(OfferNumOrders0, OfferNumOrders1, OfferNumOrders2, OfferNumOrders3,  OfferNumOrders4, OfferNumOrders5, OfferNumOrders6, OfferNumOrders7, OfferNumOrders8, OfferNumOrders9) as OfferNumOrders,
-    		      fixedLengthArrayVector(OfferOrders0, OfferOrders1, OfferOrders2, OfferOrders3,  OfferOrders4, OfferOrders5, OfferOrders6, OfferOrders7, OfferOrders8, OfferOrders9, OfferOrders10, OfferOrders11, OfferOrders12, OfferOrders13,  OfferOrders14, OfferOrders15, OfferOrders16, OfferOrders17, OfferOrders18, OfferOrders19, OfferOrders20, OfferOrders21, OfferOrders22, OfferOrders23,  OfferOrders24, OfferOrders25, OfferOrders26, OfferOrders27, OfferOrders28, OfferOrders29, OfferOrders30, OfferOrders31, OfferOrders32, OfferOrders33,  OfferOrders34, OfferOrders35, OfferOrders36, OfferOrders37, OfferOrders38, OfferOrders39, OfferOrders40, OfferOrders41, OfferOrders42, OfferOrders43,  OfferOrders44, OfferOrders45, OfferOrders46, OfferOrders47, OfferOrders48, OfferOrders49) as OfferOrders,
-    		      NumTrades, IOPV, TotalBidQty, TotalOfferQty, WeightedAvgBidPx, WeightedAvgOfferPx, TotalBidNumber, TotalOfferNumber, BidTradeMaxDuration,OfferTradeMaxDuration, NumBidOrders, NumOfferOrders, WithdrawBuyNumber, WithdrawBuyAmount, WithdrawBuyMoney,WithdrawSellNumber, WithdrawSellAmount, WithdrawSellMoney, ETFBuyNumber, ETFBuyAmount, ETFBuyMoney, ETFSellNumber, ETFSellAmount, ETFSellMoney
-    		      from data
-    	return t
+     t = select SecurityID, DateTime, PreClosePx, OpenPx, HighPx, LowPx, LastPx, TotalVolumeTrade, TotalValueTrade, InstrumentStatus,
+            fixedLengthArrayVector(BidPrice0, BidPrice1, BidPrice2, BidPrice3,  BidPrice4, BidPrice5, BidPrice6, BidPrice7, BidPrice8, BidPrice9) as BidPrice,
+            fixedLengthArrayVector(BidOrderQty0, BidOrderQty1, BidOrderQty2, BidOrderQty3,  BidOrderQty4, BidOrderQty5, BidOrderQty6, BidOrderQty7, BidOrderQty8, BidOrderQty9) as BidOrderQty,
+            fixedLengthArrayVector(BidNumOrders0, BidNumOrders1, BidNumOrders2, BidNumOrders3,  BidNumOrders4, BidNumOrders5, BidNumOrders6, BidNumOrders7, BidNumOrders8, BidNumOrders9) as BidNumOrders,
+            fixedLengthArrayVector(BidOrders0, BidOrders1, BidOrders2, BidOrders3,  BidOrders4, BidOrders5, BidOrders6, BidOrders7, BidOrders8, BidOrders9, BidOrders10, BidOrders11, BidOrders12, BidOrders13,  BidOrders14, BidOrders15, BidOrders16, BidOrders17, BidOrders18, BidOrders19, BidOrders20, BidOrders21, BidOrders22, BidOrders23,  BidOrders24, BidOrders25, BidOrders26, BidOrders27, BidOrders28, BidOrders29, BidOrders30, BidOrders31, BidOrders32, BidOrders33,  BidOrders34, BidOrders35, BidOrders36, BidOrders37, BidOrders38, BidOrders39, BidOrders40, BidOrders41, BidOrders42, BidOrders43,  BidOrders44, BidOrders45, BidOrders46, BidOrders47, BidOrders48, BidOrders49) as BidOrders,
+            fixedLengthArrayVector(OfferPrice0, OfferPrice1, OfferPrice2, OfferPrice3,  OfferPrice4, OfferPrice5, OfferPrice6, OfferPrice7, OfferPrice8, OfferPrice9) as OfferPrice,
+            fixedLengthArrayVector(OfferOrderQty0, OfferOrderQty1, OfferOrderQty2, OfferOrderQty3,  OfferOrderQty4, OfferOrderQty5, OfferOrderQty6, OfferOrderQty7, OfferOrderQty8, OfferOrderQty9) as OfferOrderQty,
+            fixedLengthArrayVector(OfferNumOrders0, OfferNumOrders1, OfferNumOrders2, OfferNumOrders3,  OfferNumOrders4, OfferNumOrders5, OfferNumOrders6, OfferNumOrders7, OfferNumOrders8, OfferNumOrders9) as OfferNumOrders,
+            fixedLengthArrayVector(OfferOrders0, OfferOrders1, OfferOrders2, OfferOrders3,  OfferOrders4, OfferOrders5, OfferOrders6, OfferOrders7, OfferOrders8, OfferOrders9, OfferOrders10, OfferOrders11, OfferOrders12, OfferOrders13,  OfferOrders14, OfferOrders15, OfferOrders16, OfferOrders17, OfferOrders18, OfferOrders19, OfferOrders20, OfferOrders21, OfferOrders22, OfferOrders23,  OfferOrders24, OfferOrders25, OfferOrders26, OfferOrders27, OfferOrders28, OfferOrders29, OfferOrders30, OfferOrders31, OfferOrders32, OfferOrders33,  OfferOrders34, OfferOrders35, OfferOrders36, OfferOrders37, OfferOrders38, OfferOrders39, OfferOrders40, OfferOrders41, OfferOrders42, OfferOrders43,  OfferOrders44, OfferOrders45, OfferOrders46, OfferOrders47, OfferOrders48, OfferOrders49) as OfferOrders,
+            NumTrades, IOPV, TotalBidQty, TotalOfferQty, WeightedAvgBidPx, WeightedAvgOfferPx, TotalBidNumber, TotalOfferNumber, BidTradeMaxDuration,OfferTradeMaxDuration, NumBidOrders, NumOfferOrders, WithdrawBuyNumber, WithdrawBuyAmount, WithdrawBuyMoney,WithdrawSellNumber, WithdrawSellAmount, WithdrawSellMoney, ETFBuyNumber, ETFBuyAmount, ETFBuyMoney, ETFSellNumber, ETFSellAmount, ETFSellMoney
+            from data
+     return t
     }
     
     def loadData(csvDir, dbName, tbName){
-    	schemaTB = extractTextSchema(csvDir)
-    	update schemaTB set type = "SYMBOL" where name = "SecurityID"
-    	loadTextEx(dbHandle=database(dbName), tableName=tbName, partitionColumns=`DateTime`SecurityID, sortColumns=`SecurityID`DateTime, filename=csvDir, schema=schemaTB, transform=transform)
+     schemaTB = extractTextSchema(csvDir)
+     update schemaTB set type = "SYMBOL" where name = "SecurityID"
+     loadTextEx(dbHandle=database(dbName), tableName=tbName, partitionColumns=`DateTime`SecurityID, sortColumns=`SecurityID`DateTime, filename=csvDir, schema=schemaTB, transform=transform)
     }
     // 后台提交导入任务
     csvDir = "/home/v2/下载/data/testdata/snapshot_100stocks_multi.csv"
@@ -1328,19 +1328,19 @@ DolphinDB 提供了函数 `toArray`。`toArray` 搭配 `group by` 语句，可�
 
 比如，将快照数据聚合成 5 分钟 tick 数据并入库，结果表字段包括高开低收、成交量、成交金额、bid0 和ask0 的量价切片。
 
-<img src="images/Array_Vector/Array_Vector_12.png" title="5 分钟 tick 数据">
+<img src="./images/Array_Vector/Array_Vector_12.png" title="5 分钟 tick 数据">
 
 ```
 // 创建存储 5 min tick 数据的分布式库表
 def createFiveMinuteBarDB(dbName, tbName){
-	if(existsDatabase(dbName)){
-		dropDatabase(dbName)
-	}
-	db = database(dbName, VALUE, 2021.01.01..2021.12.31, , "TSDB")
-	colNames = `SecurityID`DateTime`OpenPx`HighPx`LowPx`LastPx`TotalVolume`TotalValueTrade`BidPrice0`BidOrderQty0`OfferPrice0`OfferOrderQty0
-	colTypes = [SYMBOL, TIMESTAMP, DOUBLE, DOUBLE, DOUBLE, DOUBLE, LONG, DOUBLE, DOUBLE[], INT[], DOUBLE[], INT[]]
-	schemaTable = table(1:0, colNames, colTypes)
-	db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`DateTime, compressMethods={DateTime:"delta"}, sortColumns=`SecurityID`DateTime, keepDuplicates=ALL)
+ if(existsDatabase(dbName)){
+  dropDatabase(dbName)
+ }
+ db = database(dbName, VALUE, 2021.01.01..2021.12.31, , "TSDB")
+ colNames = `SecurityID`DateTime`OpenPx`HighPx`LowPx`LastPx`TotalVolume`TotalValueTrade`BidPrice0`BidOrderQty0`OfferPrice0`OfferOrderQty0
+ colTypes = [SYMBOL, TIMESTAMP, DOUBLE, DOUBLE, DOUBLE, DOUBLE, LONG, DOUBLE, DOUBLE[], INT[], DOUBLE[], INT[]]
+ schemaTable = table(1:0, colNames, colTypes)
+ db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`DateTime, compressMethods={DateTime:"delta"}, sortColumns=`SecurityID`DateTime, keepDuplicates=ALL)
 }
 dbName, tbName = "dfs://fiveMinuteBar", "fiveMinuteBar"
 createFiveMinuteBarDB(dbName, tbName)
@@ -1362,26 +1362,26 @@ DolphinDB 不仅提供了高速存取时序数据的基本功能，还内置了�
 
 根据《[量化交易因子挖掘笔记-从限价订单簿（LOB）挖掘高频价量因子](https://zhuanlan.zhihu.com/p/452566110) 》 中对净委买增额的定义和计算方法，实现的指标公式如下：
 
-<img src="images/Array_Vector/Array_Vector_13.png">
+<img src="./images/Array_Vector/Array_Vector_13.png">
 
 其中 bidAmtDiff<sub>t</sub> 表示 t 时刻的委买增额； bid<sub>i,t</sub> 表示 t 时刻快照数据的第 i 档买方报价；指示函数 I 含义如下：
 
-<img src="images/Array_Vector/Array_Vector_14.png">
+<img src="./images/Array_Vector/Array_Vector_14.png">
 
 根据上述公式，结合 DolphinDB 丰富的内置函数（`prev` 获取上一个 tick 的价格；`rowSum` 计算 Array Vector 的行和），可以转写出如下代码：
 
 ```
 @state
 def calculateAmtDiff(bid, ask, bidvol, askvol){
-	lastBidPrice = prev(bid[0])		// 上一个 tick 的买一价
-	lastAskPrice = prev(ask[0])		// 上一个 tick 的卖一价
-	lastBidQty = prev(bidvol[0])		// 上一个 tick 的买一量
-	lastAskQty = prev(askvol[0])	// 上一个 tick 的卖一量
-	// 求委买增额
-	bidAmtDiff = rowSum(bid*bidvol*(bid >= lastBidPrice)) - lastBidPrice*lastBidQty
-	// 求委卖增额
-	askAmtDiff = rowSum(ask*askvol*(ask <= lastAskPrice)) - lastAskPrice*lastAskQty
-	return bidAmtDiff - askAmtDiff
+ lastBidPrice = prev(bid[0])  // 上一个 tick 的买一价
+ lastAskPrice = prev(ask[0])  // 上一个 tick 的卖一价
+ lastBidQty = prev(bidvol[0])  // 上一个 tick 的买一量
+ lastAskQty = prev(askvol[0]) // 上一个 tick 的卖一量
+ // 求委买增额
+ bidAmtDiff = rowSum(bid*bidvol*(bid >= lastBidPrice)) - lastBidPrice*lastBidQty
+ // 求委卖增额
+ askAmtDiff = rowSum(ask*askvol*(ask <= lastAskPrice)) - lastAskPrice*lastAskQty
+ return bidAmtDiff - askAmtDiff
 }
 ```
 
@@ -1414,11 +1414,11 @@ def calculateAmtDiff(bid, ask, bidvol, askvol){
 
 根据[处理 Level 2 行情数据实例](l2_stk_data_proc.md) ，实现的指标公式如下：
 
-<img src="images/Array_Vector/Array_Vector_15.png">
+<img src="./images/Array_Vector/Array_Vector_15.png">
 
 其中 level10_Diff<sub>t</sub> 表示 t 时刻的委买增额； bid<sub>i,t</sub> 表示 t 时刻快照数据的第 i 档买方报价；指示函数 I 含义如下：
 
-<img src="images/Array_Vector/Array_Vector_16.png">
+<img src="./images/Array_Vector/Array_Vector_16.png">
 
 DolphinDB 中可以先通过行对齐函数 `rowAlign` 实现当前十档价格和前一个十档价格进行行对齐；然后通过 `rowAt` 和 `nullFill` 函数分别获取对应档位的委托量和价格；最后通过 `rowSum` 函数计算总的变化额。
 
@@ -1447,4 +1447,5 @@ DolphinDB 能够存储大量的历史高频行情数据，为其后续的高效�
 ## 5. 附件
 
 ## 附件
+
 [snapshot_100stocks_multi.zip](https://cdn.dolphindb.cn/downloads/snapshot_100stocks_multi.zip)

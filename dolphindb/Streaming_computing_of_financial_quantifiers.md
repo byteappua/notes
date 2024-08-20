@@ -5,24 +5,23 @@ DolphinDB 是一款高性能分布式时序数据库。与传统的关系数据�
 - [1.1 DolphinDB 流计算框架](#11-dolphindb-流计算框架)
 - [1.2 数据结构](#12-数据结构)
 - [2.1 实现示例](#21-实现示例)
-	- [**2.1.1 WorldQuant Alpha 1**](#211-worldquant-alpha-1)
-	- [**2.1.2 国泰君安 001 因子**](#212-国泰君安-001-因子)
+  - [**2.1.1 WorldQuant Alpha 1**](#211-worldquant-alpha-1)
+  - [**2.1.2 国泰君安 001 因子**](#212-国泰君安-001-因子)
 - [2.2 改写规则](#22-改写规则)
 - [2.3 注意事项](#23-注意事项)
 - [3.1 实现示例](#31-实现示例)
-	- [**3.1.1 价格涨跌幅**](#311-价格涨跌幅)
-	- [**3.1.2 加权平均价格**](#312-加权平均价格)
+  - [**3.1.1 价格涨跌幅**](#311-价格涨跌幅)
+  - [**3.1.2 加权平均价格**](#312-加权平均价格)
 - [3.2 无状态函数和状态函数](#32-无状态函数和状态函数)
-	- [**3.2.1 无状态函数**](#321-无状态函数)
-	- [**3.2.2 状态函数**](#322-状态函数)
-	- [**3.2.3 状态和无状态的拆分**](#323-状态和无状态的拆分)
+  - [**3.2.1 无状态函数**](#321-无状态函数)
+  - [**3.2.2 状态函数**](#322-状态函数)
+  - [**3.2.3 状态和无状态的拆分**](#323-状态和无状态的拆分)
 - [3.3 if-else](#33-if-else)
 - [3.4 历史数据访问（窗口计算和迭代）](#34-历史数据访问窗口计算和迭代)
 - [3.5 循环](#35-循环)
 - [4.1 数组向量 (array vector)](#41-数组向量-array-vector)
 - [4.2 即时编译(JIT)](#42-即时编译jit)
 - [4.3 性能测试](#43-性能测试)
-
 
 # 1. 概述
 
@@ -79,8 +78,6 @@ DolphinDB 提供了存储可变长二维数组的数据类型 array vector。在
     <figcaption><b>array vector 存储，共42列</b></figcaption>
 </figure>
 
-
-
 | **字段名称（多档多列）**           | **字段名称（array vector）** | **数据说明**         |
 | :--------------------------------- | :--------------------------- | :------------------- |
 | securityID                         | securityID                   | 证券代码             |
@@ -125,8 +122,6 @@ DolphinDB 提供了存储可变长二维数组的数据类型 array vector。在
 | etfSellNumber                      | etfSellNumber                | ETF 赎回笔数         |
 | etfSellAmount                      | etfSellAmount                | ETF 赎回数量         |
 | etfSellMoney                       | etfSellMoney                 | ETF 赎回金额         |
-
-
 
 # 2. 日频因子流式实现
 
@@ -225,8 +220,6 @@ dateTime                000001 000002
 */
 ```
 
- 
-
 ### **2.1.2 国泰君安 001 因子**
 
 - **因子计算逻辑（**[**国泰君安001因子**](https://www.joinquant.com/data/dict/alpha191#alpha001)**）**：
@@ -237,7 +230,7 @@ dateTime                000001 000002
 
 ```
 def gtjaAlpha1(open, close, vol){
-	delta = deltas(log(vol)) 
+ delta = deltas(log(vol)) 
     return -1 * (mcorr(rowRank(delta, percent=true), rowRank((close - open) \ open, percent=true), 6))
 }
 ```
@@ -314,8 +307,6 @@ dateTime                000001 000002
 */
 ```
 
-
-
 ## 2.2 改写规则
 
 在 DolphinDB 中，内置了各种流计算引擎来实现因子的流式计算。其中很重要的一步就是将因子计算逻辑转写成引擎能够正确解析并执行的函数，即改写成引擎能够识别分解的 metrics。
@@ -332,7 +323,7 @@ dateTime                000001 000002
 
 ```
 def gtjaAlpha1(open, close, vol){
-	delta = deltas(log(vol)) 
+ delta = deltas(log(vol)) 
     return -1 * (mcorr(rowRank(delta, percent=true), rowRank((close - open) \ open, percent=true), 6))
 }
 ```
@@ -355,7 +346,7 @@ def gtjaAlpha1(open, close, vol){
 
 以 2.1.2 章节的国泰君安191的 1 号因子为例，最后一步计算是 `-1 * mcorr(...)` 会被分发到响应式状态引擎内计算，所以结果输出表的各列的顺序应该为：分组列，时间列，计算结果列，即定义为 `["securityID", "dateTime", "factor"]`。
 
-# 3. 高频因子流式实现 
+# 3. 高频因子流式实现
 
 响应式状态引擎里注入的每一条数据都会触发一次计算，产生一条结果。高频因子的实时流计算一般可以考虑使用 **响应式状态引擎**（[**createReactiveStateEngine**](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/c/createReactiveStateEngine.html)）来实现。
 
@@ -665,15 +656,15 @@ Step2：使用 `mavg` 计算过去 lag 行的移动平均买卖压力指标
 ```
 @state
 def averagePress1(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9, offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9, offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9, lag){
-	bidPrice = fixedLengthArrayVector(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9)
-	bidOrderQty = fixedLengthArrayVector(bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9)
-	offerPrice = fixedLengthArrayVector(offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9)
-	offerOrderQty = fixedLengthArrayVector(offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9)
-	wap = (bidPrice0*offerOrderQty0 + offerPrice0*bidOrderQty0) \ (offerOrderQty0+bidOrderQty0)
-	bidPress = rowWavg(bidOrderQty, wap \ (bidPrice - wap))
-	askPress = rowWavg(offerOrderQty, wap \ (offerPrice - wap))
-	press = log(bidPress \ askPress)
-	return mavg(press, lag, 1)
+ bidPrice = fixedLengthArrayVector(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9)
+ bidOrderQty = fixedLengthArrayVector(bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9)
+ offerPrice = fixedLengthArrayVector(offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9)
+ offerOrderQty = fixedLengthArrayVector(offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9)
+ wap = (bidPrice0*offerOrderQty0 + offerPrice0*bidOrderQty0) \ (offerOrderQty0+bidOrderQty0)
+ bidPress = rowWavg(bidOrderQty, wap \ (bidPrice - wap))
+ askPress = rowWavg(offerOrderQty, wap \ (offerPrice - wap))
+ press = log(bidPress \ askPress)
+ return mavg(press, lag, 1)
 }
 ```
 
@@ -681,21 +672,21 @@ def averagePress1(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPric
 
 ```
 def calPress(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9, offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9, offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9){
-	bidPrice = fixedLengthArrayVector(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9)
-	bidOrderQty = fixedLengthArrayVector(bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9)
-	offerPrice = fixedLengthArrayVector(offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9)
-	offerOrderQty = fixedLengthArrayVector(offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9)
-	wap = (bidPrice0*offerOrderQty0 + offerPrice0*bidOrderQty0) \ (offerOrderQty0+bidOrderQty0)
-	bidPress = rowWavg(bidOrderQty, wap \ (bidPrice - wap))
-	askPress = rowWavg(offerOrderQty, wap \ (offerPrice - wap))
-	press = log(bidPress \ askPress)
-	return press
+ bidPrice = fixedLengthArrayVector(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9)
+ bidOrderQty = fixedLengthArrayVector(bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9)
+ offerPrice = fixedLengthArrayVector(offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9)
+ offerOrderQty = fixedLengthArrayVector(offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9)
+ wap = (bidPrice0*offerOrderQty0 + offerPrice0*bidOrderQty0) \ (offerOrderQty0+bidOrderQty0)
+ bidPress = rowWavg(bidOrderQty, wap \ (bidPrice - wap))
+ askPress = rowWavg(offerOrderQty, wap \ (offerPrice - wap))
+ press = log(bidPress \ askPress)
+ return press
 }
 
 @state
 def averagePress2(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9, offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9, offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9, lag){
-	press = calPress(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9, offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9, offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9)
-	return mavg(press, lag, 1)
+ press = calPress(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9, offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9, offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9)
+ return mavg(press, lag, 1)
 }
 ```
 
@@ -755,28 +746,28 @@ each(eqObj, resultTable1.values(), resultTable2.values()).all()
 ```
 // 因子实现
 def typeTestNonStateFunc(scalar, vector, arrayVector, anyVector){
-	print("---------------------------------------")
-	print(typestr(scalar))
-	print(scalar)
-	print(typestr(vector))
-	print(vector)
-	print(typestr(arrayVector))
-	print(arrayVector)
-	print(typestr(anyVector))
-	print(anyVector)
-	return fixedLengthArrayVector(rowSum(arrayVector), rowAvg(arrayVector))
+ print("---------------------------------------")
+ print(typestr(scalar))
+ print(scalar)
+ print(typestr(vector))
+ print(vector)
+ print(typestr(arrayVector))
+ print(arrayVector)
+ print(typestr(anyVector))
+ print(anyVector)
+ return fixedLengthArrayVector(rowSum(arrayVector), rowAvg(arrayVector))
 }
 
 @state
 def typeTestStateFunc(price1, price2, price3, lag){
-	scalar = lag
-	vector = price1
-	arrayVector = fixedLengthArrayVector(price1, price2, price3)
-	anyVector = [price1, price2, price3]
-	res = typeTestNonStateFunc(scalar, vector, arrayVector, anyVector)
-	sumRes = res[0]
-	avgRes = res[1]
-	return sumRes, avgRes, res, anyVector
+ scalar = lag
+ vector = price1
+ arrayVector = fixedLengthArrayVector(price1, price2, price3)
+ anyVector = [price1, price2, price3]
+ res = typeTestNonStateFunc(scalar, vector, arrayVector, anyVector)
+ sumRes = res[0]
+ avgRes = res[1]
+ return sumRes, avgRes, res, anyVector
 }
 ```
 
@@ -864,28 +855,28 @@ step3：因子结果是最近 lag-1 个因子值和当前 maWAP 的加权平均�
 
 ```
 defg myWavg(x){
-	weight = 1..size(x)
-	return wavg(x, weight)
+ weight = 1..size(x)
+ return wavg(x, weight)
 }
 
 def iterateFunc(historyFactors, currentValue, weight){
-	return wavg(historyFactors join currentValue, weight)
+ return wavg(historyFactors join currentValue, weight)
 }
 
 @state
 def myFactor(bidPrice0, bidOrderQty0, offerPrice0, offerOrderQty0, lag){
-	// step1: 使用 moving
-	bidPrice, askPrice, bidVolume, askVolume = moving(myWavg, bidPrice0, lag, 1), moving(myWavg, offerPrice0, lag, 1), moving(myWavg, bidOrderQty0, lag, 1), moving(myWavg, offerOrderQty0, lag, 1)
+ // step1: 使用 moving
+ bidPrice, askPrice, bidVolume, askVolume = moving(myWavg, bidPrice0, lag, 1), moving(myWavg, offerPrice0, lag, 1), moving(myWavg, bidOrderQty0, lag, 1), moving(myWavg, offerOrderQty0, lag, 1)
 
-	// step2: 使用 mavg
-	wap = (bidPrice*askVolume + askPrice*bidVolume) \ (bidVolume + askVolume)
-	maWap = mavg(wap, lag, 1)
-	
-	// step3: 使用 movingWindowData 
-	w = movingWindowData(bidVolume \ askVolume, lag)
-	//	 使用 genericStateIterate
-	factorValue = genericStateIterate(X=[maWap, w], initial=maWap, window=lag-1, func=iterateFunc{ , , })
-	return factorValue
+ // step2: 使用 mavg
+ wap = (bidPrice*askVolume + askPrice*bidVolume) \ (bidVolume + askVolume)
+ maWap = mavg(wap, lag, 1)
+ 
+ // step3: 使用 movingWindowData 
+ w = movingWindowData(bidVolume \ askVolume, lag)
+ //  使用 genericStateIterate
+ factorValue = genericStateIterate(X=[maWap, w], initial=maWap, window=lag-1, func=iterateFunc{ , , })
+ return factorValue
 }
 ```
 
@@ -933,12 +924,12 @@ select * from resultTable
 ```
 @state
 def iterateTestFunc(tradePrice){
-	// 计算交易价格涨跌幅
-	change = tradePrice \ prev(tradePrice) - 1
-	// 如果计算结果是空值，则用上一个非空因子值填充
-	factor = conditionalIterate(change != NULL, change, cumlastNot)
-	// 返回 factor+1 作为最终因子值
-	return factor + 1
+ // 计算交易价格涨跌幅
+ change = tradePrice \ prev(tradePrice) - 1
+ // 如果计算结果是空值，则用上一个非空因子值填充
+ factor = conditionalIterate(change != NULL, change, cumlastNot)
+ // 返回 factor+1 作为最终因子值
+ return factor + 1
 }
 ```
 
@@ -986,32 +977,32 @@ securityID tradeTime               factor
 ```
 // 当前要求 window >= 2，所以回看上一个数据也需要 window=2
 def processFunc(historyFactor, change){
-	lastFactor = last(historyFactor)
-	factor = iif(change != NULL, change, lastFactor)
-	return factor+1
+ lastFactor = last(historyFactor)
+ factor = iif(change != NULL, change, lastFactor)
+ return factor+1
 }
 @state
 def iterateTestFunc(tradePrice){
-	// 计算交易价格涨跌幅
-	change = tradePrice \ prev(tradePrice) - 1
-	// 如果计算结果是空值，则用上一个因子值填充，返回 factor+1 作为最终因子值
-	factor = genericStateIterate(X=[change], initial=change, window=2, func=processFunc)
-	return factor
+ // 计算交易价格涨跌幅
+ change = tradePrice \ prev(tradePrice) - 1
+ // 如果计算结果是空值，则用上一个因子值填充，返回 factor+1 作为最终因子值
+ factor = genericStateIterate(X=[change], initial=change, window=2, func=processFunc)
+ return factor
 }
 
 // 后续支持 window=1，则可以用以下代码替换
 /*
 def processFunc(lastFactor, change){
-	factor = iif(change != NULL, change, lastFactor)
-	return factor+1
+ factor = iif(change != NULL, change, lastFactor)
+ return factor+1
 }
 @state
 def iterateTestFunc(tradePrice){
-	// 计算交易价格涨跌幅
-	change = tradePrice \ prev(tradePrice) - 1
-	// 如果计算结果是空值，则用上一个因子值填充，返回 factor+1 作为最终因子值
-	factor = genericStateIterate(X=[change], initial=change, window=1, func=processFunc)
-	return factor
+ // 计算交易价格涨跌幅
+ change = tradePrice \ prev(tradePrice) - 1
+ // 如果计算结果是空值，则用上一个因子值填充，返回 factor+1 作为最终因子值
+ factor = genericStateIterate(X=[change], initial=change, window=1, func=processFunc)
+ return factor
 }
 */
 ```
@@ -1024,7 +1015,6 @@ def iterateTestFunc(tradePrice){
 | 2020.01.01T09:30:03 | 30.80          | NULL       | 2.0003         | 2.0003             | 3.0003                          |
 
 ## 3.5 循环
-
 
 状态函数不支持 `for`/`while` 等循环语句，支持使用 `each`/`loop` 等函数实现循环逻辑。
 
@@ -1057,25 +1047,25 @@ def bid_withdraws(depth, trade):
 ```
 // 对应内层循环
 def withdrawsVolumeTmp(lastPrices, lastVolumes, nowPrice, nowVolume){ 
-	withdraws = lastVolumes[lastPrices == nowPrice] - nowVolume
-	return sum(withdraws * (withdraws > 0))
+ withdraws = lastVolumes[lastPrices == nowPrice] - nowVolume
+ return sum(withdraws * (withdraws > 0))
 }
 
 // 对应外层循环
 defg withdrawsVolume(prices, Volumes){ 
-	lastPrices, nowPrices = prices[0], prices[1]
-	lastVolumes, nowVolumes = Volumes[0], Volumes[1]
+ lastPrices, nowPrices = prices[0], prices[1]
+ lastVolumes, nowVolumes = Volumes[0], Volumes[1]
 
-	withdraws = each(withdrawsVolumeTmp{lastPrices, lastVolumes}, nowPrices, nowVolumes)
-	return sum(withdraws)
+ withdraws = each(withdrawsVolumeTmp{lastPrices, lastVolumes}, nowPrices, nowVolumes)
+ return sum(withdraws)
 }
 
 
 @state
 def bidWithdrawsVolume(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9,bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9, levels=10){
-	bidPrice = fixedLengthArrayVector(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9)
-	bidOrderQty = fixedLengthArrayVector(bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9)
-	return moving(withdrawsVolume, [bidPrice[0:levels], bidOrderQty[0:levels]], 2)
+ bidPrice = fixedLengthArrayVector(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9)
+ bidOrderQty = fixedLengthArrayVector(bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9)
+ return moving(withdrawsVolume, [bidPrice[0:levels], bidOrderQty[0:levels]], 2)
 }
 ```
 
@@ -1121,8 +1111,6 @@ securityID dateTime                factor
 */
 ```
 
-
-
 # 4. 进阶：高频因子流式实现优化
 
 ## 4.1 数组向量 (array vector)
@@ -1137,17 +1125,17 @@ level 2 高频因子往往需要对十档量价数据进行频繁的操作。从
 
 ```
 def pressArrayVector(bidPrice, bidOrderQty, offerPrice, offerOrderQty){
-	wap = (bidPrice[0]*offerOrderQty[0] + offerPrice[0]*bidOrderQty[0]) \ (offerOrderQty[0]+bidOrderQty[0])
-	bidPress = rowWavg(bidOrderQty, wap \ (bidPrice - wap))
-	askPress = rowWavg(offerOrderQty, wap \ (offerPrice - wap))
-	press = log(bidPress \ askPress)
-	return press
+ wap = (bidPrice[0]*offerOrderQty[0] + offerPrice[0]*bidOrderQty[0]) \ (offerOrderQty[0]+bidOrderQty[0])
+ bidPress = rowWavg(bidOrderQty, wap \ (bidPrice - wap))
+ askPress = rowWavg(offerOrderQty, wap \ (offerPrice - wap))
+ press = log(bidPress \ askPress)
+ return press
 }
 
 @state
 def averagePress3(bidPrice, bidOrderQty, offerPrice, offerOrderQty, lag){
-	press = pressArrayVector(bidPrice, bidOrderQty, offerPrice, offerOrderQty)
-	return mavg(press, lag, 1)
+ press = pressArrayVector(bidPrice, bidOrderQty, offerPrice, offerOrderQty)
+ return mavg(press, lag, 1)
 }
 ```
 
@@ -1158,7 +1146,6 @@ def averagePress3(bidPrice, bidOrderQty, offerPrice, offerOrderQty, lag){
 ② array vector 类型的列在数据插入时要求数据类型的强一致性。比如，引擎里 dummyTable 定义了 *bidOrderQty* 的数据类型是 INT[]，则上游输入数据表中对应列的数据类型必须也是 INT[]。
 
 ③ 因为对 array vector 的切片索引也是有开销的，所以并不是所有因子转化为 array vector 的形式都会有性能提升。如果因子涉及对十档数据的大量复杂操作，则使用 array vector 作为输入会有明显的性能提升；如果因子只是对某档数据进行计算，比如计算中只会使用到的第一档数据，那么更适合多档多列的存储方式。
-
 
 ## 4.2 即时编译(JIT)
 
@@ -1186,7 +1173,7 @@ JIT 中不支持的函数，需要用户通过公式展开、`for`/`while`循环
 ```
 @jit
 def calAmount(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9){
-	return bidPrice0*bidOrderQty0+bidPrice1*bidOrderQty1+bidPrice2*bidOrderQty2+bidPrice3*bidOrderQty3+bidPrice4*bidOrderQty4+bidPrice5*bidOrderQty5+bidPrice6*bidOrderQty6+bidPrice7*bidOrderQty7+bidPrice8*bidOrderQty8+bidPrice9*bidOrderQty9
+ return bidPrice0*bidOrderQty0+bidPrice1*bidOrderQty1+bidPrice2*bidOrderQty2+bidPrice3*bidOrderQty3+bidPrice4*bidOrderQty4+bidPrice5*bidOrderQty5+bidPrice6*bidOrderQty6+bidPrice7*bidOrderQty7+bidPrice8*bidOrderQty8+bidPrice9*bidOrderQty9
 }
 ```
 
@@ -1198,12 +1185,12 @@ def calAmount(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, 
 
 ```
 @jit def calAmountMax(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9){
-	amount = [bidPrice0*bidOrderQty0, bidPrice1*bidOrderQty1, bidPrice2*bidOrderQty2, bidPrice3*bidOrderQty3, bidPrice4*bidOrderQty4, bidPrice5*bidOrderQty5, bidPrice6*bidOrderQty6, bidPrice7*bidOrderQty7, bidPrice8*bidOrderQty8, bidPrice9*bidOrderQty9]
-	maxRes = -1.0
-	for(i in 0:10){
-		if(amount[i] > maxRes) maxRes = amount[i]
-	}
-	return maxRes
+ amount = [bidPrice0*bidOrderQty0, bidPrice1*bidOrderQty1, bidPrice2*bidOrderQty2, bidPrice3*bidOrderQty3, bidPrice4*bidOrderQty4, bidPrice5*bidOrderQty5, bidPrice6*bidOrderQty6, bidPrice7*bidOrderQty7, bidPrice8*bidOrderQty8, bidPrice9*bidOrderQty9]
+ maxRes = -1.0
+ for(i in 0:10){
+  if(amount[i] > maxRes) maxRes = amount[i]
+ }
+ return maxRes
 }
 ```
 
@@ -1234,7 +1221,6 @@ metrics = <[dateTime, weightedAveragedPrice(bidPrice0, bidOrderQty0, offerPrice0
 
 比如 `def foo(x, y){}` 是可以的，但 `def foo(x, y=1){}` 不可以。
 
-
 ## 4.3 性能测试
 
 **server 版本**：2.00.9.2 2023.03.10 JIT
@@ -1258,25 +1244,25 @@ metrics = <[dateTime, weightedAveragedPrice(bidPrice0, bidOrderQty0, offerPrice0
 
 ```
 def calPress(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9, offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9, offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9){
-	bidPrice = [bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9]
-	bidOrderQty = [bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9]
-	offerPrice = [offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9]
-	offerOrderQty = [offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9]
-	// 除去空档数据
-	bidPrice, bidOrderQty = bidPrice[bidPrice > 0], bidOrderQty[bidPrice > 0]
-	offerPrice, offerOrderQty = offerPrice[offerPrice > 0], offerOrderQty[offerPrice > 0]
-	// 计算买卖压力指标
-	wap = (bidPrice0*offerOrderQty0 + offerPrice0*bidOrderQty0) \ (offerOrderQty0+bidOrderQty0)
-	bidPress = wavg(bidOrderQty, wap \ (bidPrice - wap))
-	askPress = wavg(offerOrderQty, wap \ (offerPrice - wap))
-	press = log(bidPress \ askPress)
-	return press.nullFill(0.0)
+ bidPrice = [bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9]
+ bidOrderQty = [bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9]
+ offerPrice = [offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9]
+ offerOrderQty = [offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9]
+ // 除去空档数据
+ bidPrice, bidOrderQty = bidPrice[bidPrice > 0], bidOrderQty[bidPrice > 0]
+ offerPrice, offerOrderQty = offerPrice[offerPrice > 0], offerOrderQty[offerPrice > 0]
+ // 计算买卖压力指标
+ wap = (bidPrice0*offerOrderQty0 + offerPrice0*bidOrderQty0) \ (offerOrderQty0+bidOrderQty0)
+ bidPress = wavg(bidOrderQty, wap \ (bidPrice - wap))
+ askPress = wavg(offerOrderQty, wap \ (offerPrice - wap))
+ press = log(bidPress \ askPress)
+ return press.nullFill(0.0)
 }
 
 @state
 def averagePress(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9, offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9, offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9, lag){
-	press = each(calPress, bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9, offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9, offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9)
-	return mavg(press, lag, 1)
+ press = each(calPress, bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9, offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9, offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9)
+ return mavg(press, lag, 1)
 }
 ```
 
@@ -1284,21 +1270,21 @@ def averagePress(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice
 
 ```
 def calPressArray(bidPrices, bidOrderQtys, offerPrices, offerOrderQtys){
-	// 除去空档数据
-	bidPrice, bidOrderQty = bidPrices[bidPrices > 0], bidOrderQtys[bidPrices > 0]
-	offerPrice, offerOrderQty = offerPrices[offerPrices > 0], offerOrderQtys[offerPrices > 0]
-	// 计算买卖压力指标
-	wap = (bidPrice[0]*offerOrderQty[0] + offerPrice[0]*bidOrderQty[0]) \ (offerOrderQty[0]+bidOrderQty[0])
-	bidPress = wavg(bidOrderQty, wap \ (bidPrice - wap))
-	askPress = wavg(offerOrderQty, wap \ (offerPrice - wap))
-	press = log(bidPress \ askPress)
-	return press.nullFill(0.0)
+ // 除去空档数据
+ bidPrice, bidOrderQty = bidPrices[bidPrices > 0], bidOrderQtys[bidPrices > 0]
+ offerPrice, offerOrderQty = offerPrices[offerPrices > 0], offerOrderQtys[offerPrices > 0]
+ // 计算买卖压力指标
+ wap = (bidPrice[0]*offerOrderQty[0] + offerPrice[0]*bidOrderQty[0]) \ (offerOrderQty[0]+bidOrderQty[0])
+ bidPress = wavg(bidOrderQty, wap \ (bidPrice - wap))
+ askPress = wavg(offerOrderQty, wap \ (offerPrice - wap))
+ press = log(bidPress \ askPress)
+ return press.nullFill(0.0)
 }
 
 @state
 def averagePressArray(bidPrice, bidOrderQty, offerPrice, offerOrderQty, lag){
-	press = each(calPressArray, bidPrice, bidOrderQty, offerPrice, offerOrderQty)
-	return mavg(press, lag, 1)
+ press = each(calPressArray, bidPrice, bidOrderQty, offerPrice, offerOrderQty)
+ return mavg(press, lag, 1)
 }
 ```
 
@@ -1307,38 +1293,38 @@ def averagePressArray(bidPrice, bidOrderQty, offerPrice, offerOrderQty, lag){
 ```
 @jit
 def calPressJIT(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9, offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9, offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9){
-	bidPrice = [bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9]
-	bidOrderQty = [bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9]
-	offerPrice = [offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9]
-	offerOrderQty = [offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9]
+ bidPrice = [bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9]
+ bidOrderQty = [bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9]
+ offerPrice = [offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9]
+ offerOrderQty = [offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9]
 
-	wap = (bidPrice0*offerOrderQty0 + offerPrice0*bidOrderQty0) \ (offerOrderQty0+bidOrderQty0)
-	bidPress = 0.0
-	bidWeightSum = 0.0
-	askPress = 0.0
-	askWeightSum = 0.0
-	for(i in 0:10){
-		if(bidPrice[i] > 0){
-			weight = wap \ (bidPrice[i] - wap)
-			bidWeightSum += weight
-			bidPress += bidOrderQty[i] * weight
-		}
-		if(offerPrice[i] > 0){
-			weight = wap \ (offerPrice[i] - wap)
-			askWeightSum += weight
-			askPress += offerOrderQty[i] * weight
-		}
-	}
-	bidPress = bidPress \ bidWeightSum
-	askPress = askPress \ askWeightSum
-	press = log(bidPress \ askPress)
-	return press
+ wap = (bidPrice0*offerOrderQty0 + offerPrice0*bidOrderQty0) \ (offerOrderQty0+bidOrderQty0)
+ bidPress = 0.0
+ bidWeightSum = 0.0
+ askPress = 0.0
+ askWeightSum = 0.0
+ for(i in 0:10){
+  if(bidPrice[i] > 0){
+   weight = wap \ (bidPrice[i] - wap)
+   bidWeightSum += weight
+   bidPress += bidOrderQty[i] * weight
+  }
+  if(offerPrice[i] > 0){
+   weight = wap \ (offerPrice[i] - wap)
+   askWeightSum += weight
+   askPress += offerOrderQty[i] * weight
+  }
+ }
+ bidPress = bidPress \ bidWeightSum
+ askPress = askPress \ askWeightSum
+ press = log(bidPress \ askPress)
+ return press
 }
 
 @state
 def averagePressJIT(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9, offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9, offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9, lag){
-	press = calPressJIT(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9, offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9, offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9)
-	return mavg(press.nullFill(0.0), lag, 1)
+ press = calPressJIT(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidOrderQty0, bidOrderQty1, bidOrderQty2, bidOrderQty3, bidOrderQty4, bidOrderQty5, bidOrderQty6, bidOrderQty7, bidOrderQty8, bidOrderQty9, offerPrice0, offerPrice1, offerPrice2, offerPrice3, offerPrice4, offerPrice5, offerPrice6, offerPrice7, offerPrice8, offerPrice9, offerOrderQty0, offerOrderQty1, offerOrderQty2, offerOrderQty3, offerOrderQty4, offerOrderQty5, offerOrderQty6, offerOrderQty7, offerOrderQty8, offerOrderQty9)
+ return mavg(press.nullFill(0.0), lag, 1)
 }
 ```
 
@@ -1347,34 +1333,34 @@ def averagePressJIT(bidPrice0, bidPrice1, bidPrice2, bidPrice3, bidPrice4, bidPr
 ```
 @jit
 def calPressArrayJIT(bidPrice, bidOrderQty, offerPrice, offerOrderQty){
-	// 计算买卖压力指标
-	wap = (bidPrice[0]*offerOrderQty[0] + offerPrice[0]*bidOrderQty[0]) \ (offerOrderQty[0]+bidOrderQty[0])
-	bidPress = 0.0
-	bidWeightSum = 0.0
-	askPress = 0.0
-	askWeightSum = 0.0
-	for(i in 0:10){
-		if(bidPrice[i] > 0){
-			weight = wap \ (bidPrice[i] - wap)
-			bidWeightSum += weight
-			bidPress += bidOrderQty[i] * weight
-		}
-		if(offerPrice[i] > 0){
-			weight = wap \ (offerPrice[i] - wap)
-			askWeightSum += weight
-			askPress += offerOrderQty[i] * weight
-		}
-	}
-	bidPress = bidPress \ bidWeightSum
-	askPress = askPress \ askWeightSum
-	press = log(bidPress \ askPress)
-	return press
+ // 计算买卖压力指标
+ wap = (bidPrice[0]*offerOrderQty[0] + offerPrice[0]*bidOrderQty[0]) \ (offerOrderQty[0]+bidOrderQty[0])
+ bidPress = 0.0
+ bidWeightSum = 0.0
+ askPress = 0.0
+ askWeightSum = 0.0
+ for(i in 0:10){
+  if(bidPrice[i] > 0){
+   weight = wap \ (bidPrice[i] - wap)
+   bidWeightSum += weight
+   bidPress += bidOrderQty[i] * weight
+  }
+  if(offerPrice[i] > 0){
+   weight = wap \ (offerPrice[i] - wap)
+   askWeightSum += weight
+   askPress += offerOrderQty[i] * weight
+  }
+ }
+ bidPress = bidPress \ bidWeightSum
+ askPress = askPress \ askWeightSum
+ press = log(bidPress \ askPress)
+ return press
 }
 
 @state
 def averagePressArrayJIT(bidPrice, bidOrderQty, offerPrice, offerOrderQty, lag){
-	press = calPressArrayJIT(bidPrice, bidOrderQty, offerPrice, offerOrderQty)
-	return mavg(press.nullFill(0.0), lag, 1)
+ press = calPressArrayJIT(bidPrice, bidOrderQty, offerPrice, offerOrderQty)
+ return mavg(press.nullFill(0.0), lag, 1)
 }
 ```
 
@@ -1431,11 +1417,9 @@ assert each(eqObj, resultTable1.factor, resultTable3.factor).all()
 assert each(eqObj, resultTable1.factor, resultTable4.factor).all()
 ```
 
-
-
 # 附件
 
 多档多列与多档 array vector 的快照见以下附件：
 
-- [snapshot_100stocks_arrayvector.zip](https://www.dolphindb.cn/downloads/docs/Streaming_computing_of_financial_quantifiers.zip) 
-- [snapshot_100stocks_multi.zip](https://www.dolphindb.cn/downloads/docs/Streaming_computing_of_financial_quantifiers.zip) 
+- [snapshot_100stocks_arrayvector.zip](https://www.dolphindb.cn/downloads/docs/Streaming_computing_of_financial_quantifiers.zip)
+- [snapshot_100stocks_multi.zip](https://www.dolphindb.cn/downloads/docs/Streaming_computing_of_financial_quantifiers.zip)

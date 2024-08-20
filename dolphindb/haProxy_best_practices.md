@@ -16,7 +16,6 @@ DolphinDB 作为一款可用于搭建高可用数据集群的时序数据引擎�
     - [3.4 HAProxy 运维](#34-haproxy-运维)
   - [4. 总结](#4-总结)
 
-
 ## 1. HAProxy 概述
 
 - **软件简介**
@@ -74,35 +73,35 @@ HAProxy 由 Linux 内核的核心贡献者 Willy Tarreau 于 2000 年编写，�
 首先，在安装 HAProxy 之前要确保主机上安装了 `epel-release` 、`gcc` 、`systemd-devel` 三个依赖包。执行如下命令安装：
 
 ```
-$ yum -y install epel-release gcc systemd-devel
+yum -y install epel-release gcc systemd-devel
 ```
 
 下载 HAProxy 2.6.2 的源码包并解压：
 
 ```
-$ wget https://www.haproxy.org/download/2.6/src/haproxy-2.6.2.tar.gz && tar zxf haproxy-2.6.2.tar.gz
+wget https://www.haproxy.org/download/2.6/src/haproxy-2.6.2.tar.gz && tar zxf haproxy-2.6.2.tar.gz
 ```
 
 执行如下命令编译源码：
 
 ```
-$ cd haproxy-2.6.2
-$ make clean
-$ make -j 8 TARGET=linux-glibc USE_THREAD=1
-$ make PREFIX=${/haproxy} SBINDIR=${/haproxy/bin} install  # 根据实际情况将 `${/haproxy}` 和 `${/haproxy/bin}` 替换为实际路径
+cd haproxy-2.6.2
+make clean
+make -j 8 TARGET=linux-glibc USE_THREAD=1
+make PREFIX=${/haproxy} SBINDIR=${/haproxy/bin} install  # 根据实际情况将 `${/haproxy}` 和 `${/haproxy/bin}` 替换为实际路径
 ```
 
 重新配置 *profile* 文件：
 
 ```
-$ echo 'export PATH=/app/haproxy/bin:$PATH' >> /etc/profile
-$ . /etc/profile
+echo 'export PATH=/app/haproxy/bin:$PATH' >> /etc/profile
+. /etc/profile
 ```
 
 执行如下命令查看是否安装成功：
 
 ```
-$ which haproxy
+which haproxy
 ```
 
 - **docker 环境**
@@ -110,7 +109,7 @@ $ which haproxy
 执行如下命令拉取 HAProxy 的 docker 镜像，这里我们选择 *haproxytech/haproxy-alpine:2.6.2*.
 
 ```
-$ docker pull haproxy:2.6.2-alpine
+docker pull haproxy:2.6.2-alpine
 ```
 
 ### 3.2 HAProxy 配置 DolphinDB 集群端口监控
@@ -174,13 +173,13 @@ listen stats
 在主机环境下，执行如下命令启动 HAProxy，其中 -f 后接配置文件所在地址，默认为 */etc/haproxy/haproxy.cfg*，此处为 */haproxy/haproxy.cfg* 。
 
 ```
-$ haproxy -f /haproxy/haproxy.cfg
+haproxy -f /haproxy/haproxy.cfg
 ```
 
 在 docker 环境下，执行如下命令创建容器，注意要将监控端口和前端端口映射到主机上，同时将在主机上配置好的 *haproxy.cfg* 文件映射到容器内：
 
 ```
-$ docker run -itd --name ddb_haproxy -p 8080:8080 -p 1080:1080 -v /haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg --privileged=true haproxy:2.6.2-alpine
+docker run -itd --name ddb_haproxy -p 8080:8080 -p 1080:1080 -v /haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg --privileged=true haproxy:2.6.2-alpine
 ```
 
 启动成功后，用户就可以使用 DolphinDB 的 VScode 插件和 DolphinDB GUI 连接 HAProxy 用于接收请求的前端端口8080来访问 DolphinDB 的集群服务。假如访问8080端口，出现如下为访问 DolphinDB 数据节点端口的浏览器页面时，证明 HAProxy 部署成功。
@@ -188,8 +187,6 @@ $ docker run -itd --name ddb_haproxy -p 8080:8080 -p 1080:1080 -v /haproxy/hapro
 <img src="./images/haProxy_best_practices/3_1.png" width=70%>
 
 > 💡**注意**：使用 DolphinDB 客户端工具连接监听的代理端口时，HAProxy 的负载均衡功能会根据相应的算法规则等自动分配连接到后端部署的其中之一节点。
-
- 
 
 ### 3.4 HAProxy 运维
 
@@ -206,13 +203,13 @@ $ docker run -itd --name ddb_haproxy -p 8080:8080 -p 1080:1080 -v /haproxy/hapro
 在主机环境下，首先执行如下命令找到正在运行的 HAProxy 进程 PID：
 
 ```
-$ ps -ef | grep haproxy
+ps -ef | grep haproxy
 ```
 
 其次，使用 `kill` 命令终止正在运行的 HAProxy 进程：
 
 ```
-$ kill -9 ${haproxy_pid} #${haproxy_pid}为实际进程数
+kill -9 ${haproxy_pid} #${haproxy_pid}为实际进程数
 ```
 
 如需要重启则再次执行 `haproxy -f` 命令。
@@ -220,13 +217,13 @@ $ kill -9 ${haproxy_pid} #${haproxy_pid}为实际进程数
 而在 docker 环境下，可以通过如下命令重启服务
 
 ```
-$ docker restart ddb_haproxy
+docker restart ddb_haproxy
 ```
 
 如需终止且彻底删除容器，则可以执行如下命令：
 
 ```
-$ docker stop ddb_haproxy && docker rm ddb_haproxy
+docker stop ddb_haproxy && docker rm ddb_haproxy
 ```
 
 ## 4. 总结

@@ -1,30 +1,28 @@
 # Python + HDF5 因子计算与 DolphinDB 一体化因子计算方案对比
 
-在量化交易中基于金融市场的 L1/L2 的报价和交易高频数据来进行高频因子计算是非常常见的投研需求。目前国内全市场十年的 L2 历史数据约为 20 ~ 50T，每日新增的数据量约为 10 ~ 20G。传统的关系数据库如 MS SQL Server 或 MySQL 已经很难支撑该量级的数据，即便分库分表，查询性能也远远无法达到要求。由此，一部分用户选择了分布式文件系统, 使用 HDF5 存储数据，并结合 Python 进行量化金融计算。 
+在量化交易中基于金融市场的 L1/L2 的报价和交易高频数据来进行高频因子计算是非常常见的投研需求。目前国内全市场十年的 L2 历史数据约为 20 ~ 50T，每日新增的数据量约为 10 ~ 20G。传统的关系数据库如 MS SQL Server 或 MySQL 已经很难支撑该量级的数据，即便分库分表，查询性能也远远无法达到要求。由此，一部分用户选择了分布式文件系统, 使用 HDF5 存储数据，并结合 Python 进行量化金融计算。
 
 HDF5 的存储方案虽然可以支持海量的高频数据，但是也存在一些痛点，例如数据权限管理困难、不同数据关联不便、检索和查询不便、需要通过数据冗余来提高性能等。此外，通过 Python 来读取计算，也要耗费一些时间在数据传输上。
 
 DolphinDB 是一款分析型的分布式时序数据库(time-series database)。目前，越来越多的券商和私募机构开始采用 DolphinDB 存储并进行高频数据的因子计算，也有不少还在使用 Python + HDF5 方案进行高频因子计算的客户对 DolphinDB 表现了浓厚的兴趣。因此，我们撰写了这篇对比 Python + HDF5 因子计算与 DolphinDB 一体化因子计算方案的文章，以供参考。
 
-本文将分别介绍如何基于 Python + HDF5 和 DolphinDB 实现因子计算，并比较两者的计算性能。 
+本文将分别介绍如何基于 Python + HDF5 和 DolphinDB 实现因子计算，并比较两者的计算性能。
 
-  - [1. 测试环境和测试数据](#1-测试环境和测试数据)
-    - [1.1 测试环境](#11-测试环境)
-    - [1.2 测试数据](#12-测试数据)
-  - [2. 高频因子与代码实现对比](#2-高频因子与代码实现对比)
-    - [2.1 高频因子](#21-高频因子)
-    - [2.2 DolphinDB 中的因子实现](#22-dolphindb-中的因子实现)
-    - [2.3 Python 中的因子实现](#23-python-中的因子实现)
-    - [2.4 小结](#24-小结)
-  - [3. 因子计算效率对比](#3-因子计算效率对比)
-    - [3.1 DolphinDB 的因子调用计算](#31-dolphindb-的因子调用计算)
-    - [3.2 Python + HDF5 的因子调度计算](#32-python--hdf5-的因子调度计算)
-    - [3.3 计算性能对比](#33-计算性能对比)
-    - [3.4 计算结果对比](#34-计算结果对比)
-  - [4. 总结](#4-总结)
-  - [附录](#附录)
-
-
+- [1. 测试环境和测试数据](#1-测试环境和测试数据)
+  - [1.1 测试环境](#11-测试环境)
+  - [1.2 测试数据](#12-测试数据)
+- [2. 高频因子与代码实现对比](#2-高频因子与代码实现对比)
+  - [2.1 高频因子](#21-高频因子)
+  - [2.2 DolphinDB 中的因子实现](#22-dolphindb-中的因子实现)
+  - [2.3 Python 中的因子实现](#23-python-中的因子实现)
+  - [2.4 小结](#24-小结)
+- [3. 因子计算效率对比](#3-因子计算效率对比)
+  - [3.1 DolphinDB 的因子调用计算](#31-dolphindb-的因子调用计算)
+  - [3.2 Python + HDF5 的因子调度计算](#32-python--hdf5-的因子调度计算)
+  - [3.3 计算性能对比](#33-计算性能对比)
+  - [3.4 计算结果对比](#34-计算结果对比)
+- [4. 总结](#4-总结)
+- [附录](#附录)
 
 ## 1. 测试环境和测试数据
 
@@ -68,8 +66,6 @@ DolphinDB 是一款分析型的分布式时序数据库(time-series database)。
 | 3    | dbtime     | TIMESTAMP    | 31   | OfferSize1 | DOUBLE       |
 | 4    | SecurityID | SYMBOL       | 32   | BidSize1   | INT          |
 | 5    | ……         | ……           | 33   | ……         | ……           |
-
- 
 
 部分数据示例如下：
 
@@ -116,8 +112,6 @@ DolphinDB 是一款分析型的分布式时序数据库(time-series database)。
         <figcaption>mathWghtSkew 因子计算公式</figcaption>
     </figure>
 
-    
-
 ### 2.2 DolphinDB 中的因子实现
 
 本小节中，我们使用 DolphinDB 的编程语言来实现 flow 因子和 mathWghtSkew 因子。DolphinDB 提供了 mavg (滑动窗口系列 m 系列） 和 rowWavg (行计算系列row 系列）函数，并进行了针对性的性能优化。这两个系列的函数不但可用于快捷开发这两个因子，还提供了极佳的计算性能。如以下代码所示：
@@ -126,13 +120,13 @@ DolphinDB 是一款分析型的分布式时序数据库(time-series database)。
 
 ```
 def flow(buy_vol, sell_vol, askPrice1, bidPrice1){
-	buy_vol_ma = round(mavg(buy_vol, 60), 5)
-	sell_vol_ma = round(mavg(sell_vol, 60), 5)
-	buy_prop = iif(abs(buy_vol_ma+sell_vol_ma) < 0, 0.5 , buy_vol_ma/ (buy_vol_ma+sell_vol_ma))
-	spd_tmp = askPrice1 - bidPrice1
-	spd = iif(spd_tmp  < 0, 0, spd_tmp)
-	spd_ma = round(mavg(spd, 60), 5)
-	return iif(spd_ma == 0, 0, buy_prop / spd_ma)
+ buy_vol_ma = round(mavg(buy_vol, 60), 5)
+ sell_vol_ma = round(mavg(sell_vol, 60), 5)
+ buy_prop = iif(abs(buy_vol_ma+sell_vol_ma) < 0, 0.5 , buy_vol_ma/ (buy_vol_ma+sell_vol_ma))
+ spd_tmp = askPrice1 - bidPrice1
+ spd = iif(spd_tmp  < 0, 0, spd_tmp)
+ spd_ma = round(mavg(spd, 60), 5)
+ return iif(spd_ma == 0, 0, buy_prop / spd_ma)
 }
 ```
 
@@ -140,18 +134,18 @@ def flow(buy_vol, sell_vol, askPrice1, bidPrice1){
 
 ```
 def mathWghtCovar(x, y, w){
-	v = (x - rowWavg(x, w)) * (y - rowWavg(y, w))
-	return rowWavg(v, w)
+ v = (x - rowWavg(x, w)) * (y - rowWavg(y, w))
+ return rowWavg(v, w)
 }
 def mathWghtSkew(x, w){
-	x_var = mathWghtCovar(x, x, w)
-	x_std = sqrt(x_var)
-	x_1 = x - rowWavg(x, w)
-	x_2 = x_1*x_1
-	len = size(w)
-	adj = sqrt((len - 1) * len) \ (len - 2)
-	skew = rowWsum(x_2, x_1) \ (x_var * x_std) * adj \ len
-	return iif(x_std==0, 0, skew)
+ x_var = mathWghtCovar(x, x, w)
+ x_std = sqrt(x_var)
+ x_1 = x - rowWavg(x, w)
+ x_2 = x_1*x_1
+ len = size(w)
+ adj = sqrt((len - 1) * len) \ (len - 2)
+ skew = rowWsum(x_2, x_1) \ (x_var * x_std) * adj \ len
+ return iif(x_std==0, 0, skew)
 }
 ```
 
@@ -207,11 +201,9 @@ def mathWghtSkew(x, w):
     return np.where(x_std == 0, 0, skew)
 ```
 
-### 2.4 小结 
+### 2.4 小结
 
 从代码实现来看，使用 DolphinDB 和 Python 两种语言来开发这两个因子的难度差别不大，代码量上 DolphinDB 因为提供了 row 系列的行计算函数，开发上会容易一些。此外在移动窗口计算上 Python 中是通过 `rolling` 函数 + `mean` 等需要进行计算函数组合来进行计算。而在 DolphinDB 中，也可以类似的通过 `moving` 函数组合要进行计算的函数（例如 `mean`, `avg` 等）来进行计算。但是这种组合的方式在进行数据移动时，因为不知道具体的计算业务而难以进行针对性的增量优化。为了提升性能，DolphinDB 专门提供了 m 系列滑动窗口函数。可以对不同的计算需求进行针对性的性能优化。这种针对性的移动计算函数在不同场景与组合方式计算方式相比最高可以提高 100 倍的性能。
-
- 
 
 ## 3. 因子计算效率对比
 
@@ -244,8 +236,6 @@ workerNum=20
 DolphinDB 当前任务的并行度可以通过 Web 版的管理器查看，下图展示了配置了4个并行度的并行计算作业。
 
  <img src="./images/Python+HDF5_vs_DolphinDB/3_1.png" width=80%>
-
- 
 
 ### 3.2 Python + HDF5 的因子调度计算
 
@@ -373,10 +363,10 @@ resTb.eq(resTb2).matrix().rowAnd().not().at()
 
 本教程中的对比测试使用了以下测试脚本：
 
- [createDBAndTable.dos](script/Python+HDF5_vs_DolphinDB/createDBAndTable.dos) 
+ [createDBAndTable.dos](script/Python+HDF5_vs_DolphinDB/createDBAndTable.dos)
 
- [ddbFactorCal.dos](script/Python+HDF5_vs_DolphinDB/ddbFactorCal.dos) 
+ [ddbFactorCal.dos](script/Python+HDF5_vs_DolphinDB/ddbFactorCal.dos)
 
- [gentHdf5Files.py](script/Python+HDF5_vs_DolphinDB/gentHdf5Files.py) 
+ [gentHdf5Files.py](script/Python+HDF5_vs_DolphinDB/gentHdf5Files.py)
 
- [pythonFactorCal.py](script/Python+HDF5_vs_DolphinDB/pythonFactorCal.py) 
+ [pythonFactorCal.py](script/Python+HDF5_vs_DolphinDB/pythonFactorCal.py)

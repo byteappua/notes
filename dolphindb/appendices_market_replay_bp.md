@@ -6,7 +6,6 @@
 
 **目录**
 
-
 - [1. 基于 DolphinDB 的行情回放服务](#1-基于-dolphindb-的行情回放服务)
   - [1.1 行情回放服务架构](#11-行情回放服务架构)
   - [1.2 回放服务搭建步骤](#12-回放服务搭建步骤)
@@ -36,7 +35,6 @@
 - [9. 总结](#9-总结)
 - [10. 附录](#10-附录)
 
-
 # 1. 基于 DolphinDB 的行情回放服务
 
 本教程实现的行情回放服务基于 3 类国内 A 股行情数据源：逐笔委托数据、逐笔成交数据、Level 2 快照数据，支持以下功能与特性：
@@ -51,7 +49,7 @@
 ## 1.1 行情回放服务架构
 
 本教程示例 DolphinDB 搭建的行情回放服务架构如下图所示：
-
+<img src="./
 <figure align="left">
 <img src="./images/appendices_market_replay_bp/1_1.png" width=50%>
     <figcaption>行情回放服务架构</figcaption>
@@ -64,7 +62,7 @@
 ## 1.2 回放服务搭建步骤
 
 本教程示例 DolphinDB 搭建行情回放服务的具体操作步骤如下图所示：
-
+<img src="./
 <figure align="left">
 <img src="./images/appendices_market_replay_bp/1_2.png" width=50%>
     <figcaption>搭建步骤</figcaption>
@@ -199,16 +197,16 @@ def dsTb(timeRS, startDate, endDate, stkList, replayName)
 {
     if(replayName == "snapshot"){
         tab = loadTable("dfs://Test_snapshot", "snapshot")
-	}
-	else if(replayName == "order") {
-		tab = loadTable("dfs://Test_order", "order")
-	}
-	else if(replayName == "transaction") {
-		tab = loadTable("dfs://Test_transaction", "transaction")
-	}
-	else {
-		return NULL
-	}
+ }
+ else if(replayName == "order") {
+  tab = loadTable("dfs://Test_order", "order")
+ }
+ else if(replayName == "transaction") {
+  tab = loadTable("dfs://Test_transaction", "transaction")
+ }
+ else {
+  return NULL
+ }
     ds = replayDS(sqlObj=<select * from tab where MDDate>=startDate and MDDate<endDate and HTSCSecurityID in stkList>, dateColumn='MDDate', timeColumn='MDTime', timeRepartitionSchema=timeRS)
     return ds
 }
@@ -303,7 +301,7 @@ def createEnd(tabName, sortColumn)
 
 自定义函数 createEnd 是在回放结束时给用户提供一条回放结束信号，利用了 replay 回放模式中的 N 对 1 异构回放构造回放信号，会往参数 tabName 指定的异构流表中写入一条消息类型列为 end 的记录。为方便后期异构消费解析以及复用，此处为结束信号独立建一个数据库并创建分区表，表内必须有时间列，其他字段可选。并向该表写入一条模拟数据，其数据内容没有任何强制要求。DolphinDB 建库建表相关知识可参考[分区数据库](https://gitee.com/dolphindb/Tutorials_CN/blob/master/database.md#dolphindb教程分区数据库) 。inputEnd、dateEnd、timeEnd 字典的 key 按需设置为字符串 end，将对应 replay 函数指定的输出表中的第二个字典，即消息类型。
 
-参数 sortColumn 用于指定额外的排序列，如果用户回放的数据源为仅仅包含快照（snapshot），则调用内置的 replay 函数时不加入 sortColumn 参数，结果流表中的结束信号记录如下。
+<img src="./umn 用于指定额外的排序列，如果用户回放的数据源为仅仅包含快照（snapshot），则调用内置的 replay 函数时不加入 sortColumn 参数，结果流表中的结束信号记录如下。
 
 <img src="./images/appendices_market_replay_bp/3_1.png" width=30%>
 
@@ -483,13 +481,11 @@ auto myHandler = [&](vector<Message> msgs)
 ### 5.1.5 消费输出
 
 根据 5.1.4 构造的消费函数，两支股票（“000616.SZ” &“000681.SZ”）最大速度回放三张表一天数据输出如下图所示：
-
+<img src="./
 <figure align="left">
 <img src="./images/appendices_market_replay_bp/5_1.png" width=60%>
     <figcaption>消费输出结果</figcaption>
 </figure>
-
-
 
 ## 5.2 Python API
 
@@ -539,14 +535,13 @@ def myHandler(lst):
 
 ### 5.2.4 消费输出
 
+<img src="./
 根据 5.2.3 构造的消费函数，两支股票（“000616.SZ” &“000681.SZ”）最大速度回放三张表一天数据输出如下图所示：
 
 <figure align="left">
 <img src="./images/appendices_market_replay_bp/5_2.png" width=60%>
     <figcaption>消费输出结果</figcaption>
 </figure>
-
-
 
 # 6. 性能测试
 
@@ -688,8 +683,6 @@ C++ API 教程：[C++ API 教程](https://gitee.com/dolphindb/api-cplusplus)
 
 Python API 教程：[Python API 教程](https://gitee.com/dolphindb/api_python3/blob/master/README_CN.md#python-api-for-dolphindb)
 
-
-
 # 8. 路线图 (Roadmap)
 
 - 在后续版本中，`replay` 函数将支持原速回放，即严格以两条记录的时间戳之差为输出间隔向下游注入数据；
@@ -703,14 +696,14 @@ Python API 教程：[Python API 教程](https://gitee.com/dolphindb/api_python3/
 
 附录中的压缩包包含以下文件：
 
-- [原始行情数据文件](https://www.dolphindb.cn/downloads/docs/appendices_market_replay_bp_data.zip) 
-- [逐笔委托建库建表脚本](script/appendices_market_replay_bp/order_create.txt) 
-- [逐笔成交建库建表脚本](script/appendices_market_replay_bp/transac_create.txt) 
-- [快照建库建表脚本](script/appendices_market_replay_bp/snap_create.txt) 
-- [逐笔委托示例导入脚本](script/appendices_market_replay_bp/order_upload.txt) 
-- [逐笔成交示例导入脚本](script/appendices_market_replay_bp/transac_upload.txt) 
-- [快照示例导入脚本](script/appendices_market_replay_bp/snap_upload.txt) 
-- [行情回放函数](script/appendices_market_replay_bp/replay.txt) 
-- [C++ 源码](script/appendices_market_replay_bp/cpp_replay.cpp) 
-- [Python 源码](script/appendices_market_replay_bp/python_replay.py) 
-- [C++ 测试源码](script/appendices_market_replay_bp/cpp_replay_test.cpp) 
+- [原始行情数据文件](https://www.dolphindb.cn/downloads/docs/appendices_market_replay_bp_data.zip)
+- [逐笔委托建库建表脚本](script/appendices_market_replay_bp/order_create.txt)
+- [逐笔成交建库建表脚本](script/appendices_market_replay_bp/transac_create.txt)
+- [快照建库建表脚本](script/appendices_market_replay_bp/snap_create.txt)
+- [逐笔委托示例导入脚本](script/appendices_market_replay_bp/order_upload.txt)
+- [逐笔成交示例导入脚本](script/appendices_market_replay_bp/transac_upload.txt)
+- [快照示例导入脚本](script/appendices_market_replay_bp/snap_upload.txt)
+- [行情回放函数](script/appendices_market_replay_bp/replay.txt)
+- [C++ 源码](script/appendices_market_replay_bp/cpp_replay.cpp)
+- [Python 源码](script/appendices_market_replay_bp/python_replay.py)
+- [C++ 测试源码](script/appendices_market_replay_bp/cpp_replay_test.cpp)

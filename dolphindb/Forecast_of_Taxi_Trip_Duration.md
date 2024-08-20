@@ -35,13 +35,11 @@ DolphinDB 集高性能时序数据库与全面的分析功能为一体，可用�
   <figcaption>行程时间实时预测流程</figcaption>
 </figure>
 
-
-
 ## 2. 数据介绍
 
 ### 2.1 数据来源及训练方法
 
-本文训练和预测采用 [Kaggle ](https://www.kaggle.com/competitions/nyc-taxi-trip-duration)提供的来自纽约出租车委员会的数据集，训练方法参考了获奖者 [beluga](https://www.kaggle.com/code/gaborfodor/from-eda-to-the-top-lb-0-367) 的模型，使用 DolphinDB 对原始数据进行数据预处理，完成位置信息主成分分析（PCA, Principal Component Analysis）、位置信息聚类（KMeans）、新特征构建等工作，并使用 DolphinDB XGBoost 插件完成模型训练及行程时间预测。
+本文训练和预测采用 [Kaggle](https://www.kaggle.com/competitions/nyc-taxi-trip-duration)提供的来自纽约出租车委员会的数据集，训练方法参考了获奖者 [beluga](https://www.kaggle.com/code/gaborfodor/from-eda-to-the-top-lb-0-367) 的模型，使用 DolphinDB 对原始数据进行数据预处理，完成位置信息主成分分析（PCA, Principal Component Analysis）、位置信息聚类（KMeans）、新特征构建等工作，并使用 DolphinDB XGBoost 插件完成模型训练及行程时间预测。
 
 为对比 DolphinDB 在机器学习上的性能，本文使用 Python Scikit-Learn 库及 XGBoost 在同一环境下进行了模型训练和预测，DolphinDB 在训练耗时、模型精度等方面均有良好表现。
 
@@ -94,17 +92,12 @@ select top 5 * from train
 
 此外，考虑到该数据测试集评价指标为均方根对数误差（Root Mean Squared Logarithmic Error, RMSLE），同时，最大行程时间接近 1000 小时，离群值会影响模型训练效果，对行程时间取对数作为预测值，在评价时（见 3.6 节）可以直接使用均方根误差（Root Mean Squared Error, RMSE）指标。
 
-
-
 <figure align="left">
 <img src="./images/Forecast_of_Taxi_Trip_Duration/3_1.png" width=40%>  
   <figcaption>RMSE</figcaption>
 </figure>
 
-
-
-DolphinDB 提供多种计算函数，可以帮助用户快速实现数据处理。DolphinDB 提供 `isNull()` 方法用于判断空值，配合 `sum()` 等聚合函数使用可以快速完成整表数据的查询；提供类似于条件运算符的 `iif()` 方法简化 if-else 语句；`date()`、`weekday()`、`hour()` 等方法可以提取时间、日期数据的不同特征，简洁高效；类似于 Python 等编程语言，DolphinDB 支持方括号 ([]) 索引，简化了表的查找、更新和插入。 
-
+DolphinDB 提供多种计算函数，可以帮助用户快速实现数据处理。DolphinDB 提供 `isNull()` 方法用于判断空值，配合 `sum()` 等聚合函数使用可以快速完成整表数据的查询；提供类似于条件运算符的 `iif()` 方法简化 if-else 语句；`date()`、`weekday()`、`hour()` 等方法可以提取时间、日期数据的不同特征，简洁高效；类似于 Python 等编程语言，DolphinDB 支持方括号 ([]) 索引，简化了表的查找、更新和插入。
 
 ```
 sum(isNull(train))  // 0，不含空值
@@ -120,7 +113,7 @@ select max(trip_duration / 3600) from trainData // 训练集上最大行程时�
 
 原始数据中的纬度经度信息集中在 40.70 °N 至 40.80 °N 及 73.94 °W 至 74.02 °W 之间，数据间位置特征差异不够显著，使用 PCA 来转换经度和纬度坐标，有助于 XGBoost 决策树的拆分，DolphinDB PCA 函数使用详见 [pca — DolphinDB 2.0 documentation](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/p/pca.html)。
 
-DolphinDB PCA 返回的结果是一个字典，包含 components、explainedVarianceRatio、singularValues 三个键，分别代表对应大小为 size(colNames)*k 的主成分分析矩阵、前 k 个主成分每个特征的方差贡献率、主成分方差（协方差矩阵特征值）。可通过主成分分析矩阵转换待处理数据，详见 [Scikit-Learn PCA.transform()](https://github.com/scikit-learn/scikit-learn/blob/9aaed4987/sklearn/decomposition/_base.py#L100)。 
+DolphinDB PCA 返回的结果是一个字典，包含 components、explainedVarianceRatio、singularValues 三个键，分别代表对应大小为 size(colNames)*k 的主成分分析矩阵、前 k 个主成分每个特征的方差贡献率、主成分方差（协方差矩阵特征值）。可通过主成分分析矩阵转换待处理数据，详见 [Scikit-Learn PCA.transform()](https://github.com/scikit-learn/scikit-learn/blob/9aaed4987/sklearn/decomposition/_base.py#L100)。
 
 可从中取若干数据绘制经度 - 纬度散点图观察 PCA 结果。
 
@@ -145,8 +138,7 @@ pca_trainpick = dot((matrix(trainPickPara) - repmat(matrix(avg(trainPickPara)), 
 trainData[`pca_trainpick_0] = flatten(pca_trainpick[:, 0])
 ```
 
-DolphinDB 提供了 `plot` 函数供数据可视化。用户可通过 `chartType` 指定图表类型，详见 [plot — DolphinDB 2.0 documentation](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/p/plot.html)。 
-
+DolphinDB 提供了 `plot` 函数供数据可视化。用户可通过 `chartType` 指定图表类型，详见 [plot — DolphinDB 2.0 documentation](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/p/plot.html)。
 
 ```
 x = select top 1000 pca_trainpick_1 from trainData
@@ -260,8 +252,6 @@ DolphinDB 与 Python 训练模型在验证集上误差如下表所示：
   <figcaption>DolphinDB 流数据处理框架 </figcaption>
 </figure>
 
-
-
 ### 4.1 场景描述
 
 DolphinDB 流数据模块采用发布 - 订阅 - 消费的模式，流数据首先注入流数据表中，通过流表来发布数据，第三方应用可以通过 DolphinDB 脚本或 API 订阅及消费流数据。
@@ -279,7 +269,7 @@ DolphinDB 流数据模块采用发布 - 订阅 - 消费的模式，流数据首�
 
 用户可以使用 subscribeTable 完成流数据的订阅，并通过 *handler* 指定处理订阅数据的方法（详见 subscribeTable — DolphinDB 2.0 documentation）。在本例中，特征表需订阅订单表完成原始信息的特征提取，本模型定义 `process` 函数实现；预测表需订阅特征表使用特征信息完成行程时间预测，本模型定义 `predictDuration` 函数实现。函数实现详见[6.2 节](#62-模型代码)所附代码。
 
-为模拟实时数据，使用[ replay ](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/r/replay.html)函数回放历史数据。
+为模拟实时数据，使用[replay](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/r/replay.html)函数回放历史数据。
 
 ```
 // 订阅订单信息表，数据从订单表流向特征表
@@ -304,6 +294,7 @@ Grafana 是一个用于时序数据动态可视化的数据展示工具，Dolphi
 select id as ID, pickup_datetime as pickup_time, (pickup_datetime+int((exp(duration)-1))) as arrival_time,  (exp(duration)-1)/60 as duration from predictTable 
 where date(predictTable.pickup_datetime) == date(select max(pickup_datetime) from predictTable) 
 ```
+
 - Query 2：统计当日累计订单数及累计乘客数
 
 ```
@@ -342,8 +333,6 @@ where date(predictTable.pickup_datetime) == date(select max(pickup_datetime) fro
   <figcaption>当日不同时刻订单出行耗时</figcaption>
 </figure>
 
-
-
 ### 4.4 数据持久化
 
 如果需要将历史数据落盘，可以订阅订单表中数据，指定 `subscribeTable` 以 `loadTable` 的方式将数据持久化到磁盘。
@@ -378,10 +367,8 @@ XGBoost: 1.6.2
 
 ### 6.2 模型代码
 
-DolphinDB 模型训练代码：[taxiTrain.dos](script/Forecast_of_Taxi_Trip_Duration/taxiTrain.dos) 
+DolphinDB 模型训练代码：[taxiTrain.dos](script/Forecast_of_Taxi_Trip_Duration/taxiTrain.dos)
 
+DolphinDB 流数据预测代码：  [taxiStream.dos](script/Forecast_of_Taxi_Trip_Duration/taxiStream.dos)
 
-DolphinDB 流数据预测代码：  [taxiStream.dos](script/Forecast_of_Taxi_Trip_Duration/taxiStream.dos) 
-
-
-Python 模型训练代码： [taxiTrain.py](script/Forecast_of_Taxi_Trip_Duration/taxiTrain.py) 
+Python 模型训练代码： [taxiTrain.py](script/Forecast_of_Taxi_Trip_Duration/taxiTrain.py)

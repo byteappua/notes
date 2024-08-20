@@ -15,7 +15,6 @@
 
 包含以下内容：
 
-
 - [第1章 概览](#第1章-概览)
   - [1.1 为什么引入计算节点](#11-为什么引入计算节点)
   - [1.2 计算节点简介](#12-计算节点简介)
@@ -38,9 +37,6 @@
   - [4.3 参数设置](#43-参数设置)
   - [4.4 计算节点扩缩容](#44-计算节点扩缩容)
 - [第5章 总结](#第5章-总结)
-
-
-
 
 # 第1章 概览
 
@@ -71,8 +67,6 @@ DolphinDB 自版本1.30.14，2.00.1开始支持计算节点，能够有效地解
   <figcaption>图1-1</figcaption>
 </figure>
 
-
-
 图中 C1-CNODE1 至 C1-CNODE3 为计算节点，P1-DNODE1 至 P3-DNODE1 为数据节点。
 
 从文件系统来简单验证下计算节点的无状态特性。查看数据节点 volume 配置：
@@ -92,14 +86,12 @@ P3-DNODE1    /ssd/ssd0/wfHuang/volumes/P3-DNODE1
   <figcaption>图1-2</figcaption>
 </figure>
 
-
 可看到 P1-DNODE1 作为数据节点，管理着事务 undo/redo 日志文件，和大量的数据块 CHUNKS 文件。但计算节点不需要配置 volume, 查看 C1-CNODE1 的默认 data 目录：
 
 <figure align="left">
 <img src="./images/Compute_Node/1_3.png" width=50%>  
   <figcaption>图1-3</figcaption>
 </figure>
-
 
 可以看到计算节点 C1-CNODE1 不存储任何的分布式数据文件。
 
@@ -120,6 +112,7 @@ compute_w 38563 appadmin   22u     IPv4 319095550       0t0       TCP compute:89
 ...skip 20 lines......
 compute_w 38563 appadmin   44u     IPv4 319337513       0t0       TCP compute:42566->192.192.168.2:8961 (ESTABLISHED)
 ```
+
 查看数据节点 P1-DNODE1 打开的文件：
 
 ```
@@ -228,7 +221,6 @@ order by tradedate,securityID, minute
   <figcaption>图1-6</figcaption>
 </figure>
 
-
 可以看出在 map 阶段在数据节点，是分布式、并行执行的。在 merge-reduce 过程中计算节点的内存消耗逐渐增加。
 
 ## 1.3 引入计算节点的好处
@@ -256,7 +248,6 @@ order by tradedate,securityID, minute
   <figcaption>图1-7</figcaption>
 </figure>
 
-
 如图，当数据节点启动时，流程中的蓝色标记部分：“回放 redo 日志”，“恢复损坏的 chunk” 等包含了大量的 IO 操作，实际生产环境中耗时为分钟级（具体视数据量大小而定）。而计算节点流程十分精简，可以在秒级完成启动。
 
 ## 1.4 计算节点安装
@@ -276,6 +267,7 @@ order by tradedate,securityID, minute
 ### 1.4.1 编写配置文件
 
 在节点列表文件 *cluster.nodes* 中编写计算节点及代理节点。推荐计算节点以 CN (取 compute node 首字母) 标识，数据节点以 DN (取 data node 首字母) 标识，如：
+
 ```
 localSite,mode
 192.193.168.2:8990:controller1,controller
@@ -294,6 +286,7 @@ localSite,mode
 ```
 
 在配置文件 *cluster.cfg* 中，需要使用前缀来区分数据节点与计算节点的配置项。
+
 ```
 CN%.workerNum=64
 CN%.maxConnections=3000
@@ -310,7 +303,7 @@ DN%.volumes=/ssd/ssd0/wfHuang/volumes,/ssd/ssd1/wfHuang/volumes,/ssd/ssd2/wfHuan
 
 `CN%` 匹配 CN 开头的计算节点，`DN%` 匹配 DN 开头的数据节点。以此保证计算节点与数据节点的配置项不会互相干扰。
 
-注：计算节点必须配置 ` dataSync = 0` 。
+注：计算节点必须配置 `dataSync = 0` 。
 
 ### 1.4.2 启动计算节点
 
@@ -345,7 +338,6 @@ DN%.volumes=/ssd/ssd0/wfHuang/volumes,/ssd/ssd1/wfHuang/volumes,/ssd/ssd2/wfHuan
 
 ## 2.3 高可用计算节点集群架构
 
-
 <figure align="left">
 <img src="./images/Compute_Node/2_2.png" width=50%>  
   <figcaption>图2_2</figcaption>
@@ -359,7 +351,6 @@ DN%.volumes=/ssd/ssd0/wfHuang/volumes,/ssd/ssd1/wfHuang/volumes,/ssd/ssd2/wfHuan
 
   从计算节点写入数据时，如果某个数据节点发生了崩溃，事务管理器会回滚当前失败的事务。并以一个新的事务，重试数据写入，整个过程对于客户端程序是透明无感知的。
 
-
 <figure align="left">
 <img src="./images/Compute_Node/2_3.png" width=60%>  
   <figcaption>图2_3</figcaption>
@@ -368,7 +359,6 @@ DN%.volumes=/ssd/ssd0/wfHuang/volumes,/ssd/ssd1/wfHuang/volumes,/ssd/ssd2/wfHuan
 - 读
 
   DolphinDB 默认采用2副本（确保强一致性），当计算节点发现部分子任务失败时，会根据可用 chunk 副本的分布，重新调度新的 subTask 到对应数据节点中去，实现任务的崩溃恢复。
-
 
 <figure align="left">
 <img src="./images/Compute_Node/2_4.png" width=60%>  
@@ -386,7 +376,6 @@ DN%.volumes=/ssd/ssd0/wfHuang/volumes,/ssd/ssd1/wfHuang/volumes,/ssd/ssd2/wfHuan
   <figcaption>图2_5</figcaption>
 </figure>
 
-
 图示，使用 computenode3 作为流计算节点，专门负责流计算业务。在另外两个计算节点上进行批量读写，通过计算节点之间的 Share-nothing 架构特性，有效保证流计算的低时延。
 
 ## 2.5 基于计算节点实例的资源隔离
@@ -398,7 +387,6 @@ DN%.volumes=/ssd/ssd0/wfHuang/volumes,/ssd/ssd1/wfHuang/volumes,/ssd/ssd2/wfHuan
   <figcaption>图2_6</figcaption>
 </figure>
 
-
 以 haproxy 为例，在 *haproxy.cfg* 中设置2个监听组
 
 - ddb-cluster
@@ -408,6 +396,7 @@ DN%.volumes=/ssd/ssd0/wfHuang/volumes,/ssd/ssd1/wfHuang/volumes,/ssd/ssd2/wfHuan
 - ad-hoc-single
 
 用于即席查询的计算节点，配置为单节点，限制1000连接，用于分析师，研究员等对数据做一些探索和即席查询。
+
 ```
 listen ddb-cluster
    bind 0.0.0.0:5000
@@ -422,8 +411,6 @@ listen ad-hoc-single
    balance leastconn
    server compute3 192.168.168.1:8967 maxconn 1000 check
 ```
-
- 
 
 # 第3章 应用场景
 
@@ -467,9 +454,7 @@ if __name__ == '__main__' :
 <figure align="left">
 <img src="./images/Compute_Node/3_2.png" width=80%>  
   <figcaption>图3_2</figcaption>
-</figure> 
-
-
+</figure>
 
 在执行导入过程中，计算节点 cpu 均值在15%，峰值达到20%，内存消耗约2.8G。
 
@@ -480,6 +465,7 @@ if __name__ == '__main__' :
 ### 3.3.1 配置计算节点
 
 设计 CN1 作为流计算的订阅和发布节点，配置文件如下：
+
 ```
 # publish
 CN1.persistenceDir=/ssd/ssd0/persistDir/C1-CNODE1
@@ -495,12 +481,14 @@ CN1.subExecutors=16
 ### 3.3.2 创建与订阅流表
 
 在计算节点 CN1 上创建流表：
+
 ```
 t = streamTable(1:0, `sym`price, [STRING,DOUBLE])
 enableTableShareAndPersistence(t, `tickStream)
 ```
 
 订阅并编写实时因子计算：
+
 ```
 def sum_diff(x, y){
     return (x-y)/(x+y)
@@ -512,6 +500,7 @@ subscribeTable(tableName=`tickStream, actionName="factors", offset=-1, handler=t
 ```
 
 往 CN1 模拟写入消息（同时另一个计算节点 CN2 执行导入数据作业）
+
 ```
 n = 2000000
 data = table(take("000001.SH", n) as sym, rand(10.0, n) as price)
@@ -530,14 +519,15 @@ getStreamingStat().subWorkers
 
 ## 3.4 机器学习
 
-机器学习是计算密集型的场景，模型的训练过程会消耗大量的 CPU、内存资源。将机器学习的作业部署至某个计算节点，可以避免对数据写入、读取类任务的负面影响。例如在 CN2 上，使用 [adaBoost ](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/a/adaBoostRegressor.html?highlight=adaboost#adaboostregressor)训练股票年波动率：
+机器学习是计算密集型的场景，模型的训练过程会消耗大量的 CPU、内存资源。将机器学习的作业部署至某个计算节点，可以避免对数据写入、读取类任务的负面影响。例如在 CN2 上，使用 [adaBoost](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/a/adaBoostRegressor.html?highlight=adaboost#adaboostregressor)训练股票年波动率：
+
 ```
 def tranAdaBoost(TrainData){
-	db = database(,HASH, [SYMBOL, 10])
-	p10TranData = db.createPartitionedTable(table=TrainData, partitionColumns=`SecurityID)
-	p10TranData.append!(TrainData)
-	model = adaBoostRegressor(sqlDS(<select * from p10TranData>), yColName=`targetRV, xColNames=`BAS`DI0`DI1`DI2`DI3`DI4`Press`RV, numTrees=30, maxDepth=16, loss=`square)
-	saveModel(model, "/hdd/data/finance/model/adaBoost.txt")
+ db = database(,HASH, [SYMBOL, 10])
+ p10TranData = db.createPartitionedTable(table=TrainData, partitionColumns=`SecurityID)
+ p10TranData.append!(TrainData)
+ model = adaBoostRegressor(sqlDS(<select * from p10TranData>), yColName=`targetRV, xColNames=`BAS`DI0`DI1`DI2`DI3`DI4`Press`RV, numTrees=30, maxDepth=16, loss=`square)
+ saveModel(model, "/hdd/data/finance/model/adaBoost.txt")
 }
 
 jobId="adaBoost" 
@@ -584,6 +574,7 @@ submitJob(jobId, jobDesc, tranAdaBoost, Train)
 1. 内存管理
 
 在内存紧张时，通过 getSessionMemory 视图进行会话管理，回收空闲会话：
+
 ```
 select 
     userId
@@ -603,7 +594,6 @@ order by memSize desc
   <figcaption>图4_2</figcaption>
 </figure>
 
-
 图示，test 用户已经空闲15分钟了，视情况可以关闭此 session，并回收1000MB的内存。
 
 2. 连接管理
@@ -619,6 +609,7 @@ order by memSize desc
 慢查询通常会引起系统雪崩，需要重点关注。DolphinDB 提供一个 job log 日志文件，记录 DFS 表相关查询日志，默认在 log 目录下，名称为 *nodeAlias_job.log*。
 
 - 监控 top10 sql
+
 ```
 jobLogFile = getConfig(`jobLogFile)
 queryLog = loadText(jobLogFile)
@@ -641,12 +632,11 @@ limit 10
   <figcaption>图4_3</figcaption>
 </figure>
 
-
 如图，根据 sqlText，userId，运行时间及时长，综合分析处置慢查询，比如限制一些用户进行较大规模的查询，以及对部分查询效率和速度较低的 SQL 语句进行优化。
 
 ## 4.3 参数设置
 
-计算节点不需要设置 DFS 表存储相关的参数，包括：*volumes*, *chunkCacheEngineMemSize*, *tsdbCacheEngineSize*, *redoLogDir* 等。计算节点的核心参数包括：*MaxMemSize*, *MaxConnections*, *workerNum*, *maxQueryResultLimit *等。具体设置请参考手册[参数配置](https://www.dolphindb.cn/cn/help/DatabaseandDistributedComputing/Configuration/index.html) 。
+计算节点不需要设置 DFS 表存储相关的参数，包括：*volumes*, *chunkCacheEngineMemSize*, *tsdbCacheEngineSize*, *redoLogDir* 等。计算节点的核心参数包括：*MaxMemSize*, *MaxConnections*, *workerNum*, *maxQueryResultLimit*等。具体设置请参考手册[参数配置](https://www.dolphindb.cn/cn/help/DatabaseandDistributedComputing/Configuration/index.html) 。
 
 ## 4.4 计算节点扩缩容
 
@@ -657,6 +647,7 @@ limit 10
 1. 在新机器上部署和配置 agent
 
 拷贝原机器上的 agent 部署包到新机器，并修改 *agent.cfg*，如
+
 ```
 mode=agent
 workerNum=4
@@ -667,16 +658,16 @@ lanCluster=0
 ```
 
 2. 在 web 集群管理界面修改 `Nodes Setup` 配置，新增 computenode 和 agent。
- 
+
 <figure align="left">
 <img src="./images/Compute_Node/4_4.png" width=70%>  
   <figcaption>图4_4</figcaption>
 </figure>
 
-
 回到 web 管理界面，可以看到已经新增了一个 agent4 并且是未启动状态。
 
 3. 启动新节点的 agent
+
 ```
 nohup ./DolphinDB -console 0 -mode agent -home data -config config/agent.cfg -logFile log/agent.log &
 ```

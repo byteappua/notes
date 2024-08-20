@@ -67,7 +67,7 @@
 ldd dolphindb
 ```
 
-<img src="images/performance_optimization_based_on_glibc/01.png">
+<img src="./images/performance_optimization_based_on_glibc/01.png">
 
 找到 libc.so.6 的位置，在终端执行
 
@@ -77,7 +77,7 @@ ldd dolphindb
 
 得到版本为如图（2.17，低于 2.23）
 
-<img src="images/performance_optimization_based_on_glibc/02.png">
+<img src="./images/performance_optimization_based_on_glibc/02.png">
 
 ### 3.2 下载或者编译高版本 glibc
 
@@ -130,7 +130,7 @@ sudo yum install patchelf
 
 ### 3.5 文件备份
 
-备份相关文件（`dolphindb `，`libDolphinDB.so`，`libgfortran.so.3`，`libopenblas.so.0`，`libquadmath.so.0`，`libstdc++.so.6`，`libtcmalloc_minimal.so.4`）
+备份相关文件（`dolphindb`，`libDolphinDB.so`，`libgfortran.so.3`，`libopenblas.so.0`，`libquadmath.so.0`，`libstdc++.so.6`，`libtcmalloc_minimal.so.4`）
 
 ```
 #备份文件，需要到 dolphindb 可执行文件下的目录
@@ -147,7 +147,7 @@ cp libtcmalloc_minimal.so.4 libtcmalloc_minimal.so.4.bak
 
 <font color=#B22222>**1）关闭 DolphinDB**</font>
 
-2）根据高版本 glibc 的路径，修改以下文件的 rpath：`dolphindb `，`libDolphinDB.so`，`libgfortran.so.3`，`libopenblas.so.0`，`libquadmath.so.0`，`libstdc++.so.6`，`libtcmalloc_minimal.so.4`
+2）根据高版本 glibc 的路径，修改以下文件的 rpath：`dolphindb`，`libDolphinDB.so`，`libgfortran.so.3`，`libopenblas.so.0`，`libquadmath.so.0`，`libstdc++.so.6`，`libtcmalloc_minimal.so.4`
 
 ```
 #修改 rpath，具体路径要看高版本 glibc 的路径
@@ -165,7 +165,7 @@ patchelf  --set-rpath ./:/home/thchen/glibc-2.23/lib libtcmalloc_minimal.so.4
 
 使用 ldd dolphindb 命令验证当前 glibc 库的路径。当运行结果显示其路径为高版本 glibc 路径时，说明前述修改成功。
 
-<img src="images/performance_optimization_based_on_glibc/03.png">
+<img src="./images/performance_optimization_based_on_glibc/03.png">
 
 ## 4 性能测试与对比
 

@@ -17,20 +17,20 @@
 
 本教程包含内容：
 
-- [SQL优化案例：深度不平衡、买卖压力指标、波动率计算](#sql优化案例深度不平衡买卖压力指标波动率计算)
-  - [1. Snapshot数据文件结构](#1-snapshot数据文件结构)
-  - [2. 指标定义](#2-指标定义)
-  - [3. SQL优化](#3-sql优化)
-    - [3.1 新手：以列为单位进行计算](#31-新手以列为单位进行计算)
-    - [3.2 进阶：将列拼接为矩阵进行计算](#32-进阶将列拼接为矩阵进行计算)
-    - [3.3 高性能1：V2.00的TSDB存储和计算](#33-高性能1v200的tsdb存储和计算)
-    - [3.4 高性能2：V2.00的TSDB使用Array Vector存储和计算](#34-高性能2v200的tsdb使用array-vector存储和计算)
-  - [4. OLAP到TSDB的性能提升原因](#4-olap到tsdb的性能提升原因)
-    - [4.1 数据库分区方法](#41-数据库分区方法)
-    - [4.2 数据表创建方法](#42-数据表创建方法)
-    - [4.3 OLAP存储引擎与TSDB存储引擎的差异](#43-olap存储引擎与tsdb存储引擎的差异)
-    - [4.4 小结](#44-小结)
-  - [5. 总结](#5-总结)
+* [SQL优化案例：深度不平衡、买卖压力指标、波动率计算](#sql优化案例深度不平衡买卖压力指标波动率计算)
+  * [1. Snapshot数据文件结构](#1-snapshot数据文件结构)
+  * [2. 指标定义](#2-指标定义)
+  * [3. SQL优化](#3-sql优化)
+    * [3.1 新手：以列为单位进行计算](#31-新手以列为单位进行计算)
+    * [3.2 进阶：将列拼接为矩阵进行计算](#32-进阶将列拼接为矩阵进行计算)
+    * [3.3 高性能1：V2.00的TSDB存储和计算](#33-高性能1v200的tsdb存储和计算)
+    * [3.4 高性能2：V2.00的TSDB使用Array Vector存储和计算](#34-高性能2v200的tsdb使用array-vector存储和计算)
+  * [4. OLAP到TSDB的性能提升原因](#4-olap到tsdb的性能提升原因)
+    * [4.1 数据库分区方法](#41-数据库分区方法)
+    * [4.2 数据表创建方法](#42-数据表创建方法)
+    * [4.3 OLAP存储引擎与TSDB存储引擎的差异](#43-olap存储引擎与tsdb存储引擎的差异)
+    * [4.4 小结](#44-小结)
+  * [5. 总结](#5-总结)
 
 ## 1. Snapshot数据文件结构
 
@@ -68,20 +68,19 @@
 -->
 2020年上交所14460个证券的Snapshot数据已经提前导入至DolphinDB数据库中，一共约28.75亿条快照数据，导入方法见[股票行情数据导入实例](https://gitee.com/dolphindb/Tutorials_CN/blob/master/stockdata_csv_import_demo.md)，一共174列。
 
-
 ## 2. 指标定义
 
 * **Weighted Averaged Price(WAP)**：加权平均价格
 
-<img src="images/sql_performance_optimization_wap_di_rv/2_1.png">
+<img src="./images/sql_performance_optimization_wap_di_rv/2_1.png">
 
 * **Depth Imbalance(DI)**：深度不平衡
 
-<img src="images/sql_performance_optimization_wap_di_rv/2_2.png">
+<img src="./images/sql_performance_optimization_wap_di_rv/2_2.png">
 
 * **Press**：买卖压力指标
 
-<img src="images/sql_performance_optimization_wap_di_rv/2_3.png">
+<img src="./images/sql_performance_optimization_wap_di_rv/2_3.png">
 
 **特征数据重采样（10min窗口，并聚合计算波动率）**
 
@@ -89,14 +88,14 @@
 
 * **Realized Volatility(RV)**：波动率定义为对数收益率的平方和的平方根
 
-<img src="images/sql_performance_optimization_wap_di_rv/2_4.png">
+<img src="./images/sql_performance_optimization_wap_di_rv/2_4.png">
 
 股票的价格始终是处于买单价和卖单价之间，因此本项目用加权平均价格来代替股价进行计算
 
-<img src="images/sql_performance_optimization_wap_di_rv/2_5.png">
-
+<img src="./images/sql_performance_optimization_wap_di_rv/2_5.png">
 
 ## 3. SQL优化
+
 这些指标的计算SQL语句由以下几部分组成：
 
 ```
@@ -113,17 +112,18 @@ GROUP BY 股票代码, interval(时间列,时间单位,缺失值填充方式)
 数据采用OLAP存储引擎存储。
 
 根据指标定义公式，以列为单位进行计算，开发者能够快速写出以下SQL代码：
+
 ```
 /**
 part1: Define calculation function
 */
 def calPress(BidPrice0,BidPrice1,BidPrice2,BidPrice3,BidPrice4,BidPrice5,BidPrice6,BidPrice7,BidPrice8,BidPrice9,BidOrderQty0,BidOrderQty1,BidOrderQty2,BidOrderQty3,BidOrderQty4,BidOrderQty5,BidOrderQty6,BidOrderQty7,BidOrderQty8,BidOrderQty9,OfferPrice0,OfferPrice1,OfferPrice2,OfferPrice3,OfferPrice4,OfferPrice5,OfferPrice6,OfferPrice7,OfferPrice8,OfferPrice9,OfferOrderQty0,OfferOrderQty1,OfferOrderQty2,OfferOrderQty3,OfferOrderQty4,OfferOrderQty5,OfferOrderQty6,OfferOrderQty7,OfferOrderQty8,OfferOrderQty9){
-	WAP = (BidPrice0*OfferOrderQty0+OfferPrice0*BidOrderQty0)\(BidOrderQty0+OfferOrderQty0)
-	Bid_1_P_WAP_SUM = 1\(BidPrice0-WAP) + 1\(BidPrice1-WAP) + 1\(BidPrice2-WAP) + 1\(BidPrice3-WAP) + 1\(BidPrice4-WAP) + 1\(BidPrice5-WAP) + 1\(BidPrice6-WAP) + 1\(BidPrice7-WAP) + 1\(BidPrice8-WAP) + 1\(BidPrice9-WAP)
-	Offer_1_P_WAP_SUM = 1\(OfferPrice0-WAP)+1\(OfferPrice1-WAP)+1\(OfferPrice2-WAP)+1\(OfferPrice3-WAP)+1\(OfferPrice4-WAP)+1\(OfferPrice5-WAP)+1\(OfferPrice6-WAP)+1\(OfferPrice7-WAP)+1\(OfferPrice8-WAP)+1\(OfferPrice9-WAP)
-	BidPress = BidOrderQty0*((1\(BidPrice0-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty1*((1\(BidPrice1-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty2*((1\(BidPrice2-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty3*((1\(BidPrice3-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty4*((1\(BidPrice4-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty5*((1\(BidPrice5-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty6*((1\(BidPrice6-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty7*((1\(BidPrice7-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty8*((1\(BidPrice8-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty9*((1\(BidPrice9-WAP))\Bid_1_P_WAP_SUM)
-	OfferPress = OfferOrderQty0*((1\(OfferPrice0-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty1*((1\(OfferPrice1-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty2*((1\(OfferPrice2-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty3*((1\(OfferPrice3-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty4*((1\(OfferPrice4-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty5*((1\(OfferPrice5-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty6*((1\(OfferPrice6-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty7*((1\(OfferPrice7-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty8*((1\(OfferPrice8-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty9*((1\(OfferPrice9-WAP))\Offer_1_P_WAP_SUM)
-	return log(BidPress)-log(OfferPress)
+ WAP = (BidPrice0*OfferOrderQty0+OfferPrice0*BidOrderQty0)\(BidOrderQty0+OfferOrderQty0)
+ Bid_1_P_WAP_SUM = 1\(BidPrice0-WAP) + 1\(BidPrice1-WAP) + 1\(BidPrice2-WAP) + 1\(BidPrice3-WAP) + 1\(BidPrice4-WAP) + 1\(BidPrice5-WAP) + 1\(BidPrice6-WAP) + 1\(BidPrice7-WAP) + 1\(BidPrice8-WAP) + 1\(BidPrice9-WAP)
+ Offer_1_P_WAP_SUM = 1\(OfferPrice0-WAP)+1\(OfferPrice1-WAP)+1\(OfferPrice2-WAP)+1\(OfferPrice3-WAP)+1\(OfferPrice4-WAP)+1\(OfferPrice5-WAP)+1\(OfferPrice6-WAP)+1\(OfferPrice7-WAP)+1\(OfferPrice8-WAP)+1\(OfferPrice9-WAP)
+ BidPress = BidOrderQty0*((1\(BidPrice0-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty1*((1\(BidPrice1-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty2*((1\(BidPrice2-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty3*((1\(BidPrice3-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty4*((1\(BidPrice4-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty5*((1\(BidPrice5-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty6*((1\(BidPrice6-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty7*((1\(BidPrice7-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty8*((1\(BidPrice8-WAP))\Bid_1_P_WAP_SUM) + BidOrderQty9*((1\(BidPrice9-WAP))\Bid_1_P_WAP_SUM)
+ OfferPress = OfferOrderQty0*((1\(OfferPrice0-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty1*((1\(OfferPrice1-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty2*((1\(OfferPrice2-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty3*((1\(OfferPrice3-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty4*((1\(OfferPrice4-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty5*((1\(OfferPrice5-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty6*((1\(OfferPrice6-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty7*((1\(OfferPrice7-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty8*((1\(OfferPrice8-WAP))\Offer_1_P_WAP_SUM) + OfferOrderQty9*((1\(OfferPrice9-WAP))\Offer_1_P_WAP_SUM)
+ return log(BidPress)-log(OfferPress)
 }
 
 /**
@@ -151,9 +151,9 @@ result = select
             avg((BidOrderQty9-OfferOrderQty9)\(BidOrderQty9+OfferOrderQty9)) as DI9,
             avg(calPress(BidPrice0,BidPrice1,BidPrice2,BidPrice3,BidPrice4,BidPrice5,BidPrice6,BidPrice7,BidPrice8,BidPrice9, BidOrderQty0,BidOrderQty1,BidOrderQty2,BidOrderQty3,BidOrderQty4,BidOrderQty5,BidOrderQty6,BidOrderQty7,BidOrderQty8,BidOrderQty9,OfferPrice0,OfferPrice1,OfferPrice2,OfferPrice3,OfferPrice4,OfferPrice5,OfferPrice6,OfferPrice7,OfferPrice8,OfferPrice9,OfferOrderQty0,OfferOrderQty1,OfferOrderQty2,OfferOrderQty3,OfferOrderQty4,OfferOrderQty5,OfferOrderQty6,OfferOrderQty7,OfferOrderQty8,OfferOrderQty9)) as Press,
             sqrt(sum(pow((log((BidPrice0*OfferOrderQty0+OfferPrice0*BidOrderQty0)\(BidOrderQty0+OfferOrderQty0))-prev(log((BidPrice0*OfferOrderQty0+OfferPrice0*BidOrderQty0)\(BidOrderQty0+OfferOrderQty0)))),2))) as RV
-		from snapshot
-		where date(TradeTime) between 2020.01.01 : 2020.12.31, SecurityID in stockList, (time(TradeTime) between 09:30:00.000 : 11:29:59.999) || (time(TradeTime) between 13:00:00.000 : 14:56:59.999)
-		group by SecurityID, interval( TradeTime, 10m, "none" ) as TradeTime
+  from snapshot
+  where date(TradeTime) between 2020.01.01 : 2020.12.31, SecurityID in stockList, (time(TradeTime) between 09:30:00.000 : 11:29:59.999) || (time(TradeTime) between 13:00:00.000 : 14:56:59.999)
+  group by SecurityID, interval( TradeTime, 10m, "none" ) as TradeTime
 ```
 
 上述SQL中，涉及`BidPrice0-9`、`BidOrderQty0-9`、`OfferPrice0-9`、`OfferOrderQty0-9`共40列数据，且由于指标定义较为复杂，即使公式化简后，仍然难以解决代码冗长、修改困难的问题。
@@ -177,16 +177,16 @@ result = select
 part1: Define calculation function
 */
 defg featureEngine(bidPrice,bidQty,offerPrice,offerQty){
-	bas = offerPrice[0]\bidPrice[0]-1
-	wap = (bidPrice[0]*offerQty[0] + offerPrice[0]*bidQty[0])\(bidQty[0]+offerQty[0])
-	di = (bidQty-offerQty)\(bidQty+offerQty)
-	bidw=(1.0\(bidPrice-wap))
-	bidw=bidw\(bidw.rowSum())
-	offerw=(1.0\(offerPrice-wap))
-	offerw=offerw\(offerw.rowSum())
-	press=log((bidQty*bidw).rowSum())-log((offerQty*offerw).rowSum())
-	rv=sqrt(sum2(log(wap)-log(prev(wap))))
-	return avg(bas),avg(di[0]),avg(di[1]),avg(di[2]),avg(di[3]),avg(di[4]),avg(di[5]),avg(di[6]),avg(di[7]),avg(di[8]),avg(di[9]),avg(press),rv
+ bas = offerPrice[0]\bidPrice[0]-1
+ wap = (bidPrice[0]*offerQty[0] + offerPrice[0]*bidQty[0])\(bidQty[0]+offerQty[0])
+ di = (bidQty-offerQty)\(bidQty+offerQty)
+ bidw=(1.0\(bidPrice-wap))
+ bidw=bidw\(bidw.rowSum())
+ offerw=(1.0\(offerPrice-wap))
+ offerw=offerw\(offerw.rowSum())
+ press=log((bidQty*bidw).rowSum())-log((offerQty*offerw).rowSum())
+ rv=sqrt(sum2(log(wap)-log(prev(wap))))
+ return avg(bas),avg(di[0]),avg(di[1]),avg(di[2]),avg(di[3]),avg(di[4]),avg(di[5]),avg(di[6]),avg(di[7]),avg(di[8]),avg(di[9]),avg(press),rv
 }
 
 /**
@@ -206,9 +206,9 @@ result1 = select
             matrix(BidOrderQty0,BidOrderQty1,BidOrderQty2,BidOrderQty3,BidOrderQty4,BidOrderQty5,BidOrderQty6,BidOrderQty7, BidOrderQty8,BidOrderQty9),
             matrix(OfferPrice0,OfferPrice1,OfferPrice2,OfferPrice3,OfferPrice4,OfferPrice5,OfferPrice6,OfferPrice7,OfferPrice8, OfferPrice9),
             matrix(OfferOrderQty0,OfferOrderQty1,OfferOrderQty2,OfferOrderQty3,OfferOrderQty4,OfferOrderQty5,OfferOrderQty6, OfferOrderQty7,OfferOrderQty8,OfferOrderQty9)) as `BAS`DI0`DI1`DI2`DI3`DI4`DI5`DI6`DI7`DI8`DI9`Press`RV
-		from snapshot
-		where date(TradeTime) between 2020.01.01 : 2020.12.31, SecurityID in stockList, (time(TradeTime) between 09:30:00.000 : 11:29:59.999) || (time(TradeTime) between 13:00:00.000 : 14:56:59.999)
-		group by SecurityID, interval( TradeTime, 10m, "none" ) as TradeTime map
+  from snapshot
+  where date(TradeTime) between 2020.01.01 : 2020.12.31, SecurityID in stockList, (time(TradeTime) between 09:30:00.000 : 11:29:59.999) || (time(TradeTime) between 13:00:00.000 : 14:56:59.999)
+  group by SecurityID, interval( TradeTime, 10m, "none" ) as TradeTime map
 ```
 
 通过矩阵化处理，代码大量减少，且在自定义聚合函数中已经可以比较容易的看出指标公式的计算代码，这将极大地方便后续公式定义和指标计算代码的修改。
@@ -224,6 +224,7 @@ result1 = select
 ### 3.3 高性能1：V2.00的TSDB存储和计算
 
 DolphinDB V2.00新增了TSDB存储引擎，在创建分区数据库和表时与OLAP存储引擎的不同之处是必须指定`engine`和`sortColumns`，创建语句如下：
+
 ```
 dbName = "dfs://snapshot_SH_L2_TSDB"
 tableName = "snapshot_SH_L2_TSDB"
@@ -255,16 +256,16 @@ DolphinDB从V2.00.4开始，分布式表的存储支持[数组向量（array vec
 part1: Define calculation function
 */
 defg featureEngine(bidPrice,bidQty,offerPrice,offerQty){
-	bas = offerPrice[0]\bidPrice[0]-1
-	wap = (bidPrice[0]*offerQty[0] + offerPrice[0]*bidQty[0])\(bidQty[0]+offerQty[0])
-	di = (bidQty-offerQty)\(bidQty+offerQty)
-	bidw=(1.0\(bidPrice-wap))
-	bidw=bidw\(bidw.rowSum())
-	offerw=(1.0\(offerPrice-wap))
-	offerw=offerw\(offerw.rowSum())
-	press=log((bidQty*bidw).rowSum())-log((offerQty*offerw).rowSum())
-	rv=sqrt(sum2(log(wap)-log(prev(wap))))
-	return avg(bas),avg(di[0]),avg(di[1]),avg(di[2]),avg(di[3]),avg(di[4]),avg(di[5]),avg(di[6]),avg(di[7]),avg(di[8]),avg(di[9]),avg(press),rv
+ bas = offerPrice[0]\bidPrice[0]-1
+ wap = (bidPrice[0]*offerQty[0] + offerPrice[0]*bidQty[0])\(bidQty[0]+offerQty[0])
+ di = (bidQty-offerQty)\(bidQty+offerQty)
+ bidw=(1.0\(bidPrice-wap))
+ bidw=bidw\(bidw.rowSum())
+ offerw=(1.0\(offerPrice-wap))
+ offerw=offerw\(offerw.rowSum())
+ press=log((bidQty*bidw).rowSum())-log((offerQty*offerw).rowSum())
+ rv=sqrt(sum2(log(wap)-log(prev(wap))))
+ return avg(bas),avg(di[0]),avg(di[1]),avg(di[2]),avg(di[3]),avg(di[4]),avg(di[5]),avg(di[6]),avg(di[7]),avg(di[8]),avg(di[9]),avg(press),rv
 }
 
 /**
@@ -279,10 +280,10 @@ snapshot = loadTable(dbName, tableName)
 part3: Execute SQL
 */
 result = select
-		featureEngine(BidPrice,BidOrderQty,OfferPrice,OfferOrderQty) as `BAS`DI0`DI1`DI2`DI3`DI4`DI5`DI6`DI7`DI8`DI9`Press`RV
-		from snapshot
-		where date(TradeTime) between 2020.01.01 : 2020.12.31, SecurityID in stockList, (time(TradeTime) between 09:30:00.000 : 11:29:59.999) || (time(TradeTime) between 13:00:00.000 : 14:56:59.999)
-		group by SecurityID, interval( TradeTime, 10m, "none" ) as TradeTime map
+  featureEngine(BidPrice,BidOrderQty,OfferPrice,OfferOrderQty) as `BAS`DI0`DI1`DI2`DI3`DI4`DI5`DI6`DI7`DI8`DI9`Press`RV
+  from snapshot
+  where date(TradeTime) between 2020.01.01 : 2020.12.31, SecurityID in stockList, (time(TradeTime) between 09:30:00.000 : 11:29:59.999) || (time(TradeTime) between 13:00:00.000 : 14:56:59.999)
+  group by SecurityID, interval( TradeTime, 10m, "none" ) as TradeTime map
 ```
 
 使用TSDB的array vector进行数据存储，在性能上相较于TSDB的分列存储提升不明显，但是代码更加精简，方便后期的修改和维护。
@@ -361,8 +362,6 @@ TSDB存储引擎设置了```sortColumns=`SecurityID`TradeTime```，对同一个`
 * TSDB存储引擎的做法是将同一个`SecurityID`在同一个LevelFile里的全部数据一起压缩存储，并且指定一个时间区间以供查询，而这个时间区间内的数据只占据了这个`SecurityID`所有数据的一小部分。在本案例中，同一个`SecurityID`的数据根据`sortColumns`最后一列`TradeTime`排序，并将数据拆成一定大小（默认为16KB）的数据块（block）来存储。在读取数据的时候，TSDB根据查询语句中的股票列和时间列过滤条件先快速定位到满足过滤条件的数据块，再将这些数据块读到内存里进行解压，而这些数据块通常只占所有数据的一小部分，这样就可以大大提升查询的效率。
 
 ![](./images/sql_performance_optimization_wap_di_rv/levelFileBlock.png)
-
-
 
 ### 4.4 小结
 

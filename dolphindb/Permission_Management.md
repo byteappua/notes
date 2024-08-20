@@ -18,6 +18,7 @@ DolphinDB 在 1.30.21 和 2.00.9 版本中对权限管理主要做了如下升�
 - 支持在数据节点执行权限相关函数
 
 **目录**：
+
 - [1.角色](#1角色)
   - [1.1 角色分类](#11-角色分类)
   - [1.2 角色管理](#12-角色管理)
@@ -47,8 +48,6 @@ DolphinDB 在 1.30.21 和 2.00.9 版本中对权限管理主要做了如下升�
   - [7.1 使用 HTTPS 配置](#71-使用-https-配置)
   - [7.2 HTTPS 证书设置](#72-https-证书设置)
 - [8. 支持 SSO (Single Sign On)](#8-支持-sso-single-sign-on)
-
-
 
 ## 1.角色
 
@@ -194,10 +193,8 @@ grant命令：授予某个用户或某个用户组各类权限：
 grant(`user2, DBOBJ_CREATE,"*") 
 getUserAccess("user2")
 ```
+
 <img src="./images/Permission_Management/2_1.png" width=75%>
-
-
-
 
 revoke命令:撤销某个用户或某个组的之前被赋予或禁止的权限：
 
@@ -205,18 +202,17 @@ revoke命令:撤销某个用户或某个组的之前被赋予或禁止的权限�
 revoke(`user2, DBOBJ_CREATE,"*")
 getUserAccess("user2")
 ```
+
 <img src="./images/Permission_Management/2_2.png" width=75%>
   
-
 deny命令:拒绝某个用户或某个组的权限：
 
 ```
 deny(`user2, DBOBJ_CREATE,"*") 
 getUserAccess("user2")
 ```
+
 <img src="./images/Permission_Management/2_3.png" width=75%>
-
-
 
 ## 3. 权限确定规则
 
@@ -456,8 +452,6 @@ getUserAccess("user1")//TABLE_READ 依旧是 deny
 
 <img src="./images/Permission_Management/3_1.png" width=75%>
 
-  
-
 **例7**： 先对用户 user1 `deny` 全局的 TABLE_READ 权限，然后 `grant` "dfs://test/pt" 表 TABLE_READ 权限，1.30.21 和 2.00.9版本前，此时 user1 被赋予读 "dfs://test/pt" 表的权限，被拒绝其他所有表的 TABLE_READ 权限，而新版本则在执行 `grant` 的时候抛出异常：
 
 ```
@@ -486,7 +480,7 @@ select * from loadTable(dbName, "pt1")//老版本没有读其他表的权限
 
 1.30.21 和 2.00.9 版本前，如果某个用户对两张不同表分别 `grant` 和 `deny`  相同的表层面权限（TABLE_READ 或 TABLE_WRITE），升级到新版本后该用户会拥有除 `deny` 的表以外所有表的该权限。举例如下：
 
-1.30.21 和 2.00.9 版本以前，使用 `grant`` 命令赋予或使用 `deny`` 命令禁用用户 'user1'不同表对象的 TABLE_READ 权限后，'user1' 将只有 "dfs://valuedb/pt1" 表的读权限：
+1.30.21 和 2.00.9 版本以前，使用 `grant`` 命令赋予或使用`deny`` 命令禁用用户 'user1'不同表对象的 TABLE_READ 权限后，'user1' 将只有 "dfs://valuedb/pt1" 表的读权限：
 
 ```
 login("admin","123456")
@@ -547,7 +541,7 @@ grant("user1", DB_OWNER,"*")//用户拥有所有数据库的 DB_OWNER 权限
 grant("user1", DB_OWNER,"dfs://test0*")//用户拥有以 "dfs://test0" 为前缀的数据库 DB_OWNER 权限
 ```
 
-4. 1.30.21 和 2.00.9 版本起，accessType=DB_MANAGE 时，使用 `grant `/ `deny` / `revoke` 命令需确保 objs 中指定的数据库已存在,否则将报错：
+4. 1.30.21 和 2.00.9 版本起，accessType=DB_MANAGE 时，使用 `grant`/ `deny` / `revoke` 命令需确保 objs 中指定的数据库已存在,否则将报错：
 
 ```
 login("admin", "123456")
@@ -606,7 +600,6 @@ getUserAccess("user1")
 
 <img src="./images/Permission_Management/4_1.png" width=47%>
 
-
 ```
 login("admin", "123456")
 if(existsDatabase(dbName)){
@@ -620,7 +613,6 @@ getUserAccess("user1")
 此时 user1 用户的 DB_MANAGE 权限被回收。
 
 <img src="./images/Permission_Management/4_2.png" width=47%>
-
 
 **例3**： "u1" 用户拥有流表 "trades"、"output1" 和流引擎 "agg1" 的读写权限：
 
@@ -640,7 +632,6 @@ getUserAccess(`u1)
 ```
 
  <img src="./images/Permission_Management/4_3.png" width=75%>
-
 
 重启或删除并创建同名流表 "trades"、"output1" 和流引擎 "agg1"，此时三个对象都没有访问控制，任何用户可以对其进行读写：
 
@@ -1094,7 +1085,7 @@ select * from loadTable(dbName,`pt)
 
 ```
 def countTradeAll(){  
-	return exec count(*) from loadTable("dfs://TAQ","Trades")  
+ return exec count(*) from loadTable("dfs://TAQ","Trades")  
 }
 addFunctionView(countTradeAll)  
 grant("NickFoles",VIEW_EXEC,"countTradeAll")  
@@ -1114,7 +1105,7 @@ countTradeAll()
 
 ```
 def getTrades(s, d){
-	return select * from loadTable("dfs://TAQ","Trades") where sym=s, date=d
+ return select * from loadTable("dfs://TAQ","Trades") where sym=s, date=d
 }
 addFunctionView(getTrades)
 grant("NickFoles",VIEW_EXEC,"getTrades")  
@@ -1130,14 +1121,14 @@ getTrades("IBM", 2018.07.09)
 
 定时作业是指用户指定在特定的时间，以特定的频率执行一系列任务，多用于批处理类业务场景。
 
-- 当用户创建定时作业（函数 ` scheduleJob`）时，若作业中包含库/表的读写或修改操作，不需要具备相关的权限也能成功创建。但执行定时作业时，需要具备与对象相关的权限，否则无法执行
+- 当用户创建定时作业（函数 `scheduleJob`）时，若作业中包含库/表的读写或修改操作，不需要具备相关的权限也能成功创建。但执行定时作业时，需要具备与对象相关的权限，否则无法执行
 - 系统管理员可以 `deleteScheduledJob` 删除其他用户定时作业，非管理员用户只能删除自己创建的定时作业
 
 ```
 login("NickFoles","AB123!@")  
 def readTable(){
-	read_t1=loadTable("dfs://db1","t1")  
-	return exec count(*) from read_t1  
+ read_t1=loadTable("dfs://db1","t1")  
+ return exec count(*) from read_t1  
 }
 scheduleJob("readTableJob","read DFS table",readTable,minute(now()),date(now()),date(now())+1,'D');
 ```
@@ -1172,7 +1163,7 @@ test("test.txt")
 
 ### 6.7 内存限制权限
 
-`grant` 指定 *accessType* = QUERY_RESULT_MEM_LIMIT 来限制某个用户查询返回结果的内存上限和 *accessType* = TASK_GROUP_MEM_LIMIT 限制发送的批量子查询占用的内存上限，等同于 `setMemLimitOfQueryResult` 函数和 `setMemLimitOfTaskGroupResult` 函数，区别在于 `grant` 只对指定用户生效（暂不支持用户组），`setMemLimitOfQueryResult `函数和  `setMemLimitOfTaskGroupResult `函数对所有用户生效。
+`grant` 指定 *accessType* = QUERY_RESULT_MEM_LIMIT 来限制某个用户查询返回结果的内存上限和 *accessType* = TASK_GROUP_MEM_LIMIT 限制发送的批量子查询占用的内存上限，等同于 `setMemLimitOfQueryResult` 函数和 `setMemLimitOfTaskGroupResult` 函数，区别在于 `grant` 只对指定用户生效（暂不支持用户组），`setMemLimitOfQueryResult`函数和  `setMemLimitOfTaskGroupResult`函数对所有用户生效。
 
 下述脚本限制用户 “AlexSmith” 查询时，查询结果所占用的内存大小不能超过 4 GB：
 
@@ -1205,11 +1196,11 @@ DolphinDB 提供两种配置 HTTPS 的方法：
 
 DolphinDB 使用服务端证书验证的安全策略。默认情况下，会生成自制证书，客户需要安装服务端的证书，否则浏览器提示不安全连接。在集群环境中，每个节点分布在不同的物理机器上，每台物理 server 需要一份证书，因此控制节点和代理节点需要生成证书，数据节点使用同一个物理服务器上代理节点生成的证书。用户也可购买经过第三方认证的证书。
 
-#### 7.2.1 第三方认证证书 
+#### 7.2.1 第三方认证证书
 
 将第三方证书重命名为 server.crt，并且拷贝到控制节点和代理节点的 *home* 目录下的 *keys* 文件夹中，若 *keys* 文件夹不存在，则需手动创建。由于第三方证书经过公认的权威授权机构颁布，所以浏览器默认信任该证书，不需要再手动安装。绝大部分应用场景适合使用此方式。
 
-#### 7.2.2 安装自制证书 
+#### 7.2.2 安装自制证书
 
 在小型封闭集群内部通信时，用户也可以使用自制证书进行 OPENSSL 安全通信，具体过程如下:
 
@@ -1225,7 +1216,7 @@ DolphinDB 使用服务端证书验证的安全策略。默认情况下，会生�
 
 > 在Google Chrome，选择 设置->隐私和安全->安全->管理设备证书->Import，把 *server.crt* 导入。
 
-在浏览器地址栏中输入 "https://www.ABCD.com:8500/" 连接到 DolphinDB集群管理器，其中 8500 是控制节点的端口。
+在浏览器地址栏中输入 "<https://www.ABCD.com:8500/>" 连接到 DolphinDB集群管理器，其中 8500 是控制节点的端口。
 
 ## 8. 支持 SSO (Single Sign On)
 

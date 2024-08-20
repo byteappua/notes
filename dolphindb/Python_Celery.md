@@ -5,10 +5,7 @@
 - 因子数据量的增长以及 Python 作为计算平台导致的性能瓶颈问题
 - 传统的计算平台框架如何无缝替换问题
 
- 
-
 本教程聚焦于因子批量化计算这一实际业务场景，将 DolphinDB 作为一个核心的计算工具引入到传统的因子平台。以DolphinDB 为核心的因子计算平台包括：数据同步模块、因子批计算模块和因子调度模块。其中 dataX 作为数据同步工具，负责将原始数据以及增量数据从关系数据库同步存储到 DolphinDB 中；DolphinDB 作为因子计算与存储模块；Celery 作为任务调度框架模块。DolphinDB 因子计算平台，可以为业务部门提供即时的因子计算服务、大数据批计算服务以及历史因子查询服务等。引入DolphinDB后，既能满足高中低频因子计算的要求，又有丰富的API以及ETL工具实现无缝集成。下文以 WorldQuant 101 Alpha 因子指标库中的1号因子 `WQAlpha1` 为例来展现出整个因子计算平台的构建流程。
-
 
 - [1. 总体架构](#1-总体架构)
   - [1.1 SQL Server 概述](#11-sql-server-概述)
@@ -23,7 +20,6 @@
   - [3.4 Celery 框架触发 DolphinDB 预定义函数计算](#34-celery-框架触发-dolphindb-预定义函数计算)
 - [4. 总结](#4-总结)
 - [附件](#附件)
-
 
 ## 1. 总体架构
 
@@ -151,7 +147,7 @@
   dbName = "dfs://tick_close"
   tbName = "tick_close"
   if(existsDatabase(dbName)){
-  	dropDatabase(dbName)
+   dropDatabase(dbName)
   }
   db = database(dbName, RANGE, date(datetimeAdd(2000.01M,0..50*12,'M')))
   name = `SecurityID`TradeDate`Value
@@ -229,14 +225,14 @@
   
   ```
 
-  注：本教程涉及到的数据同步仅为历史数据的全量同步，在实际过程中如果有增量同步等的需要，在 `writer` 配置中要增加 `saveFunctionName ` 和 `saveFunctionDef` 两个配置，具体用法可以参考[ 基于 DataX 的 DolphinDB 数据导入工具](https://gitee.com/dolphindb/datax-writer)。
+  注：本教程涉及到的数据同步仅为历史数据的全量同步，在实际过程中如果有增量同步等的需要，在 `writer` 配置中要增加 `saveFunctionName` 和 `saveFunctionDef` 两个配置，具体用法可以参考[基于 DataX 的 DolphinDB 数据导入工具](https://gitee.com/dolphindb/datax-writer)。
 
 - **执行数据导入命令：**
 
   进入 dataX 的 `bin` 目录下，分别执行如下命令向 DolphinDB 的 `tick_close` 数据表中导入数据：
 
   ```
-  $ python datax.py ../conf/tick_close.json
+  python datax.py ../conf/tick_close.json
   ```
 
   参数解释：
@@ -270,15 +266,15 @@
    */
   use wq101alpha
   defg get_alpha1(security_id, begin_date, end_date){
-  	if (typestr(security_id) == 'STRING VECTOR' && typestr(begin_date) == `DATE && typestr(end_date) == `DATE){
-  	tick_list = select * from loadTable("dfs://tick_close", "tick_close") where TradeDate >= begin_date and TradeDate <= end_date and SecurityID in security_id
-  	alpha1_list=WQAlpha1(panel(tick_list.TradeDate, tick_list.SecurityID, tick_list.Value))
-  	return table(alpha1_list.rowNames() as TradeDate, alpha1_list)
-  	}
-  	else {
-  		print("What you have entered is a wrong type")
-  		return `NULLValue
-  	}
+   if (typestr(security_id) == 'STRING VECTOR' && typestr(begin_date) == `DATE && typestr(end_date) == `DATE){
+   tick_list = select * from loadTable("dfs://tick_close", "tick_close") where TradeDate >= begin_date and TradeDate <= end_date and SecurityID in security_id
+   alpha1_list=WQAlpha1(panel(tick_list.TradeDate, tick_list.SecurityID, tick_list.Value))
+   return table(alpha1_list.rowNames() as TradeDate, alpha1_list)
+   }
+   else {
+    print("What you have entered is a wrong type")
+    return `NULLValue
+   }
   }
   ```
 
@@ -292,7 +288,7 @@
 | begin_date  | 区间开始日期 | DATE            |                              | 是       |
 | end_date    | 区间结束日期 | DATE            |                              | 是       |
 
-- 返回参数：        
+- 返回参数：
 
 | 字段        | 说明                                 | 类型(dolphindb) | 备注                                           |
 | :---------- | :----------------------------------- | :-------------- | :--------------------------------------------- |
@@ -311,7 +307,7 @@
   本节介绍如何构建一个基于 Celery 框架的项目，本教程所使用的 Celery 安装方式是 `pip` 命令，登录机器执行如下命令。用户也可以使用其它安装方法：
 
   ```
-  $ pip install celery==4.3.0 && pip install redis==3.2.0
+  pip install celery==4.3.0 && pip install redis==3.2.0
   ```
 
   注：如果出现诸如 `TypeError: __init__() got an unexpected keyword argument 'username'` 类似的错误，说明安装 Celery 框架同时安装的组件 kombu 库的版本出了问题，建议卸载掉原有版本的库，执行 `pip3 install kombu==5.1.0` 安装 `5.1.0` 版本的库。
@@ -319,7 +315,7 @@
   安装好所需库后，在特定目录下执行如下命令构建项目目录架构和所需文件：
 
   ```
-  $ mkdir celery_project && touch celery_project/tasks.py celery_project/app.py
+  mkdir celery_project && touch celery_project/tasks.py celery_project/app.py
   ```
 
   执行 `tree ./celery_project` 命令查看项目目录结构如下：
@@ -370,7 +366,7 @@
     )
     ```
 
-    注：由于在本次计算过程中涉及到 `datetime` 和 `DataFrame` 格式数据的传递和返回，而 Celery 默认的序列化方式 `json` 无法支持这类数据的序列化，因此要设置 `task_serializer`、`accept_content`、`result_serializer `三个参数设置指定序列化方式为 `pickle` 。
+    注：由于在本次计算过程中涉及到 `datetime` 和 `DataFrame` 格式数据的传递和返回，而 Celery 默认的序列化方式 `json` 无法支持这类数据的序列化，因此要设置 `task_serializer`、`accept_content`、`result_serializer`三个参数设置指定序列化方式为 `pickle` 。
 
     最后，将调用 DolphinDB 的预定义函数封装成一个函数以供调用，并添加 `@app.task()` 装饰器以说明执行的任务是可供 Celery 调用的异步任务：
 
@@ -400,7 +396,7 @@
   在命令行执行如下语句运行 Celery 框架的 `worker` 端：
 
   ```
-  $ celery -A tasks worker --loglevel=info
+  celery -A tasks worker --loglevel=info
   ```
 
   预期输出：
@@ -433,7 +429,7 @@
   由于使用该命令运行 `worker` 后会一直保持在交互模式，因此我们需要和机器建立一个新的会话，在进入Celery 项目目录后执行如下命令向 Celery 框架发送异步任务调用请求：
 
   ```
-  $ python3 app.py
+  python3 app.py
   ```
 
   预期输出：
@@ -533,7 +529,6 @@
 
 ## 附件
 
-- 原始数据文件： [tick_close.zip](data/Python_Celery/tick_close.zip) 
--  DolphinDB 脚本：[ddb_function.txt](script/Python_Celery) 
-- Celery项目：[celery_project](script/Python_Celery/celery_project) 
-
+- 原始数据文件： [tick_close.zip](data/Python_Celery/tick_close.zip)
+- DolphinDB 脚本：[ddb_function.txt](script/Python_Celery)
+- Celery项目：[celery_project](script/Python_Celery/celery_project)

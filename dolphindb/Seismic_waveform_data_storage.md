@@ -19,16 +19,15 @@
 - [7.1 参考文献](#71-参考文献)
 - [7.2 脚本运行顺序说明](#72-脚本运行顺序说明)
 
-
 # 1. 绪论
 
 波形数据的存储与实时流处理是地震预警、地震速报、地震烈度速报、震源机制解等数字地震台网综合处理系统的前提，合理的存储方案与高效的实时流处理架构能极大地节约存储成本、降低响应延时、方便震源分析。本篇教程会为有该方面需求的客户提供一个基于 DolphinDB 的地震波形数据存储及实时流处理的解决方案，助力用户降低存储成本、提升效率。
 
-## 1.1 行业背景 
+## 1.1 行业背景
 
 国家地震台网、区域地震台网和流动地震台网等组成的中国数字地震观测网络系统每天不间断地产生地震波行数据。该数据的原始形态是方便数据处理的，但为了进行归档和交换，必须进行统一的数据格式化，现使用的国际通用交换格式为 SEED。国家测震台网数据备份中心实时接收存储的地震波形数据始于 2007 年 8 月，至今数据量大约有 100TB 左右。随着地震台站数量和强震数据的不断增多，可以预见今后的测震数据增速会越来越快。
 
-现今大部分测震数据是以 SEED 文件格式或存储于盘阵内，或存储于光盘、移动硬盘等离线介质内，辅以数十张描述这些数据文件的关系型表，这些表遵从《中国数字测震台网数据规范》。有数据分析需求的研究人员通过网络等方式进行数据申请，数据服务方按照请求进行波形数据的截取和打包，并发送给研究员。 
+现今大部分测震数据是以 SEED 文件格式或存储于盘阵内，或存储于光盘、移动硬盘等离线介质内，辅以数十张描述这些数据文件的关系型表，这些表遵从《中国数字测震台网数据规范》。有数据分析需求的研究人员通过网络等方式进行数据申请，数据服务方按照请求进行波形数据的截取和打包，并发送给研究员。
 
 传统模式下的地震波形数据存储较为分散，一次能处理的数据长度有限，分析应用的流程冗长，因此并不能有效支撑大规模的数据查询、分析、计算和可视化服务。
 
@@ -81,8 +80,6 @@ DolphinDB 解决方案架构图如下：
 
  <img src="./images/Seismic_waveform_data_storage/2_1.png" width=60%>
 
- 
-
 架构说明如下：
 
 - MiniSeed 文件解析：DolphinDB 通过自研的 MiniSeed 插件可以将 MiniSeed 文件解析为结构化数据，解析结果包含两部分内容，一部分是采样信息，包含采样时间、采样值、MiniSeed 文件块 id；另一部分是 MiniSeed 文件块信息，包含文件块 id、采样时间、解析时间、解析数据总条数、MiniSeed 采样频率等。
@@ -95,7 +92,6 @@ DolphinDB 解决方案架构图如下：
 # 3. 存储方案设计
 
 存储方案与数据的写入、查询、更新、删除常见操作密切相关，合理的存储方案能极大地提升效率，并且在一定程度上节约硬件资源。因此，在实施整个解决方案之前，需先设计合理的的存储方案。常见的地震数据表结构如表 1 所示：
-
 
 <table class="tg">
 <caption align="bottom">表 1：常见地震数据表结构</caption>
@@ -188,8 +184,6 @@ DolphinDB 解决方案架构图如下：
 </tbody>
 </table>
 
-
-
 <table class="tg">
 <caption align="bottom">表 3 维度表结构</caption>
 <thead>
@@ -233,9 +227,6 @@ DolphinDB 解决方案架构图如下：
 </tbody>
 </table>
 
-
-
-
 ## 3.2 压缩算法设计
 
 对数据进行压缩时，不仅要考虑压缩率，还要兼顾解压速度。DolphinDB 内置 lz4 和 delta 两种压缩算法，根据不同类型的数据采用合适的压缩算法能极大地提升压缩率，降低存储成本。
@@ -272,9 +263,9 @@ MiniSeed 插件提供了 read、write、parse、parseStream 等接口，为 Mini
 if( existsDatabase("dfs://real") ){ dropDatabase("dfs://real") }
 create database "dfs://real" partitioned by VALUE(2023.03.01..2023.03.10), VALUE(1..3900), engine='TSDB'
 create table "dfs://real"."realData"(
-	id INT[compress="delta"],
-	ts TIMESTAMP[compress="delta"],
-	value INT[compress="delta"]
+ id INT[compress="delta"],
+ ts TIMESTAMP[compress="delta"],
+ value INT[compress="delta"]
 )
 partitioned by ts, id,
 sortColumns=[`id, `ts],
@@ -282,27 +273,27 @@ keepDuplicates=ALL
 
   //创建存储时延计算结果的分布式数据库和分区表
 if(existsDatabase("dfs://delay")){dropDatabase("dfs://delay")}
-create database "dfs://delay" partitioned by VALUE(2023.03.01..2023.03.10), HASH([INT, 10]), engine='TSDB'	
+create database "dfs://delay" partitioned by VALUE(2023.03.01..2023.03.10), HASH([INT, 10]), engine='TSDB' 
 create table "dfs://delay"."delayData"(
-	id INT[compress="delta"],
-	tagid SYMBOL,
-	startTime TIMESTAMP[compress="delta"],
-	receivedTime TIMESTAMP[compress="delta"],
-	delay INT[compress="delta"]
+ id INT[compress="delta"],
+ tagid SYMBOL,
+ startTime TIMESTAMP[compress="delta"],
+ receivedTime TIMESTAMP[compress="delta"],
+ delay INT[compress="delta"]
 )
 partitioned by startTime, id,
 sortColumns=[`id, `startTime],
-keepDuplicates=ALL			
+keepDuplicates=ALL   
 
   //创建存储台网、台站、位置、通道等基础信息的维度表 
 if(existsTable("dfs://real","tagInfo")){ dropTable(database("dfs://real"),"tagInfo") }
 create table "dfs://real"."tagInfo"(
-	id INT[compress="delta"],
-	net SYMBOL,
-	sta SYMBOL,
-	loc SYMBOL,
-	chn SYMBOL,
-	tagid SYMBOL
+ id INT[compress="delta"],
+ net SYMBOL,
+ sta SYMBOL,
+ loc SYMBOL,
+ chn SYMBOL,
+ tagid SYMBOL
 )
 sortColumns=[`id]
 
@@ -321,7 +312,7 @@ locList = take(`40,150)
 chn = take(tmp,150)
 colt =   array(STRING)
 for(i in 0..(chn.size()-1)){
-	colt.append!( chn[i].split()[0] + "_" + chn[i].split()[1] + "_" +chn[i].split()[2] )
+ colt.append!( chn[i].split()[0] + "_" + chn[i].split()[1] + "_" +chn[i].split()[2] )
 }
 tagid = "XFDSN:"+netList+"_"+staList+"_"+locList+"_"+colt
 t = table(1..150 as id,netList as net,staList as sta,locList as loc,chn,tagid)
@@ -343,12 +334,12 @@ pt.append!(t)
 unsubscribeTable(tableName = `dataStream,actionName = `append_data_into_dfs)
 unsubscribeTable(tableName = `dataStream,actionName = `abnormalDetect)
 unsubscribeTable(tableName = `metaStream,actionName = `calculate_delay)
-unsubscribeTable(tableName = `delayStream,actionName = `append_delay_into_dfs)	
+unsubscribeTable(tableName = `delayStream,actionName = `append_delay_into_dfs) 
 try{ dropStreamTable(`metaStream) }catch(ex){ print(ex) }
 try{ dropStreamTable(`dataStream) }catch(ex){ print(ex) }
 try{ dropStreamTable(`delayStream) }catch(ex){ print(ex) }
 try{ dropStreamEngine(`engine) }catch(ex){ print(ex) }
-try{ dropStreamTable(`abnormalStream) }catch(ex){ print(ex) }	
+try{ dropStreamTable(`abnormalStream) }catch(ex){ print(ex) } 
 
   //创建建立接收实时流数据的流数据表
 st1 = streamTable(1000000:0,`id`tagid`startTime`receivedTime`actualCount`expectedCount`sampleRate,[INT,SYMBOL,TIMESTAMP,TIMESTAMP,INT,INT,DOUBLE])
@@ -362,7 +353,6 @@ enableTableShareAndPersistence(table=st4, tableName=`abnormalStream, asynWrite=t
 ```
 
 dataStream 表结构见表 2，metaStream、delayStream、abnormalStream 表结构分别见表 4、表 5、表 6。
-
 
 <table class="tg">
 <caption align="bottom">表 4 metaStream 表结构</caption>
@@ -412,7 +402,6 @@ dataStream 表结构见表 2，metaStream、delayStream、abnormalStream 表结�
 </tbody>
 </table>
 
-
 <table class="tg">
 <caption align="bottom">表 5 delayStream 表结构</caption>
 <thead>
@@ -451,7 +440,6 @@ dataStream 表结构见表 2，metaStream、delayStream、abnormalStream 表结�
 </tbody>
 </table>
 
-
 <table class="tg">
 <caption align="bottom">表 6 abnormalStream 表结构</caption>
 <thead>
@@ -485,30 +473,28 @@ dataStream 表结构见表 2，metaStream、delayStream、abnormalStream 表结�
 </tbody>
 </table>
 
-
-
 ## 4.3 MiniSeed 实时流模拟
 
 调用 MiniSeed 插件的 `write` 函数向 MiniSeed 文件写入采样数据，模拟地震计源源不断地生成 MiniSeed 实时流过程。以下代码以 `submitJob` 提交任务的形式模拟通道“ZJ_A0001_40_E_I_E”一直往 Miniseed 文件写入实时流数据的场景。
 
 ```
 def writeMseed(){
-	/*
-	 * Description：
-	 * 	此函数用于模拟实际生产环境中，每3s向台网中心发送 MiniSeed 数据包的过程，即每隔3s向 aimPath 路径上的 MiniSeed 文件写数据
-	 */
-	sid = "XFDSN:ZJ_A0001_40_E_I_E"
-	aimPath = "../streamMiniSeed/ZJ_A0001_40_E_I_E.20000101.mseed"
-	sampleRate = 100
-	cnt = 0
-	do{
-		startTime = now()
-		mseed::write(aimPath, sid, startTime, sampleRate, rand(-3000..500,300))
-		sleep(3000)
-		cnt += 1
-	}while(cnt < 40)	
+ /*
+  * Description：
+  *  此函数用于模拟实际生产环境中，每3s向台网中心发送 MiniSeed 数据包的过程，即每隔3s向 aimPath 路径上的 MiniSeed 文件写数据
+  */
+ sid = "XFDSN:ZJ_A0001_40_E_I_E"
+ aimPath = "../streamMiniSeed/ZJ_A0001_40_E_I_E.20000101.mseed"
+ sampleRate = 100
+ cnt = 0
+ do{
+  startTime = now()
+  mseed::write(aimPath, sid, startTime, sampleRate, rand(-3000..500,300))
+  sleep(3000)
+  cnt += 1
+ }while(cnt < 40) 
 }
-	
+ 
 
 mseedStreamJobid = submitJob("wrtieMseedStream","wrtieMseedStream",witeMseed) //提交后台任务
 /*
@@ -523,30 +509,30 @@ mseedStreamJobid = submitJob("wrtieMseedStream","wrtieMseedStream",witeMseed) //
 
 ```
 def writeMseed(filePath,sid,startTime,sampleRate,valueList){
-	/*
-	 * Description：
-	 * 	此函数用于将一段连续的采样值写入到 MiniSeed 文件
-	 * Input：
-	 * 	filePath：STRING MiniSeed 文件存储路径
-	 * 	sid：STRING 文件块id 
-	 * 	startTime：TIMESTAMP 开始时间
-	 * 	sampleRate：DOUBLE 采样频率
-	 * 	valueList：INT VECTOR 采样值向量
-	 */
-	mseed::write(filePath, sid, startTime, sampleRate, take(valueList,8639999))
+ /*
+  * Description：
+  *  此函数用于将一段连续的采样值写入到 MiniSeed 文件
+  * Input：
+  *  filePath：STRING MiniSeed 文件存储路径
+  *  sid：STRING 文件块id 
+  *  startTime：TIMESTAMP 开始时间
+  *  sampleRate：DOUBLE 采样频率
+  *  valueList：INT VECTOR 采样值向量
+  */
+ mseed::write(filePath, sid, startTime, sampleRate, take(valueList,8639999))
 }
 
 def parallelWrite(){
-	/*
-	 * Description：
-	 * 	此函数用于多线程 写 MiniSeed 文件
-	 */
-	realDbName,dtName = "dfs://real","tagInfo"
-	filePathList = exec "../miniSeed/"+net+"."+sta+"."+loc+"."+chn+"."+"20230302.mseed" from loadTable(realDbName,dtName)
-	sidList = exec tagid from loadTable(realDbName,dtName)
-	startTime = 2023.03.02T00:00:00.000
-	sampleRate = 100
-	ploop(writeMseed{,,startTime,sampleRate, rand(-3000..500,300)},filePathList,sidList)
+ /*
+  * Description：
+  *  此函数用于多线程 写 MiniSeed 文件
+  */
+ realDbName,dtName = "dfs://real","tagInfo"
+ filePathList = exec "../miniSeed/"+net+"."+sta+"."+loc+"."+chn+"."+"20230302.mseed" from loadTable(realDbName,dtName)
+ sidList = exec tagid from loadTable(realDbName,dtName)
+ startTime = 2023.03.02T00:00:00.000
+ sampleRate = 100
+ ploop(writeMseed{,,startTime,sampleRate, rand(-3000..500,300)},filePathList,sidList)
 }
 
 submitJob("writeMseed","writeMseed",parallelWrite)
@@ -558,32 +544,32 @@ submitJob("writeMseed","writeMseed",parallelWrite)
 
 ```
 def parseAndImportIntoDfs(realDbName,realTbNname,dtName,tagInfo,fileParse){
-	/*
-	 * Description：
-	 * 	此函数用于解析 miniSeed 文件，并将结构化数据存入分布式数据库
-	 * Input：
-	 * 	realDbName,realTbNname,dtNam：STRING 
-	 * 	tagInfo：dict 键为台网、台站、位置通道拼接起的字符串，值为对应的 id
-	 * 	fileParse：STRING 解析的miniSeed文件存储路径
-	 */
-	ret = mseed::parseStream(file(fileParse).readBytes(30000000))
-	data = ret[`data]
-	data.replaceColumn!(`id,tagInfo[data.id])
-	delete from data where id = NULL
-	pt = loadTable(realDbName,realTbNname)
-	pt.append!(data)	 	
+ /*
+  * Description：
+  *  此函数用于解析 miniSeed 文件，并将结构化数据存入分布式数据库
+  * Input：
+  *  realDbName,realTbNname,dtNam：STRING 
+  *  tagInfo：dict 键为台网、台站、位置通道拼接起的字符串，值为对应的 id
+  *  fileParse：STRING 解析的miniSeed文件存储路径
+  */
+ ret = mseed::parseStream(file(fileParse).readBytes(30000000))
+ data = ret[`data]
+ data.replaceColumn!(`id,tagInfo[data.id])
+ delete from data where id = NULL
+ pt = loadTable(realDbName,realTbNname)
+ pt.append!(data)   
 }
 
 def parallelInToDfs(realDbName,realTbNname,dtName,tagInfo,filePathList){
-	/*
-	 * Description：
-	 * 	此函数用于并行解析 MiniSeed 文件，并存入分布式数据库
-	 * Input：
-	 * 	realDbName,realTbNname,dtName：均为 STRING 类型常量，分别代表分布式数据库名、分区表名、维度表名
-	 * 	tagInfo：dict 键为由台网、台站、位置、通道组成的字符串，值为对应的id
-	 * 	filePathList：STRING VECTOR 需要解析的MiniSeed文件路径向量
-	 */
-	ploop(parseAndImportIntoDfs{realDbName,realTbNname,dtName,tagInfo,},filePathList)
+ /*
+  * Description：
+  *  此函数用于并行解析 MiniSeed 文件，并存入分布式数据库
+  * Input：
+  *  realDbName,realTbNname,dtName：均为 STRING 类型常量，分别代表分布式数据库名、分区表名、维度表名
+  *  tagInfo：dict 键为由台网、台站、位置、通道组成的字符串，值为对应的id
+  *  filePathList：STRING VECTOR 需要解析的MiniSeed文件路径向量
+  */
+ ploop(parseAndImportIntoDfs{realDbName,realTbNname,dtName,tagInfo,},filePathList)
 }
 
 realDbName,realTbNname,dtName = "dfs://real","realData","tagInfo"
@@ -592,8 +578,8 @@ filePathListGroup = cut(filePathList,48)
 d = exec tagid,id from loadTable(realDbName,dtName)
 tagInfo=dict(d[`tagid],d[`id])
 for(i in 0..(filePathListGroup.size()-1)){
-	submitJobEx("parse_mseed_into_dfs"+string(i),"parse_mseed_into_dfs"+string(i),i%10,48,parallelInToDfs,realDbName,realTbNname,dtName,tagInfo,filePathListGroup[i])
-}	
+ submitJobEx("parse_mseed_into_dfs"+string(i),"parse_mseed_into_dfs"+string(i),i%10,48,parallelInToDfs,realDbName,realTbNname,dtName,tagInfo,filePathListGroup[i])
+} 
 ```
 
 将历史数据解析入库并强制刷盘后，观察磁盘空间占用，其磁盘空间占用大小为 1.23GB，观察原始 MiniSeed 文件大小为 3.12GB，由此可见，MiniSeed 文件解压后存储为结构化数据的体积大大减少了。
@@ -609,7 +595,6 @@ for(i in 0..(filePathListGroup.size()-1)){
 ## 5.1 实时流数据解析
 
 调用 MiniSeed 插件的 `parseStream` 函数解析 4.3 节模拟的 MiniSeed 实时流，结果注入 dataStream、metaStream。dataStream、metaStream 接收到的数据如表 7、表 8 所示
-
 
 <table class="tg">
     <caption align="bottom">表 7 dataStream 表示例</caption>
@@ -653,7 +638,6 @@ for(i in 0..(filePathListGroup.size()-1)){
   </tr>
 </tbody>
 </table>
-
 
 <table class="tg">
     <caption align="bottom">表 8 metaStream 示例</caption>
@@ -719,41 +703,39 @@ for(i in 0..(filePathListGroup.size()-1)){
 </tbody>
 </table>
 
-
-
 以下代码以 `submitJob` 的方式提交了解析波形实时流数据的任务，`streamSimulate` 函数代码见[附录 7.2](#72-脚本运行顺序说明)：
 
 ```
 def streamSimulate(meta,data,tagInfo){
-	/*
-	 * Description：
-	 * 	此函数用于接收 MiniSeed 实时流文件，并将其解析为结构化数据，存入流数据表中   
-	 * Input：
-	 * 	meta：stream TABLE   存放 meta 数据的流表   
-	 * 	data：stream TABLE  存放采样数据的流表  
-	 * 	tagInfo：dict   tagid 和 id 映射的字典     
-	 */
-	ret = mseed::parseStream(file("../streamMiniSeed/ZJ_A0001_40_E_I_E.20000101.mseed").readBytes(30000000))
-	data_num_row = ret[`data].size()
-	meta_num_row = ret[`metaData].size()
-	do{
-		ret = mseed::parseStream(file("../streamMiniSeed/ZJ_A0001_40_E_I_E.20000101.mseed").readBytes(30000000))
-		if(ret[`data].size() > data_num_row){
-			now_data_num_row = ret[`data].size()
-			now_meta_num_row = ret[`metaData].size()
-			qdata = ret[`data][data_num_row:now_data_num_row]
-			qmeta= ret[`metaData][meta_num_row:now_meta_num_row]
-			data_num_row = now_data_num_row
-			meta_num_row = now_meta_num_row
-			tmp = tagInfo[qmeta.id]
-			qdata.replaceColumn!(`id,tagInfo[qdata.id])
-			qmeta = select tmp as ids ,* from qmeta
-			delete from qdata where id = NULL
-			delete from qmeta where ids = NULL
-			objByName(data).append!(qdata)
-			objByName(meta).append!(qmeta)
-		}
-	}while(true)
+ /*
+  * Description：
+  *  此函数用于接收 MiniSeed 实时流文件，并将其解析为结构化数据，存入流数据表中   
+  * Input：
+  *  meta：stream TABLE   存放 meta 数据的流表   
+  *  data：stream TABLE  存放采样数据的流表  
+  *  tagInfo：dict   tagid 和 id 映射的字典     
+  */
+ ret = mseed::parseStream(file("../streamMiniSeed/ZJ_A0001_40_E_I_E.20000101.mseed").readBytes(30000000))
+ data_num_row = ret[`data].size()
+ meta_num_row = ret[`metaData].size()
+ do{
+  ret = mseed::parseStream(file("../streamMiniSeed/ZJ_A0001_40_E_I_E.20000101.mseed").readBytes(30000000))
+  if(ret[`data].size() > data_num_row){
+   now_data_num_row = ret[`data].size()
+   now_meta_num_row = ret[`metaData].size()
+   qdata = ret[`data][data_num_row:now_data_num_row]
+   qmeta= ret[`metaData][meta_num_row:now_meta_num_row]
+   data_num_row = now_data_num_row
+   meta_num_row = now_meta_num_row
+   tmp = tagInfo[qmeta.id]
+   qdata.replaceColumn!(`id,tagInfo[qdata.id])
+   qmeta = select tmp as ids ,* from qmeta
+   delete from qdata where id = NULL
+   delete from qmeta where ids = NULL
+   objByName(data).append!(qdata)
+   objByName(meta).append!(qmeta)
+  }
+ }while(true)
 }
 
 meta,data= "metaStream","dataStream"
@@ -780,12 +762,12 @@ subscribeTable([server],tableName,[actionName],[offset=-1],handler,[msgAsTable=f
 
 ```
 def calDelay(msg){
-	/*
-	 * msg：数据流
-	 * delayTableName：时延结果流数据表
-	 */
-	t = select first(id) as id,first(tagid) as tagid,last(startTime) as startTime,receivedTime,last((receivedTime+8*60*60*1000+3000)-(startTime+(actualCount-1)*10)) as delay from msg group by receivedTime
-	objByName(`delayStream).append!(t) 	
+ /*
+  * msg：数据流
+  * delayTableName：时延结果流数据表
+  */
+ t = select first(id) as id,first(tagid) as tagid,last(startTime) as startTime,receivedTime,last((receivedTime+8*60*60*1000+3000)-(startTime+(actualCount-1)*10)) as delay from msg group by receivedTime
+ objByName(`delayStream).append!(t)  
 }
 ```
 
@@ -798,7 +780,6 @@ receivedTime-(startTime+(actualCount)*10)
 举例说明：receivedTime 为"2023.03.09T12:33:03.995"，startTime 为"2023.03.09T12:33:00.984"，actualCount 为 300，则该 MiniSeed 文件块的时延为 2023.03.09T12:33:03.995-(2023.03.09T12:33:00.984+300*10) = 11ms。
 
 然后，再通过 `subscribeTable` 函数订阅 metaStream，将计算结果注入 delayStream，实现时延计算。时延计算结果示例如表 9 所示：
-
 
 <table class="tg">
     <caption align="bottom">表 9 delayStream 示例</caption>
@@ -857,8 +838,6 @@ receivedTime-(startTime+(actualCount)*10)
 </tbody>
 </table>
 
-
-
 ### **5.2.3 异常告警**
 
 DolphinDB 内置异常告警引擎 `createAnomalyDetectionEngine`，其调用方式如下：
@@ -877,9 +856,6 @@ createAnomalyDetectionEngine(name,metrics,dummyTable,outputTable,timeColumn,[key
 即，3 秒长度的时间窗口内，若采样数据最大值大于 300 或采样数据最小值小于 -2500，则告警。
 
 然后通过 `subscribeTable` 函数订阅 dataStream，将告警结果注入 abnormalStream，实现异常告警。异常告警结果示例如表 10 所示：
-
-
-
 
 <table class="tg">
     <caption align="bottom">表 10 abnormalStream 示例</caption>
@@ -933,7 +909,7 @@ subscribeTable(tableName=`delayStream , actionName="append_delay_into_dfs", offs
 //建立异常告警引擎，设置告警规则
 engine = createAnomalyDetectionEngine(name="engine", metrics=<[max(data)>= 300,min(data)<=-2500]>, dummyTable=objByName(`dataStream), outputTable=objByName(`abnormalStream), timeColumn=`ts, keyColumn=`id, windowSize =3000 , step = 3000)
 //订阅实时流数据，进行异常告警
-subscribeTable(tableName="dataStream", actionName="abnormalDetect", offset=0, handler=append!{engine}, msgAsTable=true)	
+subscribeTable(tableName="dataStream", actionName="abnormalDetect", offset=0, handler=append!{engine}, msgAsTable=true) 
 ```
 
 ## 5.3 历史数据查询与导出
@@ -946,7 +922,6 @@ subscribeTable(tableName="dataStream", actionName="abnormalDetect", offset=0, ha
 - case4：Java API 查询，某个台网、某个台站一天所有通道的历史观测数据
 
 性能测试结果如表 11 所示：
-
 
 <table class="tg">
     <caption align="bottom">表 11 查询与导出性能测试结果</caption>
@@ -998,33 +973,33 @@ subscribeTable(tableName="dataStream", actionName="abnormalDetect", offset=0, ha
 netAim,staAim,locAim = `ZJ,`A0003, `40  //查询case的查询条件
 // case1
 timer(10){
-	aim  = exec id from loadTable("dfs://real","tagInfo") where net = netAim and  sta = staAim and loc = locAim
-	t = select avg(value)  as sample_value from loadTable("dfs://real","realData") where ts >= 2023.03.02T00:00:00.000 and ts < 2023.03.03T00:00:00.000 and id in  aim   group by bar(ts,60000),id
+ aim  = exec id from loadTable("dfs://real","tagInfo") where net = netAim and  sta = staAim and loc = locAim
+ t = select avg(value)  as sample_value from loadTable("dfs://real","realData") where ts >= 2023.03.02T00:00:00.000 and ts < 2023.03.03T00:00:00.000 and id in  aim   group by bar(ts,60000),id
 }
 
 // case2
 timer(10){
-	aim = exec id from loadTable("dfs://real","tagInfo") where net = netAim
-	t = select *  from loadTable("dfs://real","realData") where ts >= 2023.03.02T00:08:00.000 and ts <= 2023.03.02T00:21:00.000 and id in aim		 	
+ aim = exec id from loadTable("dfs://real","tagInfo") where net = netAim
+ t = select *  from loadTable("dfs://real","realData") where ts >= 2023.03.02T00:08:00.000 and ts <= 2023.03.02T00:21:00.000 and id in aim    
 }
 
 // case3
 timer {
-	aim = exec id from loadTable("dfs://real","tagInfo") where net = netAim and sta = staAim
-	t = select * from loadTable("dfs://real","realData") where ts >= 2023.03.02T00:00:00.000 and ts < 2023.03.03T00:00:00.000 and id in aim
-	t = select ts,loc,net,sta,chn,value,tagid from ej(loadTable("dfs://real","tagInfo"),t,`id) // 导出的结果集数据
-	
-	sidList = exec distinct tagid from t // 涉及的所有sid
-	startTimeTable = select min(ts) as startTime from t group by tagid order by tagid desc  // 文件开始采样时间
-	dataList = [] // 涉及的所有采样值
-	for(i in 0..(sidList.size()-1)){
-		tmpValue = exec value from t where tagid = sidList[i]
-		dataList.append!(tmpValue)
-	}
-	
-	aimFilePath= "<YOURDIR>/"+sidList+'.20230302.mseed' // 目标文件
-	sampleRate = 100.00 // 采样频率，表示1秒钟有100个采集点，即10ms采集一次
-	ploop(mseed::write{,,,sampleRate,},aimFilePath,sidListid,startTimeTable[`startTime],dataList) // 使用mseed::write函数写入文件，使用ploop并行加速
+ aim = exec id from loadTable("dfs://real","tagInfo") where net = netAim and sta = staAim
+ t = select * from loadTable("dfs://real","realData") where ts >= 2023.03.02T00:00:00.000 and ts < 2023.03.03T00:00:00.000 and id in aim
+ t = select ts,loc,net,sta,chn,value,tagid from ej(loadTable("dfs://real","tagInfo"),t,`id) // 导出的结果集数据
+ 
+ sidList = exec distinct tagid from t // 涉及的所有sid
+ startTimeTable = select min(ts) as startTime from t group by tagid order by tagid desc  // 文件开始采样时间
+ dataList = [] // 涉及的所有采样值
+ for(i in 0..(sidList.size()-1)){
+  tmpValue = exec value from t where tagid = sidList[i]
+  dataList.append!(tmpValue)
+ }
+ 
+ aimFilePath= "<YOURDIR>/"+sidList+'.20230302.mseed' // 目标文件
+ sampleRate = 100.00 // 采样频率，表示1秒钟有100个采集点，即10ms采集一次
+ ploop(mseed::write{,,,sampleRate,},aimFilePath,sidListid,startTimeTable[`startTime],dataList) // 使用mseed::write函数写入文件，使用ploop并行加速
 }
 ```
 
@@ -1056,8 +1031,6 @@ select delay from delayStream pivot by startTime,tagid
       <figcaption>图 4 时延数据</figcaption>
     </figure>
 
-
-
 # 6 总结
 
 DolphinDB 在地震行业的运用远远不止波形数据的存储与查询。正如前文所说，DolphinDB 具有非常完善的产品生态，在强大的生态支持下，DolphinDB 能够支持更加复杂的波形数据过滤与深度学习预警，限于篇幅，本文不作过多介绍。感兴趣的用户可查阅[浙江智臾科技有限公司/Tutorials_CN](https://gitee.com/dolphindb/Tutorials_CN) 作更加深入细致的了解。
@@ -1069,9 +1042,9 @@ DolphinDB 在地震行业的运用远远不止波形数据的存储与查询。�
 - 《大数据架构下的地震波形数据分析应用浅析》
 - 《数字地震台网综合处理系统通用架构研究与设计》
 - 《地震台网智慧服务平台的开发与应用》
-- DolphinDB 流数据教程 [streaming_tutorial.md · 浙江智臾科技有限公司/Tutorials_CN - Gitee](https://gitee.com/dolphindb/Tutorials_CN/blob/master/streaming_tutorial.md) 
-- DolphinDB 分布式存储教程 [database.md · dolphindb/Tutorials_CN - Gitee](https://gitee.com/dolphindb/Tutorials_CN/blob/master/database.md#2-dolphindb分区和基于mpp架构的数据存储的区别) 
-- DolphinDB-datasource 插件教程 [README.zh.md · dolphindb/grafana-datasource - Gitee](https://gitee.com/dolphindb/grafana-datasource/blob/master/README.zh.md) 
+- DolphinDB 流数据教程 [streaming_tutorial.md · 浙江智臾科技有限公司/Tutorials_CN - Gitee](https://gitee.com/dolphindb/Tutorials_CN/blob/master/streaming_tutorial.md)
+- DolphinDB 分布式存储教程 [database.md · dolphindb/Tutorials_CN - Gitee](https://gitee.com/dolphindb/Tutorials_CN/blob/master/database.md#2-dolphindb分区和基于mpp架构的数据存储的区别)
+- DolphinDB-datasource 插件教程 [README.zh.md · dolphindb/grafana-datasource - Gitee](https://gitee.com/dolphindb/grafana-datasource/blob/master/README.zh.md)
 
 ## 7.2 脚本运行顺序说明
 
@@ -1086,11 +1059,11 @@ go;
 /***
  * ==============================
  * 在运行此脚本此之前，需要做以下事情：
- * 	1.建立与server同级的目录  miniSeed
- * 	2.建立与server同级的目录  streamMiniSeed
- * 	3.建立与server同级的目录  outputMiniSeed
- * 	4.在./server/plugins/目录下建立mseed目录，并将libPluginMseed.so文件和PluginMseed.txt文件放置在改目录下
- * 	5. 运行脚本1-8
+ *  1.建立与server同级的目录  miniSeed
+ *  2.建立与server同级的目录  streamMiniSeed
+ *  3.建立与server同级的目录  outputMiniSeed
+ *  4.在./server/plugins/目录下建立mseed目录，并将libPluginMseed.so文件和PluginMseed.txt文件放置在改目录下
+ *  5. 运行脚本1-8
  * ==============================
  */
 
@@ -1127,4 +1100,4 @@ outputRecord = mainOutputMiniSeed(netAim,staAim)
 
 ```
 
-测试脚本压缩包：[test_scripts.zip](script/Seismic_waveform_data_storage/test_scripts.zip) 
+测试脚本压缩包：[test_scripts.zip](script/Seismic_waveform_data_storage/test_scripts.zip)

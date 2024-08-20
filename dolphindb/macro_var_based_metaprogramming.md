@@ -57,10 +57,10 @@ sql(select=sel, from=fm, where=wre, groupby=ctxBy, groupFlag=0, csort=cs, limit=
 - 查询字段须以  sqlCol 或者 sqlColAlias 声明。
 - 对表字段计算的元代码：
   - 单字段参与计算：sqlCol 函数指定 func 参数。
-  - 多字段参与计算：sqlColAlias 函数 搭配 makeCall 或者 makeUnifiedCall 函数。 
+  - 多字段参与计算：sqlColAlias 函数 搭配 makeCall 或者 makeUnifiedCall 函数。
 - 表对象可以是一个表变量名字符串、表变量如 t 或 loadTable 返回的句柄。
 
-具体的参数说明请参考：[sql](https://docs.dolphindb.cn/zh/funcs/s/sql.html) 
+具体的参数说明请参考：[sql](https://docs.dolphindb.cn/zh/funcs/s/sql.html)
 
 sql 函数生成的元代码是基于一些小的元代码片段组装的，为了进一步理解这个规则，下面介绍一下组装涉及到的相关函数及其作用：
 
@@ -94,7 +94,7 @@ sql 函数生成的元代码是基于一些小的元代码片段组装的，为�
   - makeCall, makeUnifiedCall: 用于生成 <func(cols.., args…)> 的元代码表达式。
   - expr, unifiedExpr, binaryExpr：生成多元算术表达式，例如 <a+b+c>, <a1\*b1+a2\*b2+… +an\*bn>
 
-- parseExpr：从字符串生成元代码，将拼接、API 上传或脚本读取的字符串，生成可执行的脚本。例如 parseExpr(“select * from t”) 即可生成 <select * from t> 的元代码；parseExpr(“where vol>1000“) 生成 sql 函数 where 参数部分的元代码等。
+- parseExpr：从字符串生成元代码，将拼接、API 上传或脚本读取的字符串，生成可执行的脚本。例如 parseExpr(“select *from t”) 即可生成 <select* from t> 的元代码；parseExpr(“where vol>1000“) 生成 sql 函数 where 参数部分的元代码等。
 
 以一个更复杂的场景为例：基于函数生成 select 部分的元代码 < nullFill(price, quantile(price, 0.5)) as price >，其中 price 是动态传入的一个字段名：
 
@@ -169,9 +169,9 @@ alias="sum_val"
     <select sum:V(_$$names) as _$$alias from t>.eval()
     <select cumsum(_$$names) as _$$alias from t>.eval()
     ```
-    
+
     **注意**：
-    
+
     1. 聚合函数 sum 后面用函数模式 byColumn 修饰，是因为希望对元组的每一个元素分别做聚合计算。
     2. 向量函数 cumsum 后面没有使用函数模式 byColumn 修饰，是因为内置的向量化函数，应用于一个等长的 Vector 组成的元组时，自动会将向量化应用于元组的每一个元素，并返回一个元组。
 
@@ -371,10 +371,9 @@ select *, val1*0.1 + val2*0.2 + val3*0.3 +...+val10*1.0 from t
 
 将 `val1*0.1 + val2*0.2 + val3*0.3 +...+val10*1.0` 拆分为两部分：
 
-- obj<sub>k</sub> = val<sub>k</sub> * W<sub>k</sub> 
+- obj<sub>k</sub> = val<sub>k</sub> * W<sub>k</sub>
 
 - re = obj1 + obj2 + … +obj10
-
 
 参照例 2，其中 obj<sub>k</sub> 是二元表达式，可以使用 binaryExpr 生成，re 相加部分则可以借助函数 unifiedExpr 实现。同样，元代码中列字段用 sqlCol 声明，则最后编写的脚本如下：
 

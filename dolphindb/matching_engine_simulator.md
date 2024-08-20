@@ -1,4 +1,5 @@
 # 模拟撮合引擎使用教程
+
 在中高频策略中，我们常常会遇到这样的情况：一些在回测中表现良好的策略，一旦应用于实际交易，效果就不如预期。其中一个非常重要的原因是低估了交易成本。为了更准确地模拟实际交易中的成本，我们可以在回测过程中引入模拟撮合系统。DolphinDB提供了模拟撮合引擎插件，使我们能够更合理地评估和预测策略在实际交易中的表现，并进行相应的优化。
 
 ### 介绍
@@ -55,8 +56,6 @@
 
 #### 行情逐笔数据
 
-
-
 其中，对于逐笔模式，行情表必须提供的列有
 
 | **名称**     | **类型**  | **含义**                                                     |
@@ -72,7 +71,6 @@
 | sellNo       | LONG      | transaction对应其原始数据；order填充sellNo                   |
 | direction    | INT       | 1（买）或2（卖）                                             |
 | seqNum       | LONG      | 逐笔数据序号                                                 |
-
 
 用户订单表必须提供的列有
 
@@ -104,8 +102,6 @@
 | insertTime          | TIMESTAMP     | 订单收到时的行情最新时间                                     |
 | startMatchTime      | NANOTIMESTAMP | 匹配开始时间                                                 |
 | endMatchTime        | NANOTIMESTAMP | 匹配完成时间                                                 |
-
-
 
 具体其他接口字段说明见[模拟撮合引擎使用说明](https://gitee.com/dolphindb/DolphinDBPlugin/tree/release200.10/MatchingEngineSimulator)。
 
@@ -140,21 +136,20 @@
 - 快照行情
 
     行情为快照时，撮合步骤如下：
-    
-    <img src="images/MatchEngineSimulator/DM_20230922142321_002.png" width="350"/>
-    
-    
+
+    <img src="./images/MatchEngineSimulator/DM_20230922142321_002.png" width="350"/>
+
     1. 限价订单即时匹配N档盘口数据：
-    
+
         - 买单：当委托价 \>= 卖一价时，按卖一盘口的顺序逐笔成交。成交价格为对应的盘口价格，成交数量取某一盘口数量乘以盘口成交比例和委托数量减去该委托已成交数量中的较小值。如果委托未完全成交，则进入挂单排队阶段。在该价位上排在第一位，即该委托前面的数量为0，随后进入挂单撮合阶段。
         - 卖单：当委托价 \<=买一价时，按买一盘口的顺序逐笔成交。成交价格为对应的盘口价格，成交数量取某一盘口数量乘以盘口成交比例和委托数量减去该委托已成交数量的较小值。如果委托仍未完全成交，则进入挂单排队阶段。在该价位上排在第一位，即该委托前面的数量为0，随后进入挂单撮合阶段。
-    
+
     1. 挂单：
-    
+
         - 当委托时委托价格落在本方盘口时，此时该委托进入挂单排队阶段，排在该委托前面的数量为与委托价相同价位的盘口数量，此后进入挂单撮合阶段。
-    
+
     3. 挂单撮合阶段（不成交或未成交部分）：
-    
+
         - 撮合模式一
           - 当区间成交百分比设置为0时，同步骤1。委托将与最新行情中的对手方盘口档位进行模拟撮合，成交价格为委托订单的价格。直到订单完全成交或者当天收盘为止，结束模拟撮合。对未成交或者未完全成交的订单可以根据撤单请求进行取消。
           - 当区间成交百分比设置大于0时，按一下模式撮合成交：
@@ -174,12 +169,12 @@
 - 逐笔行情
 
     行情为逐笔时，撮合步骤如下：
-    
-    <img src="images/MatchEngineSimulator/DM_20230922142321_003.png" width="250"/>
-    
+
+    <img src="./images/MatchEngineSimulator/DM_20230922142321_003.png" width="250"/>
+
     1. 首先限价订单即时匹配N档盘口数据（可以按配置的成交比例撮合）
     1. 不成交或未完全成交部分，交易按价格优先、时间优先的原则撮合成交。
-    
+
         1. 对于后续行情数据，按价格优先，时间优先原则，将用户订单与行情订单进行撮合。
         1. 对未成交或者未完全成交的订单也可以根据撤单请求取消该订单。
         1. 直到完全成交或者当天收盘为止。
@@ -192,7 +187,7 @@
 
 上交所的市价单交易规则如下：
 
-<img src="images/MatchEngineSimulator/DM_20230922142321_004.png" width="350"/>
+<img src="./images/MatchEngineSimulator/DM_20230922142321_004.png" width="350"/>
 
 - 最优5档即时成交剩余撤销，即按照对手方最新最优的5个价位逐次成交，成交价以对手方价格为准。如果成交后，委托订单中仍有未成交部分，未成交部分将自动撤销。
 - 最优5档即时成交剩余转限价委托，即该委托在对手方最新的5个最优价位内以对手方价格逐次成交。剩余未成交部分按本方行情委托中最新成交价转为限价委托；如该委托无成交的，按行情中本方最优价格转为限价委托；如无本方委托的，该委托撤销。
@@ -203,7 +198,7 @@
 
 深交所市价单交易规则如下：
 
-<img src="images/MatchEngineSimulator/DM_20230922142321_005.png" width="500"/>
+<img src="./images/MatchEngineSimulator/DM_20230922142321_005.png" width="500"/>
 
 - 全额成交或撤销委托，以对手方价格为成交价，如果在用户订单委托时刻，最新行情 orderbook 中的对手方行情委托能够依次成交使订单完全成交，则按顺序成交；否则，订单将自动全部撤销。
 - 最优五档即时成交剩余撤销委托，以对手方价格为成交价，根据用户订单委托时刻的最新行情 orderbook中的对手方最优五个价位的行情委托档位，依次成交。未成交部分自动撤销。
@@ -270,7 +265,7 @@
     ```
 
     使用示例：
-    
+
     ```
     symbol = "000001"
     //for hq order
@@ -328,7 +323,7 @@
 - 以模式一撮合委托订单：
 
     以模式一进行委托订单撮合，即限价订单即时匹配N档盘口数据，未成交的部分的挂单，在后续的行情中，首先与区间的最新价进行价格匹配，然后再与最新时刻的 orderbook依次匹配成交。此时"matchingMode"设置为1，区间的成交比例（matchingRatio）为10%，其它具体配置如下：
-    
+
     ```
     config = dict(STRING, DOUBLE);
     //行情类别：0表示逐笔，1表示快照
@@ -348,22 +343,22 @@
     ////快照模式下，快照的区间成交百分比，默认情况下和成交百分比orderBookMatchingRatio相等
     config["matchingRatio"]=0.1
     ```
-    
+
     t 时刻的 orderbook为表格2所示，用户委托价格为16.32，数量为50000股的卖单，此时委托订单即刻成交对手方16.33和16.22价格档位的订单，成交量分别为10100和22000，剩余未成交数量为50000-10100-22000=17900，排在卖方的第一档位。
-    
+
     ```
     appendMsg(engine, ("000001.SZ", 2022.04.15T09:55:15.000, 5, 16.32, 50000, 2, 1) ,2)
     select * from tradeOutputTable
     ```
-    
+
     此时的成交结果明细如下：
-    
-    <img src="images/MatchEngineSimulator/DM_20230922142321_006.png" width="500"/>
-    
+
+    <img src="./images/MatchEngineSimulator/DM_20230922142321_006.png" width="500"/>
+
     下一时刻行情快照 orderbook如下表3，最新的成交价格为16.34，行情的区间成交量为25500。
-    
+
     表2
-    
+
     | **bidQty** | **bidPrice** | **askPrice** | **askQty** |
     | ---------- | ------------ | ------------ | ---------- |
     | 28900      | 16.33        | 16.34        | 1700       |
@@ -376,17 +371,17 @@
     | 17800      | 16.26        | 16.41        | 49000      |
     | 39054      | 16.25        | 16.42        | 59400      |
     | 4400       | 16.24        | 16.43        | 76300      |
-    
+
     此时用户剩余委托订单与区间最新成交价格进行撮合成交，成交数量为2500。剩余的17900-2500=15400，将与买方第一档位进行撮合成交，此时用户委托订单成交完成，成交结果明细如下：
-    
-    <img src="images/MatchEngineSimulator/DM_20230922142321_007.png" width="500"/>
-    
+
+    <img src="./images/MatchEngineSimulator/DM_20230922142321_007.png" width="500"/>
+
     以上脚本见附件。
 
 - 以模式二撮合委托订单：
 
     以模式二进行委托订单撮合，即限价订单即时匹配N档盘口数据。未成交的订单将进入挂单流程，使用区间的成交价进行价格匹配，然后再与最新时刻的 orderbook依次匹配成交。此时"matchingMode"设置为2，其它具体配置如下：
-    
+
     ```
     config = dict(STRING, DOUBLE);
     //行情类别：0表示逐笔，1表示快照
@@ -407,22 +402,22 @@
     config["matchingRatio"]=0.1
     ////是否需要输出到复合输出表
     ```
-    
+
     t 时刻的 orderbook以上图表格1所示，用户委托价格16.32，数量为50000股的卖单,此时委托订单即刻成交对手方16.33和16.22价格档位的订单，成交量分别为10100和22000，剩余未成交数量为50000-10100-22000=17900，排在卖方的第一档位。
-    
+
     ```
     appendMsg(engine, ("000001.SZ", 2022.04.15T09:55:15.000, 5, 16.32, 50000, 2, 1), 2)
     select * from tradeOutputTable
     ```
-    
+
     成交结果明细如下，和模式一的结果一样：
-    
-    <img src="images/MatchEngineSimulator/DM_20230922142321_010.png" width="500"/>
-    
+
+    <img src="./images/MatchEngineSimulator/DM_20230922142321_010.png" width="500"/>
+
     此时用户订单排在本方最优位置。下一时刻行情快照 orderbook还是如上表2，最新的区间成交价格列表为[16.34,16.33,16.34]，成交量为[300,1000,24200]。委托订单与区间的成交列表价格进行撮合成交。此时用户委托订单成交完成，成交结果明细如下：
-    
-    <img src="images/MatchEngineSimulator/DM_20230922142321_011.png" width="500"/>
-    
+
+    <img src="./images/MatchEngineSimulator/DM_20230922142321_011.png" width="500"/>
+
     以上脚本见附件。
 
 ### 性能测试
@@ -443,59 +438,57 @@
 
 ```
 def strategy(mutable engine,msg,mutable contextdict,mutable logTB){ 
-	/*
-	 * 每只股票每3秒下单1000股
-	 */
-	try{
-		temp=select last(DateTime) as time ,last(lastPx) as price from msg group by SecurityID
-		codes=distinct(msg.SecurityID)
-		prices=dict(temp.SecurityID,temp.price)
-		for (icode in codes){
-			appendMsg(engine,(icode,contextdict["now"],5,prices[icode],1000,1,1),2)
-			}
-		//log
-		text="open_signal: "+string(contextdict["now"])+"  code : "+ 
-		concat(temp.SecurityID,",")+" price:  "+string(concat(string(temp.price),","))
-		logTB.append!(table(text as info))		
-		}
-	catch(ex){
-		logTB.append!(table("error:"+string(contextdict["now"])+ex[1] as info))
-	}
+ /*
+  * 每只股票每3秒下单1000股
+  */
+ try{
+  temp=select last(DateTime) as time ,last(lastPx) as price from msg group by SecurityID
+  codes=distinct(msg.SecurityID)
+  prices=dict(temp.SecurityID,temp.price)
+  for (icode in codes){
+   appendMsg(engine,(icode,contextdict["now"],5,prices[icode],1000,1,1),2)
+   }
+  //log
+  text="open_signal: "+string(contextdict["now"])+"  code : "+ 
+  concat(temp.SecurityID,",")+" price:  "+string(concat(string(temp.price),","))
+  logTB.append!(table(text as info))  
+  }
+ catch(ex){
+  logTB.append!(table("error:"+string(contextdict["now"])+ex[1] as info))
+ }
 }
 
 
 
 timer{
-	for (idate in 2022.04.15..2022.04.15){
-		contextdict["now"]=idate
-		tb = select "XSHE" as symbolSource,SecurityID,DateTime,lastPrice,highestPrice,lowestPrice,deltas(TotalVolumeTrade)  as newTradeQty ,BidPrice,
-		BidOrderQty,OfferPrice,OfferOrderQty from loadTable("dfs://level2_tickTrade",`tickTradeTable) where  SecurityID in universe and 
-		date(DateTime)=idate and  DateTime.second() between 09:30:00:15:00:00
-		context by SecurityID csort DateTime order by DateTime map  
-		times=tb.DateTime
-		nTimes=cumsum(groupby(count,times,times).values()[1])
-		i=1
-		for (i in 0..(size(nTimes)-1)){
-			if(i==0){
-				contextdict["now"]=times[nTimes[0]-1]
-				msg=tb[0:nTimes[0]]
-			}
-			else{
-				contextdict["now"]=times[nTimes[i]-1]
-				msg=tb[nTimes[i-1]:nTimes[i]]
-				}		
-			if(size(msg)>0){
-				savehqdataToMatchEngine(engine, msg,logTB)	
-				strategy(engine,msg, contextdict, logTB)
-				}
-			}
+ for (idate in 2022.04.15..2022.04.15){
+  contextdict["now"]=idate
+  tb = select "XSHE" as symbolSource,SecurityID,DateTime,lastPrice,highestPrice,lowestPrice,deltas(TotalVolumeTrade)  as newTradeQty ,BidPrice,
+  BidOrderQty,OfferPrice,OfferOrderQty from loadTable("dfs://level2_tickTrade",`tickTradeTable) where  SecurityID in universe and 
+  date(DateTime)=idate and  DateTime.second() between 09:30:00:15:00:00
+  context by SecurityID csort DateTime order by DateTime map  
+  times=tb.DateTime
+  nTimes=cumsum(groupby(count,times,times).values()[1])
+  i=1
+  for (i in 0..(size(nTimes)-1)){
+   if(i==0){
+    contextdict["now"]=times[nTimes[0]-1]
+    msg=tb[0:nTimes[0]]
+   }
+   else{
+    contextdict["now"]=times[nTimes[i]-1]
+    msg=tb[nTimes[i-1]:nTimes[i]]
+    }  
+   if(size(msg)>0){
+    savehqdataToMatchEngine(engine, msg,logTB) 
+    strategy(engine,msg, contextdict, logTB)
+    }
+   }
 
-		MatchingEngineSimulator::resetMatchEngine(engine)
-	}
+  MatchingEngineSimulator::resetMatchEngine(engine)
+ }
 }
 ```
-
-
 
 #### 测试结果
 
@@ -507,11 +500,9 @@ timer{
 
 成交明细结果表如下：
 
-<img src="images/MatchEngineSimulator/DM_20230922142321_009.png" width="550"/>
+<img src="./images/MatchEngineSimulator/DM_20230922142321_009.png" width="550"/>
 
 ## 基于 Level 2 逐笔数据模拟撮合
-
-
 
 模拟撮合引擎以委托单和行情数据为输入，行情为 Level 2 逐笔数据时，模拟撮合引擎按照证券交易所的成交规则按价格优先、时间优先的原则对用户订单进行撮合。
 
@@ -535,18 +526,18 @@ timer{
 - 限价16.45卖出1000股
 
     2022.04.14T09:35:00.040 时刻的最优买价为15.81，以限价16.45的价格卖出1000股委托单的价格高于买方最优价15.81，此时的委托单无法成交。再查看最优卖盘的价格为16.45，数量为2000股，因此16.45价格的用户委托单排在卖方第一档位的2000股完全成交之后再等待成交。
-    
+
     ```
     appendMsg(engine, (`000001, `XSHE, 2022.04.14T09:35:00.050, 0, 2, 16.45, 2500, 901, 901, 1, 34) ,1) 
     select * from tradeOutputTable
     ```
 
     模拟撮合引擎 可以通过appendMsg (engine,msgBody,msgId)函数接口来接收行情数据和用户委托订单，msgId=1表示是行情数据，为2表示用户委托订单。
-    
+
     2022.04.14T09:35:00.050有一笔价格为16.45数量2500的行情买单进入，此时查看 VolumeTraded，发现用户订单成交了500股，订单状态（OrderStatus）为0，表示未完全成交。
-    
+
     如果2022.04.14T09:35:00.070时来一笔数量为500的行情市价买单，可以发现用户委托订单中的剩余订单在此刻成交。
-    
+
     以上脚本参见附件。
 
 ## 基于 Level 2 逐笔数据进行用户订单的模拟撮合的性能测试
@@ -576,7 +567,7 @@ auto engine = createEngineFunc->call(heap_, args);
 - TWAP 算法交易策略
 
     时间区间为10:00到11:30，13:00到14:30，每分钟触发一次交易策略，执行以下两个步骤：
-    
+
     1. 对上一分钟订单中未成交的订单进行撤单。
     2. 每只股票下买单一次，一次2000股。
 
@@ -587,7 +578,7 @@ auto engine = createEngineFunc->call(heap_, args);
     ```
     loadPlugin("<path>/MatchEngineTest.txt")
     ```
-    
+
     本算法交易插件命名为MatchEngineTest，txt文件在该插件源码的bin目录下。
 
 - 插件接口
@@ -595,43 +586,43 @@ auto engine = createEngineFunc->call(heap_, args);
     ```
     MatchEngineTest::runTestTickData(messageTable, stockList, engineConfig)
     ```
-    
+
     messageTable 读入的是通过 replay 回放行情数据（逐笔委托和逐笔成交）后的数据。
-    
+
     stockList 是用户下单的股票列表。
-    
+
     engineConfig 是一个字典，包含三个配置参数：
-    
-    - engineConfig\[“engineName“] 为本次测试的名称，它同时也是创建模拟撮合引擎时的名称。在创建多个模拟撮合引擎时，引擎名称不能重复。
-    - engineConfig\[“market“] 为使用的交易所，”XSHG”（上交所）或者”XSHE”。
-    - engineConfig\[“hasSnapshotOutput“]和模拟撮合引擎中的“outputOrderBook”参数配置相同，表示是否输出 orderbook 。
+
+  - engineConfig\[“engineName“] 为本次测试的名称，它同时也是创建模拟撮合引擎时的名称。在创建多个模拟撮合引擎时，引擎名称不能重复。
+  - engineConfig\[“market“] 为使用的交易所，”XSHG”（上交所）或者”XSHE”。
+  - engineConfig\[“hasSnapshotOutput“]和模拟撮合引擎中的“outputOrderBook”参数配置相同，表示是否输出 orderbook 。
 
 - 输入输出说明
 
     输入数据表 messageTable 的列名和对应的类型如下：
-    
+
     ```
     colName = `msgTime`msgType`msgBody`sourceType`seqNum
     colType =  [TIMESTAMP, SYMBOL, BLOB, INT, INT]
     ```
-    
+
     msgType 的值有 entrust, trade 和 snapshot，分别表示逐笔委托、逐笔成交和快照数据。插件内部会将 messageTable 表中的 BLOB 格式数据进行解析。该插件中算法交易的数据源只使用了逐笔数据，逐笔委托和逐笔成交数据的结构为 tickSchema，tickSchema 在 C++ 代码中的表结构定义如下：
-    
+
     ```
     TableSP tickSchema = Util::createTable({"symbol", "symbolSource", "TradeTime", "sourceType", "orderType", "price", "qty", "buyNo", "sellNo", "BSFlag", "seqNum"}, \
                 {DT_SYMBOL, DT_SYMBOL, DT_TIMESTAMP, DT_INT, DT_INT, DT_DOUBLE, DT_INT, DT_INT, DT_INT, DT_INT, DT_INT}, 0, 0);
     ```
-    
+
     如果算法交易需要利用到快照数据，那么数据源的输入需要包含快照数据，快照数据的表结构在 C++ 代码中的定义如下：
-    
+
     ```
     TableSP snapshotSchema = Util::createTable({"SecurityID", "TradeTime", "LastPrice", "BidPrice", "OfferPrice", "BidOrderQty", "OfferOrderQty", "TotalValueTrade", "TotalVolumeTrade", "seqNum"}, \
                 {DT_SYMBOL, DT_TIMESTAMP, DT_DOUBLE, DATA_TYPE(ARRAY_TYPE_BASE + DT_DOUBLE), DATA_TYPE(ARRAY_TYPE_BASE + DT_DOUBLE), DATA_TYPE(ARRAY_TYPE_BASE + DT_INT), \
                 DATA_TYPE(ARRAY_TYPE_BASE + DT_INT), DT_DOUBLE, DT_INT, DT_INT}, 0, 0);
     ```
-    
+
     在插件代码中，将模拟撮合引擎输出的 tradeOutputTable 和 snapshotOutputTable 的两个结果表保存为了共享表，用户可以查找这两个表来查看模拟撮合的结果。
-    
+
     ```
     // 输出结果
     vector<string> arg0 = {"tmp_tradeOutputTable"};
@@ -644,9 +635,9 @@ auto engine = createEngineFunc->call(heap_, args);
     heap_->currentSession()->run(arg0, arg1);
     runScript("share tmp_snapshotOutputTable as "+ testName_ + "_snapshotOutputTable");
     ```
-    
+
     在分股票多线程执行算法交易时，每个线程有单独的 tradeOutputTable 和 snapshotOutputTable，用户查看股票成交情况时，需要将各个线程的结果表进行汇总后输出。
-    
+
     ```
     tradeResult = table(100:0, MatchEngineTest1_tradeOutputTable.schema().colDefs.name, MatchEngineTest1_tradeOutputTable.schema().colDefs.typeString)
     for (i in 1..thread_num) {
@@ -663,7 +654,7 @@ auto engine = createEngineFunc->call(heap_, args);
 - 插件接口函数
 
     每次调用 runTestTickData 时会创建一个 TickDataMatchEngineTest 类，并调用该类的 runTestTickData 方法。
-    
+
     ```
     ConstantSP runTestTickData(Heap *heap, std::vector<ConstantSP> &arguments) {
         TableSP messageStream = arguments[0];
@@ -676,9 +667,9 @@ auto engine = createEngineFunc->call(heap_, args);
         return new String("done");
     }
     ```
-    
+
     TickDataMatchEngineTest 类的构造函数定义如下：
-    
+
     ```
     TickDataMatchEngineTest::TickDataMatchEngineTest(Heap * heap, ConstantSP engineConfig)
         : heap_(heap) {
@@ -697,9 +688,9 @@ auto engine = createEngineFunc->call(heap_, args);
         ...
     }
     ```
-    
+
     testTickData 函数的定义如下：
-    
+
     ```
     bool TickDataMatchEngineTest::testTickData(TableSP messageStream, ConstantSP stockList) {
         ...
@@ -729,7 +720,7 @@ auto engine = createEngineFunc->call(heap_, args);
 - 为引擎插入行情数据和用户订单
 
     保存行情数据和发送用户订单的方式都和 DolphinDB 脚本中的方式相同。调用 appendMsg 方法向模拟撮合引擎传入数据。
-    
+
     ```
     appendMsgFunc = heap_->currentSession()->getFunctionDef("appendMsg");
     ...
@@ -747,7 +738,7 @@ auto engine = createEngineFunc->call(heap_, args);
 - 策略执行
 
     下单时，需要构建一个用户订单表，内存表的存储方式也是列存，因此需要先构建 VectorSP 类型的列，再通过数据列来创建表。对于深交所数据，下单时的市价单设置为0，对于上交所数据，下单时的市价单设置为1，对于市价单类型的定义可以参考插件接口手册。表的构建完成后，调用 saveOrdersToEngine 函数将用户订单发送到引擎。
-    
+
     ```
     void TickDataMatchEngineTest::handleStrategy(ContextDict& context, ConstantSP msgTable) {
         // 判断策略触发时间
@@ -824,7 +815,7 @@ auto engine = createEngineFunc->call(heap_, args);
 1. **行情数据回放**
 
     - 首先需要设置交易所并获取需要下单的股票代码。当market设置为sz时，symbols存储了深交所成交表中的所有股票的代码。当market设置为sh时，symbols存储了上交所成交表中的所有股票的代码。
-    
+
         ```
         trade_dfs = loadTable("dfs://TSDB_tradeAndentrust", "trade")
         market = "sz"  // market = "sz" or "sh"
@@ -839,7 +830,7 @@ auto engine = createEngineFunc->call(heap_, args);
         ```
 
     - 对股票代码进行取模，将数据划分给不同的线程。
-    
+
         ```
         def genSymbolListWithHash(symbolTotal, thread_num) {
             symbol_list = []
@@ -860,7 +851,7 @@ auto engine = createEngineFunc->call(heap_, args);
         ```
 
     - entrust和trade表分别代表逐笔委托和逐笔成交数据，通过replay回放的方式将这两张表回放到同一张表内，回放后的数据是按照时间列排序的。此外，当同一时间有多条记录时，可以按照指定的字段排序。由于这两张表是分布式表，我们需要将replayDS方法和replay方法一起搭配使用。
-    
+
         ```
         entrust_dfs = loadTable("dfs://TSDB_tradeAndentrust", "entrust")
         trade_dfs = loadTable("dfs://TSDB_tradeAndentrust", "trade")
@@ -931,14 +922,14 @@ auto engine = createEngineFunc->call(heap_, args);
 1. **模拟撮合**
 
     - 首先用户需要加载模拟撮合引擎插件和算法交易插件。
-    
+
         ```
         loadPlugin("<path>/PluginMatchingEngineSimulator.txt")
         loadPlugin("<path>/MatchEngineTest.txt")
         ```
 
     - 数据准备和参数设置，这里的线程数量需要和行情回放时的相同。注意该算法测试插件接收的行情数据字段为`msgTime`msgType`msgBody`sourceType`seqNum，这是逐笔委托和逐笔成交两张行情表经过replay回放到一张表后的结果。
-    
+
         ```
         thread_num = 20
         market = "sz"
@@ -958,7 +949,7 @@ auto engine = createEngineFunc->call(heap_, args);
         ```
 
     - doMatchEngineTest表示单个线程需要执行的任务，任务主要包含设置需要传入的engine_config参数和调用算法测试插件接口，算法测试插件内部具体的执行过程在上一小节中已经介绍。注意这里的engine_config字典需要在函数内部创建，这是因为engine_config被传入插件接口的方式是一个引用，而非engine_config的一个拷贝副本。如果engine_config在函数外创建，多线程执行时一个线程对engine_config的修改会影响另一个线程。
-    
+
         ```
         def doMatchEngineTest(messageData, symbolList, engineName, marketName, hasSnapshotOutput) {
             engine_config = dict(string, any)
@@ -989,7 +980,7 @@ auto engine = createEngineFunc->call(heap_, args);
         ```
 
     - 当所有多线程任务结束后，需要将每个线程的算法交易结果（tradeOutputTable表和snapshotOutputTable表）进行合并，合并结果分别存储在tradeResult表和snapshotResult表。
-    
+
         ```
         tradeResult = table(100:0, MatchEngineTest1_tradeOutputTable.schema().colDefs.name, MatchEngineTest1_tradeOutputTable.schema().colDefs.typeString)
         snapshotResult = table(100:0, MatchEngineTest1_snapshotOutputTable.schema().colDefs.name, MatchEngineTest1_snapshotOutputTable.schema().colDefs.typeString)
@@ -1008,7 +999,7 @@ auto engine = createEngineFunc->call(heap_, args);
         ```
 
     - 查询tradeResult表查看每只股票的总成交数量。
-    
+
         ```
         select Symbol, sum(VolumeTraded) from tradeResult where OrderStatus !=2 and OrderStatus != 3 group by Symbol order by Symbol
         ```
@@ -1092,9 +1083,9 @@ DolphinDB 提供了模拟撮合引擎插件，可以基于快照和逐笔行情�
     <ERROR> :addTrade Fail symbol = 002871 seq 6517875 buyOrderNo = 6484446 sellOrderNo = 6517874 qty = 100 Can't find order.
     <ERROR> :cancelTrade Fail symbol 000776 seq 204618 orderNo 127188 qty = 300 Can't find order.
     ```
-    
-    **说明**：在合成行情快照时，逐笔成交单数据无法找到相应的逐笔委托单数据，这说明输入的行情数据有误。以下是可能的原因： 
-    
+
+    **说明**：在合成行情快照时，逐笔成交单数据无法找到相应的逐笔委托单数据，这说明输入的行情数据有误。以下是可能的原因：
+
     - **行情数据未按照正确的顺序排序**：对于深交所来说，行情数据在时间相同时，逐笔委托单输入引擎的顺序需要在逐笔成交单之前，对于上交所来说逐笔委托单需要在逐笔成交单之后。用户需要根据报错信息来检查输入的行情数据，查看买单（buyOrderNo）、卖单（sellOrderNo）和成交单三者是否处于一个正确的输入顺序。注意，sourceType为0时是一个买单或卖单，sourceType为1时是一个成交单。
     - **行情数据有遗漏**：用户可能只输入了当天某一时间段内的行情数据，比如用户筛选了10:00之后的行情数据。而在实际的行情中，存在10:00之前的委托单在10:00之后成交，那么10:00之后的成交单数据无法找到10:00之前的那一笔委托单，此时会出现此ERROR。用户可以检查输入的行情数据，查看买单、卖单和成交单三者是否齐全。
     - **创建引擎时选择的交易所有误**：在使用MatchingEngineSimulator::createMatchEngine接口创建引擎时，输入参数exchange表示选择的交易所，”XSHE”代表深交所，”XSHG”代表上交所。不同交易所的委托单和成交单顺序不同，因此出现此ERROR信息可能是选择了错误的交易所。
@@ -1104,25 +1095,25 @@ DolphinDB 提供了模拟撮合引擎插件，可以基于快照和逐笔行情�
     ```
     <ERROR> :...appendMsg(..) => Hq Order Time Can not reduce!
     ```
-    
+
     **说明**：引擎内部最新行情时间大于输入的行情。以下是可能的原因：
-    
+
     - **行情数据未按照时间排序**：行情数据必须按照时间顺序排序。
     - **引擎中的数据未清空**：引擎还保留着一部分数据，该数据的最新行情时间大于输入的行情。
     - **输入了大于最新行情时间的用户订单**：输入用户订单时，如果用户订单时间大于最新行情时间，目前版本的引擎会将最新行情时间更新为该用户订单时间，如果后续的行情数据时间小于这个用户订单时间，会导致后续的行情数据输入时报此ERROR信息。
 
 1. **the time of this userOrder is Less than LastOrderTime**
-    
+
     ```
     <WARNING>:the time of this userOrder is Less than LastOrderTime, it will be set to LastOrderTime
     ```
-    
+
     **说明：该日志是WARNING信息而非ERROR信息，** 输入的用户订单时间小于最新行情时间。以下是可能的原因：
-    
+
     - **用户订单的时间列设置有误/忘记设置**
     - **行情数据输入和用户订单生成异步进行**，可能存在算法策略生成用户订单较慢的情况，这属于正常现象。
 
 ## 附录
 
 - [完整脚本文件](data/MatchEngineSimulator/mesuc.rar)
-- [ C++ 代码文件](script/MatchingEngineSimulator/MatchEngineTest.zip) 
+- [C++ 代码文件](script/MatchingEngineSimulator/MatchEngineTest.zip)

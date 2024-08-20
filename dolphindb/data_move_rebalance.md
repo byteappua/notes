@@ -3,6 +3,7 @@
 数据迁移再平衡的目标是保证分区副本尽可能均衡分布，副本位置影响着 IO 性能、节点负载，对于数据访问延迟有着较大的影响。近来，越来越多的客户对于数据容量或计算性能提出了更高要求，因而进行了集群扩展，扩展之后如何在新的拓扑之中平衡数据，这是客户必然面临的问题。为此，我们撰写了本文，总结数据迁移再平衡的常见场景与方法。
 
 本教程适用于1.30.17、2.00.5及以上版本。
+
 - [1 概述](#1-概述)
 - [2 环境配置与数据模拟](#2-环境配置与数据模拟)
   - [2.1 硬件配置](#21-硬件配置)
@@ -24,7 +25,6 @@
   - [5.2 磁盘扩容时数据迁移性能](#52-磁盘扩容时数据迁移性能)
   - [5.3 磁盘缩容](#53-磁盘缩容)
 - [6 小结](#6-小结)
-
 
 ## 1 概述
 
@@ -266,9 +266,9 @@ pnodeRun(getRecoveryWorkerNum)
 
 <img src="./images/data_move_rebalance/4_2.png" width=90%>
 
-任务执行进度如图所示。可以看到，`DeleteSource `字段全部为 True，原因为对于数据节点之间分区再平衡，从源数据节点到目的数据节点复制完成后，该参数会被置为 True，源数据节点会删除相应副本信息。
+任务执行进度如图所示。可以看到，`DeleteSource`字段全部为 True，原因为对于数据节点之间分区再平衡，从源数据节点到目的数据节点复制完成后，该参数会被置为 True，源数据节点会删除相应副本信息。
 
-`Status`字段为 In-Progress 的任务数目表示控制节点发起任务时的并发度，通过 *dfsRebalanceConcurrency* 参数配置，默认为数据节点个数的两倍。[*recoveryWorkers* ](https://www.dolphindb.cn/cn/help/DatabaseandDistributedComputing/Configuration/ConfigParamRef.html?highlight=recoveryWorkers#id21)参数表示数据节点执行任务时的并发度，默认为1。
+`Status`字段为 In-Progress 的任务数目表示控制节点发起任务时的并发度，通过 *dfsRebalanceConcurrency* 参数配置，默认为数据节点个数的两倍。[*recoveryWorkers*](https://www.dolphindb.cn/cn/help/DatabaseandDistributedComputing/Configuration/ConfigParamRef.html?highlight=recoveryWorkers#id21)参数表示数据节点执行任务时的并发度，默认为1。
 
 `Status` 字段为 Finished，表示该任务已经完成。等待所有任务执行完毕后，在数据节点上执行以下命令，查看再平衡后各个数据节点分区数量统计。
 
@@ -466,4 +466,4 @@ select count(*) from pnodeRun(getAllChunks) group by site, getDiskNo(path) as di
 
 ## 附件
 
- [data_move_rebalance](script/data_move_rebalance) 
+ [data_move_rebalance](script/data_move_rebalance)

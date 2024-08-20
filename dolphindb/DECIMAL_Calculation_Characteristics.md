@@ -1,16 +1,14 @@
 # DolphinDB 计算精度问题与 DECIMAL 类型
 
 - [1 DECIMAL 的计算特性](#1-decimal-的计算特性)
-	- [1.1 DECIMAL 的计算方式](#11-decimal-的计算方式)
-	- [1.2 DECIMAL 的计算输出](#12-decimal-的计算输出)
+ 	- [1.1 DECIMAL 的计算方式](#11-decimal-的计算方式)
+ 	- [1.2 DECIMAL 的计算输出](#12-decimal-的计算输出)
 - [2 DECIMAL 的优缺点](#2-decimal-的优缺点)
-	- [2.1 DECIMAL 的优点](#21-decimal-的优点)
-	- [2.2 DECIMAL 的缺点](#22-decimal-的缺点)
+ 	- [2.1 DECIMAL 的优点](#21-decimal-的优点)
+ 	- [2.2 DECIMAL 的缺点](#22-decimal-的缺点)
 - [3 浮点数与 DECIMAL 计算性能差异比较](#3-浮点数与-decimal-计算性能差异比较)
 - [4 DECIMAL 最佳实践：避免 mavg 计算精度损失](#4-decimal-最佳实践避免-mavg-计算精度损失)
 - [5 总结](#5-总结)
-
-
 
 ## 1 DECIMAL 的计算特性
 
@@ -124,7 +122,7 @@ print(b)
 ```
 a = array(DOUBLE,0)
 for (i in 1..100){
-	a.append!(123.0000+0.0003*i)
+ a.append!(123.0000+0.0003*i)
 }
 avg(a)
 >> 123.015149999999
@@ -135,7 +133,7 @@ eqFloat(avg(a),123.01515)
 
 b= array(DECIMAL64(4),0)
 for (i in 1..100){
-	b.append!(123.0000+0.0003*i)
+ b.append!(123.0000+0.0003*i)
 }
 avg(b)
 >> 123.015150000000
@@ -155,9 +153,9 @@ DECIMAL32/DECIMAL64/DECIMAL128 类型的数值范围如下表所示，其中，D
 
 |            | **底层存储数据类型** | **字节占用** | **Scale有效范围** | **有效数值范围**                        | **最大表示位数** |
 | :--------- | :------------------- | :----------- | :---------------- | :-------------------------------------- | :--------------- |
-| DECIMAL32  | int32_t              | 占用4个字节  | [0,9]             | (-1 * 10 ^ (9 - S), 1 * 10 ^ (9 - S))   | 9位              |
-| DECIMAL64  | int64_t              | 占用8个字节  | [0,18]            | (-1 * 10 ^ (18 - S), 1 * 10 ^ (18 - S)) | 18位             |
-| DECIMAL128 | int128_t             | 占用16个字节 | [0,38]            | (-1 * 10 ^ (38 - S), 1 * 10 ^ (38 - S)) | 38位             |
+| DECIMAL32  | int32_t              | 占用4个字节  | [0,9]             | (-1 *10 ^ (9 - S), 1* 10 ^ (9 - S))   | 9位              |
+| DECIMAL64  | int64_t              | 占用8个字节  | [0,18]            | (-1 *10 ^ (18 - S), 1* 10 ^ (18 - S)) | 18位             |
+| DECIMAL128 | int128_t             | 占用16个字节 | [0,38]            | (-1 *10 ^ (38 - S), 1* 10 ^ (38 - S)) | 38位             |
 
 在有效数值范围和最大表示位数的限制下，DECIMAL 类型很容易溢出。自 2.00.10 版本起，我们支持算术运算溢出后，若存在更高精度的类型，则将自动拓展结果的数据类型，从而降低溢出风险：
 
@@ -284,8 +282,7 @@ timer(100){sum(data5)}
 
 本节将以具体场景，比较 DECIMAL 类型和浮点数类型在实际计算中的精度差异。
 
-
-`mavg` 和 `moving(avg,…)` 虽然在含义上完全相同，但两者的实现方式并不一致。`mavg` 的算法是：随着窗口的移动，总和加上进入窗口的数，减去离开窗口的数，再计算 avg，所以在这个加减的过程中，会产生浮点数精度问题。 
+`mavg` 和 `moving(avg,…)` 虽然在含义上完全相同，但两者的实现方式并不一致。`mavg` 的算法是：随着窗口的移动，总和加上进入窗口的数，减去离开窗口的数，再计算 avg，所以在这个加减的过程中，会产生浮点数精度问题。
 
 首先，我们导入样例数据 [tick.csv](data/DECIMAL_Calculation_Characteristics/tick.csv)，原始数据类型均为 DOUBLE 类型，并计算 `mavg`、`moving(avg,…)`：
 
@@ -293,16 +290,16 @@ timer(100){sum(data5)}
 data = loadText("<yourDirectory>/tick.csv")
 
 t = select
-	MDTime,
-	((LastPx - prev(LastPx)) / (prev(LastPx) + 1E-10) * 1000) as val,
-	mavg(((LastPx - prev(LastPx)) / (prev(LastPx) + 1E-10) * 1000), 20, 1),
-	moving(avg, ((LastPx - prev(LastPx)) / (prev(LastPx) + 1E-10) * 1000), 20, 1)
+ MDTime,
+ ((LastPx - prev(LastPx)) / (prev(LastPx) + 1E-10) * 1000) as val,
+ mavg(((LastPx - prev(LastPx)) / (prev(LastPx) + 1E-10) * 1000), 20, 1),
+ moving(avg, ((LastPx - prev(LastPx)) / (prev(LastPx) + 1E-10) * 1000), 20, 1)
 from data
 ```
 
 得到的结果如下图所示：
 
-<img src="images/DECIMAL_Calculation_Characteristics/4_1.png" width=55%>
+<img src="./images/DECIMAL_Calculation_Characteristics/4_1.png" width=55%>
 
 可以看到，计算结果从09:31:53.000开始产生误差。
 
@@ -310,16 +307,16 @@ from data
 
 ```
 t = select
-	MDTime,
-	((LastPx - prev(LastPx)) / (prev(LastPx) + 1E-10) * 1000) as val,
-	mavg(decimal128(((LastPx - prev(LastPx)) / (prev(LastPx) + 1E-10) * 1000),12), 20, 1),
-	moving(avg, decimal128(((LastPx - prev(LastPx)) / (prev(LastPx) + 1E-10) * 1000),12), 20, 1)
+ MDTime,
+ ((LastPx - prev(LastPx)) / (prev(LastPx) + 1E-10) * 1000) as val,
+ mavg(decimal128(((LastPx - prev(LastPx)) / (prev(LastPx) + 1E-10) * 1000),12), 20, 1),
+ moving(avg, decimal128(((LastPx - prev(LastPx)) / (prev(LastPx) + 1E-10) * 1000),12), 20, 1)
 from data
 ```
 
 得到的结果如下图所示：
 
-<img src="images/DECIMAL_Calculation_Characteristics/4_2.png" width=55%>
+<img src="./images/DECIMAL_Calculation_Characteristics/4_2.png" width=55%>
 
 可以看到，`mavg` 和 `moving(avg,…)` 的计算结果完全一致。
 

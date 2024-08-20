@@ -5,19 +5,18 @@
 本文主要介绍如何通过 INSIGHT 插件将实时行情数据写入分布式数据库，以及如何实现节点启动时自动订阅 INSIGHT 实时行情。本文全部代码需要运行在 2.00.11 或者更高版本的 DolphinDB server 以及插件上，目前仅支持 Linux 系统。
 
 - [DolphinDB INSIGHT 行情插件最佳实践指南](#dolphindb-insight-行情插件最佳实践指南)
-	- [1 DolphinDB INSIGHT 行情插件介绍](#1-dolphindb-insight-行情插件介绍)
-	- [2 基本使用介绍](#2-基本使用介绍)
-		- [2.1 安装插件](#21-安装插件)
-		- [2.2 加载插件](#22-加载插件)
-	- [3 通过 INSIGHT 行情插件将实时行情数据写入分布式数据库](#3-通过-insight-行情插件将实时行情数据写入分布式数据库)
-		- [3.1 清理环境（可选）](#31-清理环境可选)
-		- [3.2 创建库表](#32-创建库表)
-		- [3.3 订阅流数据表把增量数据实时写入分布式数据库](#33-订阅流数据表把增量数据实时写入分布式数据库)
-		- [3.4 订阅 INSIGHT 行情将增量数据实时写入流数据表](#34-订阅-insight-行情将增量数据实时写入流数据表)
-		- [3.5 查询 INSIGHT 行情接收情况](#35-查询-insight-行情接收情况)
-	- [4 节点启动时自动订阅 INSIGHT 实时行情数据入库](#4-节点启动时自动订阅-insight-实时行情数据入库)
-	- [附录](#附录)
-
+  - [1 DolphinDB INSIGHT 行情插件介绍](#1-dolphindb-insight-行情插件介绍)
+  - [2 基本使用介绍](#2-基本使用介绍)
+    - [2.1 安装插件](#21-安装插件)
+    - [2.2 加载插件](#22-加载插件)
+  - [3 通过 INSIGHT 行情插件将实时行情数据写入分布式数据库](#3-通过-insight-行情插件将实时行情数据写入分布式数据库)
+    - [3.1 清理环境（可选）](#31-清理环境可选)
+    - [3.2 创建库表](#32-创建库表)
+    - [3.3 订阅流数据表把增量数据实时写入分布式数据库](#33-订阅流数据表把增量数据实时写入分布式数据库)
+    - [3.4 订阅 INSIGHT 行情将增量数据实时写入流数据表](#34-订阅-insight-行情将增量数据实时写入流数据表)
+    - [3.5 查询 INSIGHT 行情接收情况](#35-查询-insight-行情接收情况)
+  - [4 节点启动时自动订阅 INSIGHT 实时行情数据入库](#4-节点启动时自动订阅-insight-实时行情数据入库)
+  - [附录](#附录)
 
 ## 1 DolphinDB INSIGHT 行情插件介绍
 
@@ -100,9 +99,9 @@ try{ loadPlugin("./plugins/insight/PluginInsight.txt") }catch(ex){print ex}
 
 ```
 try {
-	tcpClient  = insight::getHandle()
-	insight::unsubscribe(tcpClient) 
-	insight::close(tcpClient) 
+ tcpClient  = insight::getHandle()
+ insight::unsubscribe(tcpClient) 
+ insight::close(tcpClient) 
 } catch(ex) { print(ex) }
 try { unsubscribeTable(tableName="transactionTable", actionName="transactionTableInsert") } catch(ex) { print(ex) }
 try { unsubscribeTable(tableName="orderTable", actionName="orderTableInsert") } catch(ex) { print(ex) }
@@ -162,10 +161,10 @@ dbID = database(, partitionType=HASH, partitionScheme=[SYMBOL, 25])
 db = database(directory=dbName, partitionType=COMPO, partitionScheme=[dbDate, dbID],engine='TSDB',atomic='CHUNK')
 
 tbSchema = table(1:0, transactionColName, transactionColType)
-db.createPartitionedTable(table=tbSchema,tableName=transactionTbName,partitionColumns=`MDDate`HTSCSecurityID,sortColumns=`HTSCSecurityID`MDTime)	
+db.createPartitionedTable(table=tbSchema,tableName=transactionTbName,partitionColumns=`MDDate`HTSCSecurityID,sortColumns=`HTSCSecurityID`MDTime) 
 
 tbSchema = table(1:0, orderColName, orderColType)
-db.createPartitionedTable(table=tbSchema,tableName=orderTbName,partitionColumns=`MDDate`HTSCSecurityID,sortColumns=`HTSCSecurityID`MDTime)	
+db.createPartitionedTable(table=tbSchema,tableName=orderTbName,partitionColumns=`MDDate`HTSCSecurityID,sortColumns=`HTSCSecurityID`MDTime) 
 ```
 
 ### 3.3 订阅流数据表把增量数据实时写入分布式数据库
@@ -275,73 +274,73 @@ try{ loadPlugin("./plugins/insight/PluginInsight.txt") }catch(ex){print ex}
 
 // 清理环境
 def cleanEnvironment(){
-	try {
-		tcpClient  = insight::getHandle()
-		insight::unsubscribe(tcpClient) 
-		insight::close(tcpClient) 
-	} catch(ex) { print(ex) }
-	try { unsubscribeTable(tableName="transactionTable", actionName="transactionTableInsert") } catch(ex) { print(ex) }
-	try { unsubscribeTable(tableName="orderTable", actionName="orderTableInsert") } catch(ex) { print(ex) }
-	try { dropStreamTable(tableName="transactionTable") } catch(ex) { print(ex) }
-	try { dropStreamTable(tableName="orderTable") } catch(ex) { print(ex) }
-	undef all
+ try {
+  tcpClient  = insight::getHandle()
+  insight::unsubscribe(tcpClient) 
+  insight::close(tcpClient) 
+ } catch(ex) { print(ex) }
+ try { unsubscribeTable(tableName="transactionTable", actionName="transactionTableInsert") } catch(ex) { print(ex) }
+ try { unsubscribeTable(tableName="orderTable", actionName="orderTableInsert") } catch(ex) { print(ex) }
+ try { dropStreamTable(tableName="transactionTable") } catch(ex) { print(ex) }
+ try { dropStreamTable(tableName="orderTable") } catch(ex) { print(ex) }
+ undef all
 }
 
 // 创建用于 INSIGHT 行情接入的持久化流数据表
 def createStreamTable() {
-	cacheSize = 1000000
-	transactionSchema = insight::getSchema(`StockTransaction);
-	orderSchema = insight::getSchema(`StockOrder);
-	transactionColName = transactionSchema[`name]
-	transactionColType = transactionSchema[`type]
-	orderColName = orderSchema[`name]
-	orderColType = orderSchema[`type]
-	enableTableShareAndPersistence(table=streamTable(cacheSize:0, transactionColName, transactionColType), tableName=`transactionTable, cacheSize=cacheSize)
-	enableTableShareAndPersistence(table=streamTable(cacheSize:0, orderColName, orderColType), tableName=`orderTable, cacheSize=cacheSize)
+ cacheSize = 1000000
+ transactionSchema = insight::getSchema(`StockTransaction);
+ orderSchema = insight::getSchema(`StockOrder);
+ transactionColName = transactionSchema[`name]
+ transactionColType = transactionSchema[`type]
+ orderColName = orderSchema[`name]
+ orderColType = orderSchema[`type]
+ enableTableShareAndPersistence(table=streamTable(cacheSize:0, transactionColName, transactionColType), tableName=`transactionTable, cacheSize=cacheSize)
+ enableTableShareAndPersistence(table=streamTable(cacheSize:0, orderColName, orderColType), tableName=`orderTable, cacheSize=cacheSize)
 }
 
 // 创建存储行情数据的分布式数据库表
 def createDFSTable(dbName, transactionTbName, orderTbName) {
-	transactionSchema = insight::getSchema(`StockTransaction);
-	orderSchema = insight::getSchema(`StockOrder);
-	transactionColName = transactionSchema[`name]
-	transactionColType = transactionSchema[`type]
-	orderColName = orderSchema[`name]
-	orderColType = orderSchema[`type]
-	if(!existsDatabase(dbName)) {
-		dbDate = database(, partitionType=VALUE, partitionScheme=2023.01.01..2024.01.01)
-		dbID = database(, partitionType=HASH, partitionScheme=[SYMBOL, 25])
-		db = database(directory=dbName, partitionType=COMPO, partitionScheme=[dbDate, dbID],engine='TSDB',atomic='CHUNK')
-	}
-	if(!existsTable(dbName, transactionTbName)) {
-		db = database(dbName)
-		tbSchema = table(1:0, transactionColName, transactionColType)
-		db.createPartitionedTable(table=tbSchema,tableName=transactionTbName,partitionColumns=`MDDate`HTSCSecurityID,sortColumns=`HTSCSecurityID`MDTime)	
-	}
-	if(!existsTable(dbName, orderTbName)) {
-		db = database(dbName)
-		tbSchema = table(1:0, orderColName, orderColType)
-		db.createPartitionedTable(table=tbSchema,tableName=orderTbName,partitionColumns=`MDDate`HTSCSecurityID,sortColumns=`HTSCSecurityID`MDTime)	
-	}
+ transactionSchema = insight::getSchema(`StockTransaction);
+ orderSchema = insight::getSchema(`StockOrder);
+ transactionColName = transactionSchema[`name]
+ transactionColType = transactionSchema[`type]
+ orderColName = orderSchema[`name]
+ orderColType = orderSchema[`type]
+ if(!existsDatabase(dbName)) {
+  dbDate = database(, partitionType=VALUE, partitionScheme=2023.01.01..2024.01.01)
+  dbID = database(, partitionType=HASH, partitionScheme=[SYMBOL, 25])
+  db = database(directory=dbName, partitionType=COMPO, partitionScheme=[dbDate, dbID],engine='TSDB',atomic='CHUNK')
+ }
+ if(!existsTable(dbName, transactionTbName)) {
+  db = database(dbName)
+  tbSchema = table(1:0, transactionColName, transactionColType)
+  db.createPartitionedTable(table=tbSchema,tableName=transactionTbName,partitionColumns=`MDDate`HTSCSecurityID,sortColumns=`HTSCSecurityID`MDTime) 
+ }
+ if(!existsTable(dbName, orderTbName)) {
+  db = database(dbName)
+  tbSchema = table(1:0, orderColName, orderColType)
+  db.createPartitionedTable(table=tbSchema,tableName=orderTbName,partitionColumns=`MDDate`HTSCSecurityID,sortColumns=`HTSCSecurityID`MDTime) 
+ }
 }
 
 // 订阅流数据表把增量数据实时写入分布式数据库
 def saveToDFSTable(dbName, transactionTbName, orderTbName) {
-	Transaction = loadTable(database=dbName, tableName=transactionTbName)
-	Order = loadTable(database=dbName, tableName=orderTbName)
-	subscribeTable(tableName="transactionTable", actionName="transactionTableInsert", offset=-1, handler=tableInsert{Transaction}, msgAsTable=true, batchSize=20000, throttle=1, reconnect=true)
-	subscribeTable(tableName="orderTable", actionName="orderTableInsert", offset=-1, handler=tableInsert{Transaction}, msgAsTable=true, batchSize=20000, throttle=1, reconnect=true)
+ Transaction = loadTable(database=dbName, tableName=transactionTbName)
+ Order = loadTable(database=dbName, tableName=orderTbName)
+ subscribeTable(tableName="transactionTable", actionName="transactionTableInsert", offset=-1, handler=tableInsert{Transaction}, msgAsTable=true, batchSize=20000, throttle=1, reconnect=true)
+ subscribeTable(tableName="orderTable", actionName="orderTableInsert", offset=-1, handler=tableInsert{Transaction}, msgAsTable=true, batchSize=20000, throttle=1, reconnect=true)
 }
 
 // 订阅 INSIGHT 行情将增量数据实时写入流数据表
 def connectToInsight(ip, port, user, password){
-	// 建立 INSIGHT 连接
-	handles = dict(['Transaction', 'Order'], [objByName(`transactionTable), objByName(`orderTable)])
-	tcpClient= insight::connect(handles, ip, port, user, password,,,true)
-	// 订阅深交所股票逐笔成交、逐笔委托
-	insight::subscribe(tcpClient, `MD_TRANSACTION`MD_ORDER, `XSHE, `StockType)  
-	// 订阅上交所股票逐笔成交、逐笔委托
-	insight::subscribe(tcpClient, `MD_TRANSACTION`MD_ORDER, `XSHG, `StockType)  
+ // 建立 INSIGHT 连接
+ handles = dict(['Transaction', 'Order'], [objByName(`transactionTable), objByName(`orderTable)])
+ tcpClient= insight::connect(handles, ip, port, user, password,,,true)
+ // 订阅深交所股票逐笔成交、逐笔委托
+ insight::subscribe(tcpClient, `MD_TRANSACTION`MD_ORDER, `XSHE, `StockType)  
+ // 订阅上交所股票逐笔成交、逐笔委托
+ insight::subscribe(tcpClient, `MD_TRANSACTION`MD_ORDER, `XSHG, `StockType)  
 }
 
 // 配置账户信息。注意！账户信息必须根据用户实际情况进行修改
@@ -363,4 +362,3 @@ connectToInsight(ip, port, user, password)
 writeLog("Subsribe to insight market data successfully!")
 
 ```
-

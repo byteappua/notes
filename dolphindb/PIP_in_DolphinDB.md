@@ -25,7 +25,7 @@
 
 在物联网用户场景中，有一个普遍的需求是需要查询某个采集点的全年（一季度、一个月）的数据并做展示分析。在展示时，如果显示所有数据，会有性能问题，特别是实时展示。同时，这个也不是必须的，因为只需要展示大概的趋势就足以达到决策要求，太多数据点反而可能模糊决策。以折线图为例，可视化场景中，当 x 轴的数据不断增多，对应 y 轴的数据量增多，体现在图上的折线就会变得越来越复杂，当数量达到一定程度，很难再通过图找到具体的某一个点所表述的真实值是什么，数据变得很拥挤。下图展示了 1 个包含 1 万个数据点的折线图：
 
-<img src="images/PIP_in_DolphinDB/1_1.png" width=50%>
+<img src="./images/PIP_in_DolphinDB/1_1.png" width=50%>
 
 为了能够看到图形的整体，我们就要隐藏一些点，仅展示那些能够代表其他的点，或者是创建能够代表这些点的新数据点，这就是降采样算法解决的问题。
 
@@ -45,7 +45,7 @@ DolphinDB 已经内置实现了简单的降采样算法如最大值、最小值�
 
 ### 3.1 PIP 介绍
 
-PIP（Perceptually Important Points）算法又叫要点感知算法，是一种时间序列聚合算法，其思路是：对于一个长度为 n 的时间序列数据，迭代地依据最大距离原则采样出 k 个数据点，k 是人为设置的降采样数据点数（k <= n）。PIP 算法的具体步骤如下（论文参考：https://sci-hub.se/10.1109/iscmi.2017.8279589）
+PIP（Perceptually Important Points）算法又叫要点感知算法，是一种时间序列聚合算法，其思路是：对于一个长度为 n 的时间序列数据，迭代地依据最大距离原则采样出 k 个数据点，k 是人为设置的降采样数据点数（k <= n）。PIP 算法的具体步骤如下（论文参考：<https://sci-hub.se/10.1109/iscmi.2017.8279589）>
 
 - 第一步：采样出时间序列的第 1 个和最后 1 个样本放入降采样数据点集
 - 第二步：计算剩余未采样样本点到其邻接的 2 个要点构成的直线的距离
@@ -54,15 +54,15 @@ PIP（Perceptually Important Points）算法又叫要点感知算法，是一种
 
 可以通过下面的演示图片，更直观的感受 PIP 算法的计算过程：
 
-<img src="images/PIP_in_DolphinDB/3_1.png" width=47%>
+<img src="./images/PIP_in_DolphinDB/3_1.png" width=47%>
 
-其中，上述点到直线的距离计算常用的是垂直距离（Vertical Distance），本文中的脚本实现也将采用该距离计算公式。对于点（x3，y3）到另外两点（x1，y1）、（x2，y2）所构成直线的距离的计算公式为 
+其中，上述点到直线的距离计算常用的是垂直距离（Vertical Distance），本文中的脚本实现也将采用该距离计算公式。对于点（x3，y3）到另外两点（x1，y1）、（x2，y2）所构成直线的距离的计算公式为
 
-<img src="images/PIP_in_DolphinDB/3_2.png" width=23%>
+<img src="./images/PIP_in_DolphinDB/3_2.png" width=23%>
 
 即为下图中蓝色虚线所示的距离：
 
-<img src="images/PIP_in_DolphinDB/3_3.png" width=35%>
+<img src="./images/PIP_in_DolphinDB/3_3.png" width=35%>
 
 ### 3.2 脚本实现
 
@@ -196,7 +196,7 @@ DolphinDB 内置了画图函数 plot，用户可以在库内直接调用对数�
 plot(Y[0:10000], X[0:10000])
 ```
 
-<img src="images/PIP_in_DolphinDB/4_1.png" width=50%>
+<img src="./images/PIP_in_DolphinDB/4_1.png" width=50%>
 
 - 降采样数据折线图：
 
@@ -204,8 +204,6 @@ plot(Y[0:10000], X[0:10000])
 plot(samplesPIP.y[0:100], samplesPIP.x[0:100])
 ```
 
-<img src="images/PIP_in_DolphinDB/4_2.png" width=55%>
+<img src="./images/PIP_in_DolphinDB/4_2.png" width=55%>
 
 可见，PIP 降采样算法可以完全保留数据的趋势信息。但在实际业务场景中，需结合实际业务场景合理设置滑动窗口大小及降采样点数。
-
- 

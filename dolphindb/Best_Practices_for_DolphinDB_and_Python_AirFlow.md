@@ -6,28 +6,26 @@ DolphinDB 作为一款高性能时序数据库，其在实际生产环境中常�
 
 本教程包含内容如下：
 
-
-  - [1. Airflow](#1-airflow)
-    - [1.1 Airflow 简介](#11-airflow-简介)
-    - [1.2 Airflow 部分核心功能](#12-airflow-部分核心功能)
-    - [1.3 DolphinDBOperator](#13-dolphindboperator)
-    - [1.4 Airflow 安装部署](#14-airflow-安装部署)
-  - [2. Airflow 调度对行情数据 ETL](#2-airflow-调度对行情数据-etl)
-    - [2.1 整体 ETL 架构图](#21-整体-etl-架构图)
-    - [2.2 数据介绍](#22-数据介绍)
-    - [2.3 DolphinDB 核心清洗脚本介绍](#23-dolphindb-核心清洗脚本介绍)
-    - [2.4 增量数据清洗](#24-增量数据清洗)
-    - [2.5 Airflow 生成 DAG 执行任务](#25-airflow-生成-dag-执行任务)
-  - [3. 常见问题解答(FAQ)](#3-常见问题解答faq)
-    - [3.1 如何捕获 DolphinDB 脚本中的 print 函数打印的信息](#31-如何捕获-dolphindb-脚本中的-print-函数打印的信息)
-    - [3.2 DolphinDB 脚本中的异步作业 submitjob 如何检测其完成状态](#32-dolphindb-脚本中的异步作业-submitjob-如何检测其完成状态)
-    - [3.3 执行 Airflow 中经常遇到连接超时断开，该如何处理](#33-执行-airflow-中经常遇到连接超时断开该如何处理)
-    - [3.4 将 start\_date 日期设为当前日期，每天运行一次，为什么当天不会运行](#34-将-start_date-日期设为当前日期每天运行一次为什么当天不会运行)
-    - [3.5 DolphinDBOperator 任务运行失败如何定位失败原因](#35-dolphindboperator-任务运行失败如何定位失败原因)
-  - [4. 总结](#4-总结)
-  - [法律声明](#法律声明)
-  - [附件](#附件)
-
+- [1. Airflow](#1-airflow)
+  - [1.1 Airflow 简介](#11-airflow-简介)
+  - [1.2 Airflow 部分核心功能](#12-airflow-部分核心功能)
+  - [1.3 DolphinDBOperator](#13-dolphindboperator)
+  - [1.4 Airflow 安装部署](#14-airflow-安装部署)
+- [2. Airflow 调度对行情数据 ETL](#2-airflow-调度对行情数据-etl)
+  - [2.1 整体 ETL 架构图](#21-整体-etl-架构图)
+  - [2.2 数据介绍](#22-数据介绍)
+  - [2.3 DolphinDB 核心清洗脚本介绍](#23-dolphindb-核心清洗脚本介绍)
+  - [2.4 增量数据清洗](#24-增量数据清洗)
+  - [2.5 Airflow 生成 DAG 执行任务](#25-airflow-生成-dag-执行任务)
+- [3. 常见问题解答(FAQ)](#3-常见问题解答faq)
+  - [3.1 如何捕获 DolphinDB 脚本中的 print 函数打印的信息](#31-如何捕获-dolphindb-脚本中的-print-函数打印的信息)
+  - [3.2 DolphinDB 脚本中的异步作业 submitjob 如何检测其完成状态](#32-dolphindb-脚本中的异步作业-submitjob-如何检测其完成状态)
+  - [3.3 执行 Airflow 中经常遇到连接超时断开，该如何处理](#33-执行-airflow-中经常遇到连接超时断开该如何处理)
+  - [3.4 将 start\_date 日期设为当前日期，每天运行一次，为什么当天不会运行](#34-将-start_date-日期设为当前日期每天运行一次为什么当天不会运行)
+  - [3.5 DolphinDBOperator 任务运行失败如何定位失败原因](#35-dolphindboperator-任务运行失败如何定位失败原因)
+- [4. 总结](#4-总结)
+- [法律声明](#法律声明)
+- [附件](#附件)
 
 ## 1. Airflow
 
@@ -43,7 +41,7 @@ Airflow 是一个可编程，调度和监控的工作流平台，基于有向无
 - **强制幂等约束**：DAG 运行的结果应始终具有幂等特性。这意味着当您使用相同的参数多次运行某个流程时（即使在不同的日期），结果也将完全相同。
 - **有条件地执行**：Airflow 具有一些选项，可根据之前的实例的成功来控制 DAG 中任务的运行方式。
 
-### 1.3 DolphinDBOperator 
+### 1.3 DolphinDBOperator
 
 DolphinDBOperator 是 Airflow 的 operator 一种，通过 DolphinDBOperator 可以在 Airflow 连接 DolphinDB 进行数据写入、查询、计算等操作。DolphinDBOperator 特有的参数有：
 
@@ -67,6 +65,7 @@ DolphinDBOperator 使用示例如下：
                 '''
         )
     ```
+
 - 通过 file_path 指定 dos 文件运行脚本：
 
     ```
@@ -107,15 +106,15 @@ DolphinDBOperator 使用示例如下：
 - **主机环境**  
   
     1. 执行以下命令安装 Airflow：
-    
+
         ```
         pip install airflow-provider-dolphindb
-        ```       
-    
+        ```
+
     2. 安装好 airflow.provider.dolphindb 插件后，启动 Airflow ：
-    
+
         部署以及安装 Airflow 详情见官网：[airflow 快速入门](https://airflow.apache.org/docs/apache-airflow/stable/start.html)。以下为启动 Airflow 的核心代码:
-        
+
         ```
         #初始化数据库
         airflow db init
@@ -129,36 +128,35 @@ DolphinDBOperator 使用示例如下：
         # 守护进程运行 scheduler
         airflow scheduler -D
         ```
-    
+
     3. 执行以下命令验证 Airflow 是否成功启动：
-    
+
         ```
         ps -aux|grep airflow
         ```
-        
+
         预期输出如下图，证明 Airflow 启动成功：
-        
+
         <img src="./images/Best_Practices_for_DolphinDB_and_Python_AirFlow/1_1.png" width=70%>
-    
+
     4. 启动成功后，浏览器中登陆 Airflow 的 web 界面：
-    
+
         - 默认地址：`http://IP:8080`
         - 默认账户：初始化 db 中创建，本文例子中为 `admin`
         - 默认密码：初始化 db 中创建, 本文例子中为 `admin`
-        
+
         <img src="./images/Best_Practices_for_DolphinDB_and_Python_AirFlow/1_2.png" width=70%>
-    
+
     5. 输入上述创建用户名密码即可进入 Airflow 的 UI 界面，如下所示:
-    
+
         <img src="./images/Best_Practices_for_DolphinDB_and_Python_AirFlow/1_3.png" width=70%>
-    
+
     6. 填写 DolphinDB 连接信息后连接到 DolphinDB 数据库。
-    
+
         <img src="./images/Best_Practices_for_DolphinDB_and_Python_AirFlow/1_4.png" width=70%>
-    
-    
+
         <img src="./images/Best_Practices_for_DolphinDB_and_Python_AirFlow/1_5.png" width=70%>
-    
+
         连接成功后，在 DolphinDBOperator 中指定 `dolphindb_conn_id='dolphindb_test'`，即可运行 DolphinDB 脚本。上述准备工作完成后，下文以一个股票快照数据的 ETL 过程为例展现 Airflow 如何和 DolphinDB 交互。
 
 ## 2. Airflow 调度对行情数据 ETL
@@ -170,7 +168,6 @@ DolphinDBOperator 使用示例如下：
 **ETL 平台功能模块代码目录结构**
 
 <img src="./images/Best_Practices_for_DolphinDB_and_Python_AirFlow/2_2.png" width=50%>
-
 
 **功能模块代码目录结构详解**
 
@@ -228,89 +225,90 @@ DolphinDBOperator 使用示例如下：
 - 创建 snapshot 原始数据存储表：
 
     创建存储原始 snapshot 原始数据的库表，核心代码如下：
+
     ```
     module loadSnapshot::createSnapshotTable
     
     //创建 snapshot 原始数据存储库表
     def createSnapshot(dbName, tbName){
-    	login("admin", "123456")
-    	if(existsDatabase(dbName)){
-    		dropDatabase(dbName)
-    	}
-    	db1 = database(, VALUE, 2020.01.01..2021.01.01)
-    	db2 = database(, HASH, [SYMBOL, 50])
-    	//按天和股票代码组合分区
-    	db = database(dbName,COMPO,[db1,db2],engine='TSDB')
-    	colName = ["SecurityID","DateTime","PreClosePx","OpenPx","HighPx","LowPx","LastPx","TotalVolumeTrade","TotalValueTrade","InstrumentStatus","BidPrice0","BidPrice1","BidPrice2","BidPrice3","BidPrice4","BidPrice5","BidPrice6","BidPrice7","BidPrice8","BidPrice9","BidOrderQty0","BidOrderQty1","BidOrderQty2","BidOrderQty3","BidOrderQty4","BidOrderQty5","BidOrderQty6","BidOrderQty7","BidOrderQty8","BidOrderQty9","BidNumOrders0","BidNumOrders1","BidNumOrders2","BidNumOrders3","BidNumOrders4","BidNumOrders5","BidNumOrders6","BidNumOrders7","BidNumOrders8","BidNumOrders9","BidOrders0","BidOrders1","BidOrders2","BidOrders3","BidOrders4","BidOrders5","BidOrders6","BidOrders7","BidOrders8","BidOrders9","BidOrders10","BidOrders11","BidOrders12","BidOrders13","BidOrders14","BidOrders15","BidOrders16","BidOrders17","BidOrders18","BidOrders19","BidOrders20","BidOrders21","BidOrders22","BidOrders23","BidOrders24","BidOrders25","BidOrders26","BidOrders27","BidOrders28","BidOrders29","BidOrders30","BidOrders31","BidOrders32","BidOrders33","BidOrders34","BidOrders35","BidOrders36","BidOrders37","BidOrders38","BidOrders39","BidOrders40","BidOrders41","BidOrders42","BidOrders43","BidOrders44","BidOrders45","BidOrders46","BidOrders47","BidOrders48","BidOrders49","OfferPrice0","OfferPrice1","OfferPrice2","OfferPrice3","OfferPrice4","OfferPrice5","OfferPrice6","OfferPrice7","OfferPrice8","OfferPrice9","OfferOrderQty0","OfferOrderQty1","OfferOrderQty2","OfferOrderQty3","OfferOrderQty4","OfferOrderQty5","OfferOrderQty6","OfferOrderQty7","OfferOrderQty8","OfferOrderQty9","OfferNumOrders0","OfferNumOrders1","OfferNumOrders2","OfferNumOrders3","OfferNumOrders4","OfferNumOrders5","OfferNumOrders6","OfferNumOrders7","OfferNumOrders8","OfferNumOrders9","OfferOrders0","OfferOrders1","OfferOrders2","OfferOrders3","OfferOrders4","OfferOrders5","OfferOrders6","OfferOrders7","OfferOrders8","OfferOrders9","OfferOrders10","OfferOrders11","OfferOrders12","OfferOrders13","OfferOrders14","OfferOrders15","OfferOrders16","OfferOrders17","OfferOrders18","OfferOrders19","OfferOrders20","OfferOrders21","OfferOrders22","OfferOrders23","OfferOrders24","OfferOrders25","OfferOrders26","OfferOrders27","OfferOrders28","OfferOrders29","OfferOrders30","OfferOrders31","OfferOrders32","OfferOrders33","OfferOrders34","OfferOrders35","OfferOrders36","OfferOrders37","OfferOrders38","OfferOrders39","OfferOrders40","OfferOrders41","OfferOrders42","OfferOrders43","OfferOrders44","OfferOrders45","OfferOrders46","OfferOrders47","OfferOrders48","OfferOrders49","NumTrades","IOPV","TotalBidQty","TotalOfferQty","WeightedAvgBidPx","WeightedAvgOfferPx","TotalBidNumber","TotalOfferNumber","BidTradeMaxDuration","OfferTradeMaxDuration","NumBidOrders","NumOfferOrders","WithdrawBuyNumber","WithdrawBuyAmount","WithdrawBuyMoney","WithdrawSellNumber","WithdrawSellAmount","WithdrawSellMoney","ETFBuyNumber","ETFBuyAmount","ETFBuyMoney","ETFSellNumber","ETFSellAmount","ETFSellMoney"]
-    	colType = ["SYMBOL","TIMESTAMP","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","INT","DOUBLE","SYMBOL","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","DOUBLE","DOUBLE","INT","INT","INT","INT","INT","INT","INT","INT","DOUBLE","INT","INT","DOUBLE","INT","INT","INT","INT","INT","INT"]
-    	schemaTable = table(1:0,colName, colType)
-    	
-    	db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`DateTime`SecurityID, compressMethods={DateTime:"delta"}, sortColumns=`SecurityID`DateTime, keepDuplicates=ALL)
+     login("admin", "123456")
+     if(existsDatabase(dbName)){
+      dropDatabase(dbName)
+     }
+     db1 = database(, VALUE, 2020.01.01..2021.01.01)
+     db2 = database(, HASH, [SYMBOL, 50])
+     //按天和股票代码组合分区
+     db = database(dbName,COMPO,[db1,db2],engine='TSDB')
+     colName = ["SecurityID","DateTime","PreClosePx","OpenPx","HighPx","LowPx","LastPx","TotalVolumeTrade","TotalValueTrade","InstrumentStatus","BidPrice0","BidPrice1","BidPrice2","BidPrice3","BidPrice4","BidPrice5","BidPrice6","BidPrice7","BidPrice8","BidPrice9","BidOrderQty0","BidOrderQty1","BidOrderQty2","BidOrderQty3","BidOrderQty4","BidOrderQty5","BidOrderQty6","BidOrderQty7","BidOrderQty8","BidOrderQty9","BidNumOrders0","BidNumOrders1","BidNumOrders2","BidNumOrders3","BidNumOrders4","BidNumOrders5","BidNumOrders6","BidNumOrders7","BidNumOrders8","BidNumOrders9","BidOrders0","BidOrders1","BidOrders2","BidOrders3","BidOrders4","BidOrders5","BidOrders6","BidOrders7","BidOrders8","BidOrders9","BidOrders10","BidOrders11","BidOrders12","BidOrders13","BidOrders14","BidOrders15","BidOrders16","BidOrders17","BidOrders18","BidOrders19","BidOrders20","BidOrders21","BidOrders22","BidOrders23","BidOrders24","BidOrders25","BidOrders26","BidOrders27","BidOrders28","BidOrders29","BidOrders30","BidOrders31","BidOrders32","BidOrders33","BidOrders34","BidOrders35","BidOrders36","BidOrders37","BidOrders38","BidOrders39","BidOrders40","BidOrders41","BidOrders42","BidOrders43","BidOrders44","BidOrders45","BidOrders46","BidOrders47","BidOrders48","BidOrders49","OfferPrice0","OfferPrice1","OfferPrice2","OfferPrice3","OfferPrice4","OfferPrice5","OfferPrice6","OfferPrice7","OfferPrice8","OfferPrice9","OfferOrderQty0","OfferOrderQty1","OfferOrderQty2","OfferOrderQty3","OfferOrderQty4","OfferOrderQty5","OfferOrderQty6","OfferOrderQty7","OfferOrderQty8","OfferOrderQty9","OfferNumOrders0","OfferNumOrders1","OfferNumOrders2","OfferNumOrders3","OfferNumOrders4","OfferNumOrders5","OfferNumOrders6","OfferNumOrders7","OfferNumOrders8","OfferNumOrders9","OfferOrders0","OfferOrders1","OfferOrders2","OfferOrders3","OfferOrders4","OfferOrders5","OfferOrders6","OfferOrders7","OfferOrders8","OfferOrders9","OfferOrders10","OfferOrders11","OfferOrders12","OfferOrders13","OfferOrders14","OfferOrders15","OfferOrders16","OfferOrders17","OfferOrders18","OfferOrders19","OfferOrders20","OfferOrders21","OfferOrders22","OfferOrders23","OfferOrders24","OfferOrders25","OfferOrders26","OfferOrders27","OfferOrders28","OfferOrders29","OfferOrders30","OfferOrders31","OfferOrders32","OfferOrders33","OfferOrders34","OfferOrders35","OfferOrders36","OfferOrders37","OfferOrders38","OfferOrders39","OfferOrders40","OfferOrders41","OfferOrders42","OfferOrders43","OfferOrders44","OfferOrders45","OfferOrders46","OfferOrders47","OfferOrders48","OfferOrders49","NumTrades","IOPV","TotalBidQty","TotalOfferQty","WeightedAvgBidPx","WeightedAvgOfferPx","TotalBidNumber","TotalOfferNumber","BidTradeMaxDuration","OfferTradeMaxDuration","NumBidOrders","NumOfferOrders","WithdrawBuyNumber","WithdrawBuyAmount","WithdrawBuyMoney","WithdrawSellNumber","WithdrawSellAmount","WithdrawSellMoney","ETFBuyNumber","ETFBuyAmount","ETFBuyMoney","ETFSellNumber","ETFSellAmount","ETFSellMoney"]
+     colType = ["SYMBOL","TIMESTAMP","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","INT","DOUBLE","SYMBOL","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","INT","DOUBLE","DOUBLE","INT","INT","INT","INT","INT","INT","INT","INT","DOUBLE","INT","INT","DOUBLE","INT","INT","INT","INT","INT","INT"]
+     schemaTable = table(1:0,colName, colType)
+     
+     db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`DateTime`SecurityID, compressMethods={DateTime:"delta"}, sortColumns=`SecurityID`DateTime, keepDuplicates=ALL)
     }
     ```
-    
+
     对于 snapshot 数据，本文采用的数据库分区方案是组合分区，第一层按天分区，第二层对股票代码按 HASH 分50个分区。如何根据数据确定分区方案可参考 [DolphinDB 分区数据库教程](https://gitee.com/dolphindb/Tutorials_CN/blob/master/database.md)。
 
 - 创建清洗后 snapshot 数据存储表：
 
     创建清洗后以 Array 格式存储 snapshot 数据的库表，核心代码如下：
-    
+
     ```
     module processSnapshot::createSnapshot_array
     
     //创建清洗后的 snapshot 数据存储表
     def createProcessTable(dbName, tbName){
-    	if(existsDatabase(dbName)){
-    		dropDatabase(dbName)
-    	}
-    	db1 = database(, VALUE, 2020.01.01..2021.01.01)
-    	db2 = database(, HASH, [SYMBOL, 50])
-    	//按天和股票代码组合分区
-    	db = database(dbName,COMPO,[db1,db2],engine='TSDB')
-    	colName = ["SecurityID","DateTime","PreClosePx","OpenPx","HighPx","LowPx","LastPx","TotalVolumeTrade","TotalValueTrade","InstrumentStatus","BidPrice","BidOrderQty","BidNumOrders","BidOrders","OfferPrice","OfferOrderQty","OfferNumOrders","OfferOrders","NumTrades","IOPV","TotalBidQty","TotalOfferQty","WeightedAvgBidPx","WeightedAvgOfferPx","TotalBidNumber","TotalOfferNumber","BidTradeMaxDuration","OfferTradeMaxDuration","NumBidOrders","NumOfferOrders","WithdrawBuyNumber","WithdrawBuyAmount","WithdrawBuyMoney","WithdrawSellNumber","WithdrawSellAmount","WithdrawSellMoney","ETFBuyNumber","ETFBuyAmount","ETFBuyMoney","ETFSellNumber","ETFSellAmount","ETFSellMoney"]
-    	colType = ["SYMBOL","TIMESTAMP","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","INT","DOUBLE","SYMBOL","DOUBLE[]","INT[]","INT[]","INT[]","DOUBLE[]","INT[]","INT[]","INT[]","INT","INT","INT","INT","DOUBLE","DOUBLE","INT","INT","INT","INT","INT","INT","INT","INT","DOUBLE","INT","INT","DOUBLE","INT","INT","INT","INT","INT","INT"]
-    	schemaTable = table(1:0, colName, colType)
-    	db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`DateTime`SecurityID, compressMethods={DateTime:"delta"}, sortColumns=`SecurityID`DateTime, keepDuplicates=ALL)
+     if(existsDatabase(dbName)){
+      dropDatabase(dbName)
+     }
+     db1 = database(, VALUE, 2020.01.01..2021.01.01)
+     db2 = database(, HASH, [SYMBOL, 50])
+     //按天和股票代码组合分区
+     db = database(dbName,COMPO,[db1,db2],engine='TSDB')
+     colName = ["SecurityID","DateTime","PreClosePx","OpenPx","HighPx","LowPx","LastPx","TotalVolumeTrade","TotalValueTrade","InstrumentStatus","BidPrice","BidOrderQty","BidNumOrders","BidOrders","OfferPrice","OfferOrderQty","OfferNumOrders","OfferOrders","NumTrades","IOPV","TotalBidQty","TotalOfferQty","WeightedAvgBidPx","WeightedAvgOfferPx","TotalBidNumber","TotalOfferNumber","BidTradeMaxDuration","OfferTradeMaxDuration","NumBidOrders","NumOfferOrders","WithdrawBuyNumber","WithdrawBuyAmount","WithdrawBuyMoney","WithdrawSellNumber","WithdrawSellAmount","WithdrawSellMoney","ETFBuyNumber","ETFBuyAmount","ETFBuyMoney","ETFSellNumber","ETFSellAmount","ETFSellMoney"]
+     colType = ["SYMBOL","TIMESTAMP","DOUBLE","DOUBLE","DOUBLE","DOUBLE","DOUBLE","INT","DOUBLE","SYMBOL","DOUBLE[]","INT[]","INT[]","INT[]","DOUBLE[]","INT[]","INT[]","INT[]","INT","INT","INT","INT","DOUBLE","DOUBLE","INT","INT","INT","INT","INT","INT","INT","INT","DOUBLE","INT","INT","DOUBLE","INT","INT","INT","INT","INT","INT"]
+     schemaTable = table(1:0, colName, colType)
+     db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`DateTime`SecurityID, compressMethods={DateTime:"delta"}, sortColumns=`SecurityID`DateTime, keepDuplicates=ALL)
     }
     ```
 
 - 创建 K 线结果存储表：
 
     创建分钟级 K 线结果存储表，核心代码如下：
-    
+
     ```
     module Factor::createFactorOneMinute
     
     //创建分钟 k 线因子储存表
     def createFactorOneMinute(dbName, tbName){
-    	if(existsDatabase(dbName)){
-    		dropDatabase(dbName)
-    	}
-    	//按天分区
-    	db = database(dbName, VALUE, 2021.01.01..2021.01.03,engine = `TSDB)
-    	colName = `TradeDate`TradeTime`SecurityID`Open`High`Low`Close`Volume`Amount`Vwap
-    	colType =[DATE, MINUTE, SYMBOL, DOUBLE, DOUBLE, DOUBLE, DOUBLE, LONG, DOUBLE, DOUBLE]
-    	tbSchema = table(1:0, colName, colType)
-      	db.createPartitionedTable(table=tbSchema,tableName=tbName,partitionColumns=`TradeDate,sortColumns=`SecurityID`TradeTime,keepDuplicates=ALL)
+     if(existsDatabase(dbName)){
+      dropDatabase(dbName)
+     }
+     //按天分区
+     db = database(dbName, VALUE, 2021.01.01..2021.01.03,engine = `TSDB)
+     colName = `TradeDate`TradeTime`SecurityID`Open`High`Low`Close`Volume`Amount`Vwap
+     colType =[DATE, MINUTE, SYMBOL, DOUBLE, DOUBLE, DOUBLE, DOUBLE, LONG, DOUBLE, DOUBLE]
+     tbSchema = table(1:0, colName, colType)
+       db.createPartitionedTable(table=tbSchema,tableName=tbName,partitionColumns=`TradeDate,sortColumns=`SecurityID`TradeTime,keepDuplicates=ALL)
     }
     ```
-    
+
     创建日级 K 线结果存储表，核心代码如下：
-    
+
     ```
     module Factor::createFactorDaily
     
     //创建日 K 线储存表
     def createFactorDaily(dbName, tbName){
-    	if(existsDatabase(dbName)){
-    		dropDatabase(dbName)
-    	}
-    	//按年分区
-    	db = database(dbName, RANGE, datetimeAdd(2000.01M,(0..50)*12, "M"),engine = `TSDB)
-    	colName = `TradeDate`SecurityID`Open`High`Low`Close`Volume`Amount`Vwap
-    	colType =[DATE, SYMBOL, DOUBLE, DOUBLE, DOUBLE, DOUBLE, LONG, DOUBLE, DOUBLE]
-    	tbSchema = table(1:0, colName, colType)
-      	db.createPartitionedTable(table=tbSchema,tableName=tbName,partitionColumns=`TradeDate,sortColumns=`SecurityID`TradeDate,keepDuplicates=ALL)
+     if(existsDatabase(dbName)){
+      dropDatabase(dbName)
+     }
+     //按年分区
+     db = database(dbName, RANGE, datetimeAdd(2000.01M,(0..50)*12, "M"),engine = `TSDB)
+     colName = `TradeDate`SecurityID`Open`High`Low`Close`Volume`Amount`Vwap
+     colType =[DATE, SYMBOL, DOUBLE, DOUBLE, DOUBLE, DOUBLE, LONG, DOUBLE, DOUBLE]
+     tbSchema = table(1:0, colName, colType)
+       db.createPartitionedTable(table=tbSchema,tableName=tbName,partitionColumns=`TradeDate,sortColumns=`SecurityID`TradeDate,keepDuplicates=ALL)
     }
     ```
 
@@ -328,54 +326,55 @@ module processSnapshot::processSnapshotData
 
 //将数据组合为 array、去重，并统计重复数据量
 def mapProcess(mutable t, dbName, tbName){
-	n1 = t.size()
-	t = select SecurityID, DateTime, PreClosePx, OpenPx, HighPx, LowPx, LastPx, TotalVolumeTrade, TotalValueTrade, InstrumentStatus, fixedLengthArrayVector(BidPrice0, BidPrice1, BidPrice2, BidPrice3, BidPrice4, BidPrice5, BidPrice6, BidPrice7, BidPrice8, BidPrice9) as BidPrice, fixedLengthArrayVector(BidOrderQty0, BidOrderQty1, BidOrderQty2, BidOrderQty3, BidOrderQty4, BidOrderQty5, BidOrderQty6, BidOrderQty7, BidOrderQty8, BidOrderQty9) as BidOrderQty, fixedLengthArrayVector(BidNumOrders0, BidNumOrders1, BidNumOrders2, BidNumOrders3, BidNumOrders4, BidNumOrders5, BidNumOrders6, BidNumOrders7, BidNumOrders8, BidNumOrders9) as BidNumOrders, fixedLengthArrayVector(BidOrders0, BidOrders1, BidOrders2, BidOrders3, BidOrders4, BidOrders5, BidOrders6, BidOrders7, BidOrders8, BidOrders9, BidOrders10, BidOrders11, BidOrders12, BidOrders13, BidOrders14, BidOrders15, BidOrders16, BidOrders17, BidOrders18, BidOrders19, BidOrders20, BidOrders21, BidOrders22, BidOrders23, BidOrders24, BidOrders25, BidOrders26, BidOrders27, BidOrders28, BidOrders29, BidOrders30, BidOrders31, BidOrders32, BidOrders33, BidOrders34, BidOrders35, BidOrders36, BidOrders37, BidOrders38, BidOrders39, BidOrders40, BidOrders41, BidOrders42, BidOrders43, BidOrders44, BidOrders45, BidOrders46, BidOrders47, BidOrders48, BidOrders49) as BidOrders, fixedLengthArrayVector(OfferPrice0, OfferPrice1, OfferPrice2, OfferPrice3, OfferPrice4, OfferPrice5, OfferPrice6, OfferPrice7, OfferPrice8, OfferPrice9) as OfferPrice, fixedLengthArrayVector(OfferOrderQty0, OfferOrderQty1, OfferOrderQty2, OfferOrderQty3, OfferOrderQty4, OfferOrderQty5, OfferOrderQty6, OfferOrderQty7, OfferOrderQty8, OfferOrderQty9) as OfferQty, fixedLengthArrayVector(OfferNumOrders0, OfferNumOrders1, OfferNumOrders2, OfferNumOrders3, OfferNumOrders4, OfferNumOrders5, OfferNumOrders6, OfferNumOrders7, OfferNumOrders8, OfferNumOrders9) as OfferNumOrders, fixedLengthArrayVector(OfferOrders0, OfferOrders1, OfferOrders2, OfferOrders3, OfferOrders4, OfferOrders5, OfferOrders6, OfferOrders7, OfferOrders8, OfferOrders9, OfferOrders10, OfferOrders11, OfferOrders12, OfferOrders13, OfferOrders14, OfferOrders15, OfferOrders16, OfferOrders17, OfferOrders18, OfferOrders19, OfferOrders20, OfferOrders21, OfferOrders22, OfferOrders23, OfferOrders24, OfferOrders25, OfferOrders26, OfferOrders27, OfferOrders28, OfferOrders29, OfferOrders30, OfferOrders31, OfferOrders32, OfferOrders33, OfferOrders34, OfferOrders35, OfferOrders36, OfferOrders37, OfferOrders38, OfferOrders39, OfferOrders40, OfferOrders41, OfferOrders42, OfferOrders43, OfferOrders44, OfferOrders45, OfferOrders46, OfferOrders47, OfferOrders48, OfferOrders49) as OfferOrders, NumTrades, IOPV, TotalBidQty, TotalOfferQty, WeightedAvgBidPx, WeightedAvgOfferPx, TotalBidNumber, TotalOfferNumber, BidTradeMaxDuration, OfferTradeMaxDuration, NumBidOrders, NumOfferOrders, WithdrawBuyNumber, WithdrawBuyAmount, WithdrawBuyMoney, WithdrawSellNumber, WithdrawSellAmount, WithdrawSellMoney, ETFBuyNumber, ETFBuyAmount, ETFBuyMoney, ETFSellNumber, ETFSellAmount, ETFSellMoney from t where isDuplicated([SecurityID, DateTime], FIRST) = false
-	n2 = t.size()
-	loadTable(dbName, tbName).append!(t)
-	return n1,n2
+ n1 = t.size()
+ t = select SecurityID, DateTime, PreClosePx, OpenPx, HighPx, LowPx, LastPx, TotalVolumeTrade, TotalValueTrade, InstrumentStatus, fixedLengthArrayVector(BidPrice0, BidPrice1, BidPrice2, BidPrice3, BidPrice4, BidPrice5, BidPrice6, BidPrice7, BidPrice8, BidPrice9) as BidPrice, fixedLengthArrayVector(BidOrderQty0, BidOrderQty1, BidOrderQty2, BidOrderQty3, BidOrderQty4, BidOrderQty5, BidOrderQty6, BidOrderQty7, BidOrderQty8, BidOrderQty9) as BidOrderQty, fixedLengthArrayVector(BidNumOrders0, BidNumOrders1, BidNumOrders2, BidNumOrders3, BidNumOrders4, BidNumOrders5, BidNumOrders6, BidNumOrders7, BidNumOrders8, BidNumOrders9) as BidNumOrders, fixedLengthArrayVector(BidOrders0, BidOrders1, BidOrders2, BidOrders3, BidOrders4, BidOrders5, BidOrders6, BidOrders7, BidOrders8, BidOrders9, BidOrders10, BidOrders11, BidOrders12, BidOrders13, BidOrders14, BidOrders15, BidOrders16, BidOrders17, BidOrders18, BidOrders19, BidOrders20, BidOrders21, BidOrders22, BidOrders23, BidOrders24, BidOrders25, BidOrders26, BidOrders27, BidOrders28, BidOrders29, BidOrders30, BidOrders31, BidOrders32, BidOrders33, BidOrders34, BidOrders35, BidOrders36, BidOrders37, BidOrders38, BidOrders39, BidOrders40, BidOrders41, BidOrders42, BidOrders43, BidOrders44, BidOrders45, BidOrders46, BidOrders47, BidOrders48, BidOrders49) as BidOrders, fixedLengthArrayVector(OfferPrice0, OfferPrice1, OfferPrice2, OfferPrice3, OfferPrice4, OfferPrice5, OfferPrice6, OfferPrice7, OfferPrice8, OfferPrice9) as OfferPrice, fixedLengthArrayVector(OfferOrderQty0, OfferOrderQty1, OfferOrderQty2, OfferOrderQty3, OfferOrderQty4, OfferOrderQty5, OfferOrderQty6, OfferOrderQty7, OfferOrderQty8, OfferOrderQty9) as OfferQty, fixedLengthArrayVector(OfferNumOrders0, OfferNumOrders1, OfferNumOrders2, OfferNumOrders3, OfferNumOrders4, OfferNumOrders5, OfferNumOrders6, OfferNumOrders7, OfferNumOrders8, OfferNumOrders9) as OfferNumOrders, fixedLengthArrayVector(OfferOrders0, OfferOrders1, OfferOrders2, OfferOrders3, OfferOrders4, OfferOrders5, OfferOrders6, OfferOrders7, OfferOrders8, OfferOrders9, OfferOrders10, OfferOrders11, OfferOrders12, OfferOrders13, OfferOrders14, OfferOrders15, OfferOrders16, OfferOrders17, OfferOrders18, OfferOrders19, OfferOrders20, OfferOrders21, OfferOrders22, OfferOrders23, OfferOrders24, OfferOrders25, OfferOrders26, OfferOrders27, OfferOrders28, OfferOrders29, OfferOrders30, OfferOrders31, OfferOrders32, OfferOrders33, OfferOrders34, OfferOrders35, OfferOrders36, OfferOrders37, OfferOrders38, OfferOrders39, OfferOrders40, OfferOrders41, OfferOrders42, OfferOrders43, OfferOrders44, OfferOrders45, OfferOrders46, OfferOrders47, OfferOrders48, OfferOrders49) as OfferOrders, NumTrades, IOPV, TotalBidQty, TotalOfferQty, WeightedAvgBidPx, WeightedAvgOfferPx, TotalBidNumber, TotalOfferNumber, BidTradeMaxDuration, OfferTradeMaxDuration, NumBidOrders, NumOfferOrders, WithdrawBuyNumber, WithdrawBuyAmount, WithdrawBuyMoney, WithdrawSellNumber, WithdrawSellAmount, WithdrawSellMoney, ETFBuyNumber, ETFBuyAmount, ETFBuyMoney, ETFSellNumber, ETFSellAmount, ETFSellMoney from t where isDuplicated([SecurityID, DateTime], FIRST) = false
+ n2 = t.size()
+ loadTable(dbName, tbName).append!(t)
+ return n1,n2
 }
 
 def process(processDate, dbName_orig, tbName_orig, dbName_process, tbName_process){
-	dataString = temporalFormat(processDate, "yyyyMMdd")
-	//查询处理日期的数据在数据库中是否存在
-	todayCount = exec count(*) from loadTable(dbName_process, tbName_process) where date(DateTime)=processDate
-	//如果库里面已经存在当天要处理的数据，删除库里面已有数据
-	if(todayCount != 0){
-		writeLog("Start to delete the process snapshot data, the delete date is: " + dataString)
-		dropPartition(database(dbName_process), processDate, tbName_process)
-		writeLog("Successfully deleted the process snapshot data, the delete date is: " + dataString)
-	}
-	//开始处理数据
-	writeLog("Start process Snapshot Data, the datetime is "+ dataString)
-	ds = sqlDS(sql(select=sqlCol("*"), from=loadTable(dbName_orig,tbName_orig),where=<date(DateTime)=processDate>))
-	n1,n2=mr(ds, mapProcess{, dbName_process, tbName_process}, +, , false)
-	if(n1 != n2){
-		writeLog("ERROR: Duplicated datas exists in " + dataString + ", Successfully drop " + string(n1-n2) + " pieces of data" )
-	}
-	writeLog("Successfully process the snapshot data, the processDate is: " + dataString)
+ dataString = temporalFormat(processDate, "yyyyMMdd")
+ //查询处理日期的数据在数据库中是否存在
+ todayCount = exec count(*) from loadTable(dbName_process, tbName_process) where date(DateTime)=processDate
+ //如果库里面已经存在当天要处理的数据，删除库里面已有数据
+ if(todayCount != 0){
+  writeLog("Start to delete the process snapshot data, the delete date is: " + dataString)
+  dropPartition(database(dbName_process), processDate, tbName_process)
+  writeLog("Successfully deleted the process snapshot data, the delete date is: " + dataString)
+ }
+ //开始处理数据
+ writeLog("Start process Snapshot Data, the datetime is "+ dataString)
+ ds = sqlDS(sql(select=sqlCol("*"), from=loadTable(dbName_orig,tbName_orig),where=<date(DateTime)=processDate>))
+ n1,n2=mr(ds, mapProcess{, dbName_process, tbName_process}, +, , false)
+ if(n1 != n2){
+  writeLog("ERROR: Duplicated datas exists in " + dataString + ", Successfully drop " + string(n1-n2) + " pieces of data" )
+ }
+ writeLog("Successfully process the snapshot data, the processDate is: " + dataString)
 }
 ```
 
 #### 2.3.3 清洗行情数据合成 K 线
 
 分钟级 K 线合成并入库, 核心代码如下：
+
 ```
 module Factor::calFactorOneMinute
 
 //合成分钟 K 线并入库
 def calFactorOneMinute(dbName, tbName, mutable factorTable){
-	pt = loadTable(dbName, tbName)
-	//将数据分为10天一组计算
-	dayList = schema(pt).partitionSchema[0]
-	if(dayList.size()>10) dayList = dayList.cut(10)
-	for(days in dayList){
-		//计算分钟 K 线
-		res =   select first(LastPX) as Open, max(LastPx) as High, min(LastPx) as Low, last(LastPx) as Close, sum(TotalVolumeTrade) as Volume, sum(LastPx*totalVolumeTrade) as Amount, wavg(LastPx, TotalVolumeTrade) as Vwap from pt where date(DateTime) in days group by date(DateTime) as TradeDate,minute(DateTime) as TradeTime, SecurityID
-		writeLog("Start to append minute factor result , the days is: [" + concat(days, ",")+"]")
-		//分钟 K 线入库
-		factorTable.append!(res)
-		writeLog("Successfully append the minute factor result to databse, the days is: [" + concat(days, ",")+"]")
-	}
+ pt = loadTable(dbName, tbName)
+ //将数据分为10天一组计算
+ dayList = schema(pt).partitionSchema[0]
+ if(dayList.size()>10) dayList = dayList.cut(10)
+ for(days in dayList){
+  //计算分钟 K 线
+  res =   select first(LastPX) as Open, max(LastPx) as High, min(LastPx) as Low, last(LastPx) as Close, sum(TotalVolumeTrade) as Volume, sum(LastPx*totalVolumeTrade) as Amount, wavg(LastPx, TotalVolumeTrade) as Vwap from pt where date(DateTime) in days group by date(DateTime) as TradeDate,minute(DateTime) as TradeTime, SecurityID
+  writeLog("Start to append minute factor result , the days is: [" + concat(days, ",")+"]")
+  //分钟 K 线入库
+  factorTable.append!(res)
+  writeLog("Successfully append the minute factor result to databse, the days is: [" + concat(days, ",")+"]")
+ }
 }
 ```
 
@@ -386,18 +385,18 @@ module Factor::calFactorDaily1
 
 //合成日 K 线并入库
 def calFactorDaily(dbName, tbName, mutable factorTable){
-	pt = loadTable(dbName, tbName)
-	//将数据分为10天一组计算
-	dayList = schema(pt).partitionSchema[0]
-	if(dayList.size()>10) dayList = dayList.cut(10)
-	for(days in dayList){
-		//计算日 K 线
-		res =   select first(LastPX) as Open, max(LastPx) as High, min(LastPx) as Low, last(LastPx) as Close, sum(TotalVolumeTrade) as Volume, sum(LastPx*totalVolumeTrade) as Amount, wavg(LastPx, TotalVolumeTrade) as Vwap from pt where date(DateTime) in days group by date(DateTime) as TradeDate, SecurityID 
-		writeLog("Start to append daily factor result , the days is: [" + concat(days, ",")+"]")
-		//日 K 线入库
-		factorTable.append!(res)
-		writeLog("Successfully append the daily factor result to databse, the days is: [" + concat(days, ",")+"]")
-	}
+ pt = loadTable(dbName, tbName)
+ //将数据分为10天一组计算
+ dayList = schema(pt).partitionSchema[0]
+ if(dayList.size()>10) dayList = dayList.cut(10)
+ for(days in dayList){
+  //计算日 K 线
+  res =   select first(LastPX) as Open, max(LastPx) as High, min(LastPx) as Low, last(LastPx) as Close, sum(TotalVolumeTrade) as Volume, sum(LastPx*totalVolumeTrade) as Amount, wavg(LastPx, TotalVolumeTrade) as Vwap from pt where date(DateTime) in days group by date(DateTime) as TradeDate, SecurityID 
+  writeLog("Start to append daily factor result , the days is: [" + concat(days, ",")+"]")
+  //日 K 线入库
+  factorTable.append!(res)
+  writeLog("Successfully append the daily factor result to databse, the days is: [" + concat(days, ",")+"]")
+ }
 }
 ```
 
@@ -416,9 +415,11 @@ def calFactorDaily(dbName, tbName, mutable factorTable){
 #### 2.5.1 生成一个 DAG 实例
 
 生成全量 DAG 实例的示例如下：
+
 ```
 with DAG(dag_id="ETLTest", start_date=datetime(2023, 3, 10), schedule_interval=None) as dag:
 ```
+
 `dag_id` 指定了 DAG 名称，需要具有唯一性；`start_date` 设定任务开始日期；`schedule_interval` 指定两次任务的间隔；`None` 表示该任务不自动执行需手动触发。
 增量 DAG 示例如下：
 
@@ -437,6 +438,7 @@ with DAG(dag_id="addETLTest", default_args = args, schedule_interval="0 12 * * *
 #### 2.5.2 获取 Airflow 中的变量
 
 Airflow 中设定的变量值，无法直接在 DolphinDB 脚本中获取，为了在后续的任务中使用，本文通过将 Airflow 中变量写入共享表的方式，来实现后续在 DolphinDB 任务读取变量，具体代码示例如下：
+
 ```
 //获取变量值
 variable = ['ETL_dbName_origin', "ETL_tbName_origin", "ETL_dbName_process",
@@ -498,15 +500,14 @@ DAG 生成后，在如下 Web 页面显示 DAG 使用的变量可以动态修改
 | ETL_start_date          | 全量 ETL 任务中需要处理的原始数据的开始日期 | 2021.01.04                              |
 | ETL_end_date            | 全量 ETL 任务中需要处理的原始数据的结束日期 | 2021.01.04                              |
 
- 
-
 #### 2.5.3 DolphinDBOperator 执行任务
 
 - **DolphinDBOperator 全量处理数据**
 
     通过 DolphinDBOperator 将上述的数据入库、清洗、计算等设置为 DAG 中的任务
-    
+
     全量处理核心代码如下：
+
     ```
        loadSnapshot = DolphinDBOperator(
             task_id='loadSnapshot',
@@ -600,7 +601,7 @@ DAG 生成后，在如下 Web 页面显示 DAG 使用的变量可以动态修改
                 //通过参数共享表获取参数
                 params = dict(paramTable[`param], paramTable[`value])
                 dbName = params[`ETL_dbName_process]
-                tbName = params[`ETL_tbName_process]	
+                tbName = params[`ETL_tbName_process] 
                 dbName_factor = params[`ETL_dbName_factor]
                 tbName_factor = params[`ETL_tbName_factor]
                 //结果库表不存在则创建
@@ -621,11 +622,11 @@ DAG 生成后，在如下 Web 页面显示 DAG 使用的变量可以动态修改
                 go;
                 //使用 module，加载已封装好的建表及入库函数
                 use Factor::createFactorDaily
-                use Factor::calFactorDaily1	
+                use Factor::calFactorDaily1 
                 //通过参数共享表获取参数
                 params = dict(paramTable[`param], paramTable[`value])
                 dbName = params[`ETL_dbName_process]
-                tbName = params[`ETL_tbName_process]	
+                tbName = params[`ETL_tbName_process] 
                 dbName_factor = params[`ETL_dbName_factor_daily]
                 tbName_factor = params[`ETL_tbName_factor_daily]
                 //结果库表不存在则创建
@@ -638,8 +639,9 @@ DAG 生成后，在如下 Web 页面显示 DAG 使用的变量可以动态修改
                 '''
         )
     ```
-    
+
     根据任务间的依赖关系，构建 DAG，示例如下：
+
     ```
         start_task >> create_parameter_table >> given_param >> loadSnapshot >> processSnapshot >> calMinuteFactor >> calDailyFactor
     ```
@@ -647,7 +649,7 @@ DAG 生成后，在如下 Web 页面显示 DAG 使用的变量可以动态修改
 - **DolphinDBOperator 增量数据入库**
 
     增量数据任务构建代码如下：
-    
+
     ```
     addLoadSnapshot = DolphinDBOperator(
             task_id='addLoadSnapshot',
@@ -707,7 +709,7 @@ DAG 生成后，在如下 Web 页面显示 DAG 使用的变量可以动态修改
                 //通过参数共享表获取参数
                 params = dict(paramTable[`param], paramTable[`value])
                 dbName = params[`ETL_dbName_process]
-                tbName = params[`ETL_tbName_process]	
+                tbName = params[`ETL_tbName_process] 
                 dbName_factor = params[`ETL_dbName_factor]
                 tbName_factor = params[`ETL_tbName_factor]
                 factorTable = loadTable(dbName_factor, tbName_factor)
@@ -715,7 +717,7 @@ DAG 生成后，在如下 Web 页面显示 DAG 使用的变量可以动态修改
                 MarketDays = getMarketCalendar("CFFEX")
                 //是交易日则调用计算函数合成分钟K线
                 if(today() in MarketDays ){
-                    	addFactor::calFactorOneMinute::calFactorOneMinute(dbName, tbName,today(), factorTable)
+                     addFactor::calFactorOneMinute::calFactorOneMinute(dbName, tbName,today(), factorTable)
                 }
                 '''
         )
@@ -727,11 +729,11 @@ DAG 生成后，在如下 Web 页面显示 DAG 使用的变量可以动态修改
                 undef(all)
                 go;
                 //使用module，加载已封装好的计算函数
-                use addFactor::calFactorDaily1	
+                use addFactor::calFactorDaily1 
                 //通过参数共享表获取参数
                 params = dict(paramTable[`param], paramTable[`value])
                 dbName = params[`ETL_dbName_process]
-                tbName = params[`ETL_tbName_process]	
+                tbName = params[`ETL_tbName_process] 
                 dbName_factor = params[`ETL_dbName_factor_daily]
                 tbName_factor = params[`ETL_tbName_factor_daily]
                 factorTable = loadTable(dbName_factor, tbName_factor)
@@ -744,8 +746,9 @@ DAG 生成后，在如下 Web 页面显示 DAG 使用的变量可以动态修改
                 '''
         )
     ```
+
     根据任务间的依赖关系，构建 DAG，示例如下：
-    
+
     ```
         start_task >> create_parameter_table >> given_param >> addLoadSnapshot >> addProcessSnapshot >> addCalMinuteFactor >> addCalDailyFactor
     ```
@@ -757,11 +760,11 @@ DAG 生成后，在如下 Web 页面显示 DAG 使用的变量可以动态修改
 - **第一步 DolphinDB 项目部署**
 
     将 DolphinDB 项目中的 *addETL* 和 *fullETL* 项目分别导入 DolphinDB GUI (DolphinDB 客户端工具)中：
-    
+
     <img src="./images/Best_Practices_for_DolphinDB_and_Python_AirFlow/2_7.png" width=50%>
-    
+
     将 *addETL* 及 *fullETL* 项目中的 module 模块上传至 Airflow 中已建立连接的 DolphinDB server 中：
-    
+
     <img src="./images/Best_Practices_for_DolphinDB_and_Python_AirFlow/2_8.png" width=60%>
 
 - **第二步 python 项目部署**
@@ -777,17 +780,17 @@ DAG 生成后，在如下 Web 页面显示 DAG 使用的变量可以动态修改
 - **第四步 上传原始数据文件**
 
     将数据文件上传至服务器，并根据数据文件的实际存放路径，在 Airflow 中修改 `ETL_filedir` 变量。如运行增量 ETL 任务，需要将数据文件名中的日期改为当前日期，如：*20230330snapshot.csv*，以避免无数据导致任务失败。
-    
+
     最终实现 DAG 如下所示：
-    
+
     **全量数据入库**：
-    
+
     <img src="./images/Best_Practices_for_DolphinDB_and_Python_AirFlow/2_10.png" width=80%>
-    
+
     **增量数据入库**：
-    
+
     <img src="./images/Best_Practices_for_DolphinDB_and_Python_AirFlow/2_11.png" width=80%>
-    
+
     运行任务后，任务实例为绿色代表任务运行成功；红色表示任务运行失败；橙色则表示该任务所依赖的上游任务运行失败，任务未启动。
 
 ## 3. 常见问题解答(FAQ)
@@ -837,9 +840,9 @@ DAG 生成后，在如下 Web 页面显示 DAG 使用的变量可以动态修改
 - 任务失败后，DolphinDBOperator 会将具体的错误信息打印在日志中，可通过查看日志信息，定位异常代码并进行修改。查看日志信息步骤如下：
 
     <img src="./images/Best_Practices_for_DolphinDB_and_Python_AirFlow/3_3.png" width=80%>
-    
+
     <img src="./images/Best_Practices_for_DolphinDB_and_Python_AirFlow/3_4.png" width=70%>
-    
+
     <img src="./images/Best_Practices_for_DolphinDB_and_Python_AirFlow/3_5.png" width=80%>
 
 ## 4. 总结
@@ -852,13 +855,10 @@ DAG 生成后，在如下 Web 页面显示 DAG 使用的变量可以动态修改
 
 ## 附件
 
-- DolphinDB 工程项目：[addETL](script/Best_Practices_for_DolphinDB_and_Python_AirFlow/DolphinDB_projects/addETL)，[fullETL](script/Best_Practices_for_DolphinDB_and_Python_AirFlow/DolphinDB_projects/fullETL) 
+- DolphinDB 工程项目：[addETL](script/Best_Practices_for_DolphinDB_and_Python_AirFlow/DolphinDB_projects/addETL)，[fullETL](script/Best_Practices_for_DolphinDB_and_Python_AirFlow/DolphinDB_projects/fullETL)
 
 - Python 项目：[addETL.py](script/Best_Practices_for_DolphinDB_and_Python_AirFlow/Python_projects)，[fullETL.py](script/Best_Practices_for_DolphinDB_and_Python_AirFlow/Python_projects)
 
 - 数据文件：[20210104snapshot.csv](https://www.dolphindb.cn/downloads/docs/Best_Practices_for_DolphinDB_and_Python_AirFlow.zip)
 
-- Airflow 变量：[Variables.json](script/Best_Practices_for_DolphinDB_and_Python_AirFlow) 
-
-  
-
+- Airflow 变量：[Variables.json](script/Best_Practices_for_DolphinDB_and_Python_AirFlow)

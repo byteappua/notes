@@ -2,35 +2,35 @@
 
 DolphinDB 是一款高性能时序数据库。DolphinDB集成了功能强大的编程语言和高容量高速度的批流一体数据分析系统，为海量数据（特别是时间序列数据）的快速存储、检索、计算及分析提供一站式解决方案。在实际生产环境中，经常存在数据导入、转换、查询计算，更新等一系列流程任务，各个部分之间存在依赖，如何将这些DolphinDB任务按照需求准确、有效率地调度，可以借用DolphinScheduler 任务调度器。本文将从生产环境中的一个ETL场景出发，将 DolphinScheduler 引入到DolphinDB的高可用集群中，通过使用DolphinScheduler提供的功能来调度DolphinDB的数据ETL作业。
 
-- 
-	- [1. Apache DolphinScheduler](#1-apache-dolphinscheduler)
-		- [1.1 特性](#11-特性)
-		- [1.2 安装部署](#12-安装部署)
-		- [1.3 DolphinDB 与 DolphinScheduler 结合](#13-dolphindb-与-dolphinscheduler-结合)
-			- [1.3.1 如何创建DolphinDB数据源](#131-如何创建dolphindb数据源)
-			- [1.3.2 如何调度DolphinDB任务](#132-如何调度dolphindb任务)
-	- [2. 调度DolphinDB数据ETL任务](#2-调度dolphindb数据etl任务)
-		- [2.1 任务流程结构](#21-任务流程结构)
-			- [2.1.1 DolphinDB 功能模块部分](#211-dolphindb-功能模块部分)
-			- [2.1.2 DolphinDB 脚本部分](#212-dolphindb-脚本部分)
-		- [2.2 数据介绍](#22-数据介绍)
-		- [2.3 数据导入、指标计算与校验任务](#23-数据导入指标计算与校验任务)
-			- [2.3.1 数据清洗、处理、入表](#231-数据清洗处理入表)
-			- [2.3.2 K分钟线因子指标计算](#232-k分钟线因子指标计算)
-			- [2.3.3 数据校验与K分钟线指标校验](#233-数据校验与k分钟线指标校验)
-		- [2.4 实现DolphinDB任务调度](#24-实现dolphindb任务调度)
-		- [2.5 获取 DolphinDB 任务调度结果](#25-获取-dolphindb-任务调度结果)
-			- [2.5.1 查看 DolphinDB 任务执行情况](#251-查看-dolphindb-任务执行情况)
-			- [2.5.2 获取 DolphinDB 任务运行过程中的信息](#252-获取-dolphindb-任务运行过程中的信息)
-				- [SQL任务节点非查询类型](#sql任务节点非查询类型)
-				- [SQL任务节点查询类型](#sql任务节点查询类型)
-				- [如何获取 DolphinDB 任务运行过程中的信息](#如何获取-dolphindb-任务运行过程中的信息)
-		- [2.6 DolphinDB脚本开发注意事项](#26-dolphindb脚本开发注意事项)
-	- [3. DolphinScheduler 与 Airflow 对比](#3-dolphinscheduler-与-airflow-对比)
-	- [4.常见问题](#4常见问题)
-		- [1.  DolphinScheduler status显示running，web的登陆页面却无法登录](#1--dolphinscheduler-status显示runningweb的登陆页面却无法登录)
-		- [2.  DolphinScheduler设置开机自启动后，服务器重启无法正常启动](#2--dolphinscheduler设置开机自启动后服务器重启无法正常启动)
-	- [5. 附录](#5-附录)
+-
+ 	- [1. Apache DolphinScheduler](#1-apache-dolphinscheduler)
+  		- [1.1 特性](#11-特性)
+  		- [1.2 安装部署](#12-安装部署)
+  		- [1.3 DolphinDB 与 DolphinScheduler 结合](#13-dolphindb-与-dolphinscheduler-结合)
+   			- [1.3.1 如何创建DolphinDB数据源](#131-如何创建dolphindb数据源)
+   			- [1.3.2 如何调度DolphinDB任务](#132-如何调度dolphindb任务)
+ 	- [2. 调度DolphinDB数据ETL任务](#2-调度dolphindb数据etl任务)
+  		- [2.1 任务流程结构](#21-任务流程结构)
+   			- [2.1.1 DolphinDB 功能模块部分](#211-dolphindb-功能模块部分)
+   			- [2.1.2 DolphinDB 脚本部分](#212-dolphindb-脚本部分)
+  		- [2.2 数据介绍](#22-数据介绍)
+  		- [2.3 数据导入、指标计算与校验任务](#23-数据导入指标计算与校验任务)
+   			- [2.3.1 数据清洗、处理、入表](#231-数据清洗处理入表)
+   			- [2.3.2 K分钟线因子指标计算](#232-k分钟线因子指标计算)
+   			- [2.3.3 数据校验与K分钟线指标校验](#233-数据校验与k分钟线指标校验)
+  		- [2.4 实现DolphinDB任务调度](#24-实现dolphindb任务调度)
+  		- [2.5 获取 DolphinDB 任务调度结果](#25-获取-dolphindb-任务调度结果)
+   			- [2.5.1 查看 DolphinDB 任务执行情况](#251-查看-dolphindb-任务执行情况)
+   			- [2.5.2 获取 DolphinDB 任务运行过程中的信息](#252-获取-dolphindb-任务运行过程中的信息)
+    				- [SQL任务节点非查询类型](#sql任务节点非查询类型)
+    				- [SQL任务节点查询类型](#sql任务节点查询类型)
+    				- [如何获取 DolphinDB 任务运行过程中的信息](#如何获取-dolphindb-任务运行过程中的信息)
+  		- [2.6 DolphinDB脚本开发注意事项](#26-dolphindb脚本开发注意事项)
+ 	- [3. DolphinScheduler 与 Airflow 对比](#3-dolphinscheduler-与-airflow-对比)
+ 	- [4.常见问题](#4常见问题)
+  		- [1.  DolphinScheduler status显示running，web的登陆页面却无法登录](#1--dolphinscheduler-status显示runningweb的登陆页面却无法登录)
+  		- [2.  DolphinScheduler设置开机自启动后，服务器重启无法正常启动](#2--dolphinscheduler设置开机自启动后服务器重启无法正常启动)
+ 	- [5. 附录](#5-附录)
 
 ## 1. Apache DolphinScheduler
 
@@ -50,7 +50,7 @@ DolphinScheduler 可在单机、单服务器集群、多服务器集群、K8S环
 **前置条件**
 
 - JDK：安装[JDK](https://www.oracle.com/java/technologies/downloads/)(1.8+)并配置JAVA_HOME环境变量，DolphinScheduler的启动依赖于该环境变量，同时将其下的bin目录追加到**PATH**环境变量中。  
-- 二进制包：已配置**DolphinDB数据源**的DolphinScheduler版本，下载链接在https://cdn.dolphindb.cn/downloads/apache-dolphinscheduler-3.1.7-bin.tar.gz
+- 二进制包：已配置**DolphinDB数据源**的DolphinScheduler版本，下载链接在<https://cdn.dolphindb.cn/downloads/apache-dolphinscheduler-3.1.7-bin.tar.gz>
 - 本教程将 **MySQL** 作为 DolphinScheduler 持久化的元数据库，因此要保证服务器已安装好**MySQL**，若没有，需要下载安装，所有平台的mysql下载地址为：[MySQL 下载地址](https://dev.mysql.com/downloads/mysql/)
 
 **元数据持久化配置**
@@ -63,6 +63,7 @@ DolphinScheduler 可在单机、单服务器集群、多服务器集群、K8S环
 tar -xvzf apache-dolphinscheduler-3.1.7-bin.tar.gz
 cd apache-dolphinscheduler-3.1.7-bin
 ```
+
 - 进入MySQL，创建数据库和用户
 
 ```
@@ -126,7 +127,7 @@ bash apache-dolphinscheduler-3.1.7-bin/tools/bin/upgrade-schema.sh
 
 - 执行完成之后进入 MySQL 查询会发现名称为`dolphinscheduler` 的数据库已经生成了很多表格
 
-<img src="images/dolphinscheduler_integration/1.png">
+<img src="./images/dolphinscheduler_integration/1.png">
 
 **启动DolphinScheduler单机服务器**
 
@@ -144,11 +145,11 @@ bash ./bin/dolphinscheduler-daemon.sh start standalone-server
 
 ​　　　　a. 运行 `jps` 查看相应实例是否已在进程中
 
-<img src="images/dolphinscheduler_integration/2.png">
+<img src="./images/dolphinscheduler_integration/2.png">
 
 ​　　　　b. 运行 `bash ./bin/dolphinscheduler-daemon.sh status standalone-server` 查看 standalone-server的运行状态
 
-<img src="images/dolphinscheduler_integration/3.png">
+<img src="./images/dolphinscheduler_integration/3.png">
 
 3. 停止运行
 
@@ -164,11 +165,11 @@ bash ./bin/dolphinscheduler-daemon.sh stop standalone-server
 
 登陆成功后将会看到如下页面：
 
-<img src="images/dolphinscheduler_integration/4.png">
+<img src="./images/dolphinscheduler_integration/4.png">
 
 - 重启dolphinscheduler服务，测试已经连接好数据库
 
-  <img src="images/dolphinscheduler_integration/5.png">
+  <img src="./images/dolphinscheduler_integration/5.png">
 
 ### 1.3 DolphinDB 与 DolphinScheduler 结合
 
@@ -178,11 +179,11 @@ DolphinDB作为强大的高性能时序数据库，能够高效存储和处理PB
 
 1. 在安装部署好DolphinScheduler之后，登录其Web界面，点击数据源中心并点击创建数据源
 
-<img src="images/dolphinscheduler_integration/6.png">
+<img src="./images/dolphinscheduler_integration/6.png">
 
 2. 输入相关参数定义，创建DolphinDB数据源
 
-<img src="images/dolphinscheduler_integration/7.png">
+<img src="./images/dolphinscheduler_integration/7.png">
 
 > 注意：数据库名和jdbc连接参数不用填，不然会报错 JDBC connect failed。
 
@@ -194,9 +195,9 @@ DolphinDB作为强大的高性能时序数据库，能够高效存储和处理PB
 
 > 注意：SQL类型分为查询类型和非查询类型，这两种类型分别适用于不同的使用场景，在本文 2.5.2 小节中会详细介绍。
 
-<img src="images/dolphinscheduler_integration/8.png">
+<img src="./images/dolphinscheduler_integration/8.png">
 
-<img src="images/dolphinscheduler_integration/9.png">
+<img src="./images/dolphinscheduler_integration/9.png">
 
 由于在SQL任务节点中，**每次只能执行一行DolphinDB代码**。因此，调度DolphinDB任务主要有以下两种途径：
 
@@ -215,15 +216,15 @@ run("/data/script.dos");
 ```
 // 在DolphinDB中定义一个函数，用于创建数据库表
 def createTable(dbName, tbName){
-	login("admin", "123456")
+ login("admin", "123456")
 
-	if(!existsDatabase(dbName)){
-		db1 = database(, VALUE, 2020.01.01..2021.01.01)
-		db2 = database(, HASH, [SYMBOL, 10])
-		db = database(dbName, COMPO, [db1, db2], , "TSDB")
-	}else{
-		db = database(dbName)
-	}
+ if(!existsDatabase(dbName)){
+  db1 = database(, VALUE, 2020.01.01..2021.01.01)
+  db2 = database(, HASH, [SYMBOL, 10])
+  db = database(dbName, COMPO, [db1, db2], , "TSDB")
+ }else{
+  db = database(dbName)
+ }
     if(!existsTable(dbName,tbName)){
         name =`SecurityID`ChannelNo`ApplSeqNum`MDStreamID`SecurityIDSource`Price
               `OrderQty`Side`TradeTIme`OrderType`OrderIndex`LocalTime`SeqNo
@@ -256,8 +257,6 @@ addFunctionView(createTable)
 createTable("dfs://testDb", "testTb");
 ```
 
- 
-
 上述两种方法的区别是：
 
 - 使用`run` 执行脚本不能传递参数，灵活性较差
@@ -271,11 +270,11 @@ createTable(${dbName}, ${tbName});
 
 1. 局部参数在**定义任务节点**时定义
 
-   <img src="images/dolphinscheduler_integration/10.png">
+   <img src="./images/dolphinscheduler_integration/10.png">
 
 2. 全局参数在**保存工作流**时定义
 
-   <img src="images/dolphinscheduler_integration/11.png">
+   <img src="./images/dolphinscheduler_integration/11.png">
 
 ## 2. 调度DolphinDB数据ETL任务
 
@@ -283,7 +282,7 @@ createTable(${dbName}, ${tbName});
 
 - **文件结构**
 
-<img src="images/dolphinscheduler_integration/12.png">
+<img src="./images/dolphinscheduler_integration/12.png">
 
 #### 2.1.1 DolphinDB 功能模块部分
 
@@ -364,8 +363,6 @@ def createEntrust(dbName, tbName,userName = "admin",password = "123456")
 }
 ```
 
- 
-
 - **csv数据清洗与处理**
 
 ```
@@ -397,8 +394,6 @@ def processEntrust(loadDate, mutable t)
 }
 ```
 
- 
-
 - **将处理后的数据导入数据库表**
 
 ```
@@ -407,52 +402,52 @@ use stockData::stockDataProcess
 
 def loadEntrust(userName, userPassword, startDate, endDate, dbName, tbName, filePath, loadType,mutable infoTb)
 {
-	for(loadDate in startDate..endDate)
-	{
-		// 删除已有数据
-		dateString = temporalFormat(loadDate,"yyyyMMdd")
-		dataCount = exec count(*) from loadTable(dbName, tbName) where date(tradeTime)=loadDate
-		// 如果表里面已经存在当天要处理的数据，删除库里面已有数据
-		if(dataCount != 0){
-			msg = "Start to delete the entrust data, the delete date is: " + dateString
-			print(msg)
-			infoTb.tableInsert(msg)
+ for(loadDate in startDate..endDate)
+ {
+  // 删除已有数据
+  dateString = temporalFormat(loadDate,"yyyyMMdd")
+  dataCount = exec count(*) from loadTable(dbName, tbName) where date(tradeTime)=loadDate
+  // 如果表里面已经存在当天要处理的数据，删除库里面已有数据
+  if(dataCount != 0){
+   msg = "Start to delete the entrust data, the delete date is: " + dateString
+   print(msg)
+   infoTb.tableInsert(msg)
 
-			dropPartition(database(dbName), loadDate, tbName)
-			msg = "Successfully deleted the entrust data, the delete date is: " + dateString
-			print(msg)
-			infoTb.tableInsert(msg)
-		}
-		// 数据导入
-		// 判断数据csv文件是否存在
-		fileName = filePath + "/" + dateString + "/" + "entrust.csv"
-		if(!exists(fileName))
-		{
-			throw fileName + "不存在!请检查数据源!"
-		}
-		// 如果是全市场数据，数据量较大，因此分批导入
-		schemaTB = schemaEntrust()
-		tmpData1 = loadText(filename=fileName, schema=schemaTB)
-		tmpData1,n1,n2 = processEntrust(loadDate,tmpData1)
-		pt = loadTable(dbName,tbName)
-		msg = "the data size in csv file is :" + n2 + ", the duplicated count is " + (n1 - n2)
-		print(msg)
-		infoTb.tableInsert(msg)
-		for(i in 0..23)
-		{
-			startTime = 08:00:00.000 + 1200 * 1000 * i
-			tmpData2 = select * from tmpData1 where time(TradeTime)>=startTime and time(TradeTime)<(startTime+ 1200 * 1000)
-			if(size(tmpData2) < 1)
-			{
-				continue
-			}
-			//数据入库
-			pt.append!(tmpData2)
-		}
-		msg = "successfully loaded!"
-		print(msg)
-		infoTb.tableInsert(msg)
-	}
+   dropPartition(database(dbName), loadDate, tbName)
+   msg = "Successfully deleted the entrust data, the delete date is: " + dateString
+   print(msg)
+   infoTb.tableInsert(msg)
+  }
+  // 数据导入
+  // 判断数据csv文件是否存在
+  fileName = filePath + "/" + dateString + "/" + "entrust.csv"
+  if(!exists(fileName))
+  {
+   throw fileName + "不存在!请检查数据源!"
+  }
+  // 如果是全市场数据，数据量较大，因此分批导入
+  schemaTB = schemaEntrust()
+  tmpData1 = loadText(filename=fileName, schema=schemaTB)
+  tmpData1,n1,n2 = processEntrust(loadDate,tmpData1)
+  pt = loadTable(dbName,tbName)
+  msg = "the data size in csv file is :" + n2 + ", the duplicated count is " + (n1 - n2)
+  print(msg)
+  infoTb.tableInsert(msg)
+  for(i in 0..23)
+  {
+   startTime = 08:00:00.000 + 1200 * 1000 * i
+   tmpData2 = select * from tmpData1 where time(TradeTime)>=startTime and time(TradeTime)<(startTime+ 1200 * 1000)
+   if(size(tmpData2) < 1)
+   {
+    continue
+   }
+   //数据入库
+   pt.append!(tmpData2)
+  }
+  msg = "successfully loaded!"
+  print(msg)
+  infoTb.tableInsert(msg)
+ }
 }
 ```
 
@@ -467,19 +462,17 @@ module minFactor::createMinFactorTable
 
 def createMinuteFactor(dbName, tbName)
 {
-	if(existsDatabase(dbName)){
-		dropDatabase(dbName)
-	}
-	//按天分区
-	db = database(dbName, VALUE, 2021.01.01..2021.01.03,engine = `TSDB)
-	colName = `TradeDate`TradeTime`SecurityID`Open`High`Low`Close`Volume`Amount`Vwap
-	colType =[DATE, MINUTE, SYMBOL, DOUBLE, DOUBLE, DOUBLE, DOUBLE, LONG, DOUBLE, DOUBLE]
-	tbSchema = table(1:0, colName, colType)
-  	db.createPartitionedTable(table=tbSchema,tableName=tbName,partitionColumns=`TradeDate,sortColumns=`SecurityID`TradeTime,keepDuplicates=ALL)
+ if(existsDatabase(dbName)){
+  dropDatabase(dbName)
+ }
+ //按天分区
+ db = database(dbName, VALUE, 2021.01.01..2021.01.03,engine = `TSDB)
+ colName = `TradeDate`TradeTime`SecurityID`Open`High`Low`Close`Volume`Amount`Vwap
+ colType =[DATE, MINUTE, SYMBOL, DOUBLE, DOUBLE, DOUBLE, DOUBLE, LONG, DOUBLE, DOUBLE]
+ tbSchema = table(1:0, colName, colType)
+   db.createPartitionedTable(table=tbSchema,tableName=tbName,partitionColumns=`TradeDate,sortColumns=`SecurityID`TradeTime,keepDuplicates=ALL)
 }
 ```
-
- 
 
 - **计算K分钟线因子指标并入库**
 
@@ -488,21 +481,21 @@ module minFactor::computeMinFactor
 
 def calFactorOneMinute(dbName, startDate, endDate, mutable factorTb,mutable infoTb)
 {
-	pt = loadTable(dbName, "trade")
-	dayList = startDate..endDate
-	if(dayList.size()>12) dayList = dayList.cut(12)
-	for(days in dayList){
-		//计算分钟 K 线
-		res = select first(TradePrice) as open, max(TradePrice) as high, min(TradePrice) as low, last(TradePrice) as close, sum(tradeQty) as volume,sum(TradePrice*TradeQty) as amount,sum(TradePrice*TradeQty)\sum(TradeQty) as vwap from pt where date(tradeTime) in days group by date(tradeTime) as TradeDate,minute(tradeTime) as TradeTime, SecurityID
-		msg = "Start to append minute factor result , the days is: [" + concat(days, ",")+"]"
-		print(msg)
-		infoTb.tableInsert(msg)
-		//分钟 K 线入库
-		factorTb.append!(res)
-		msg = "Successfully append the minute factor result to databse, the days is: [" + concat(days, ",")+"]"
-		print(msg)
-		infoTb.tableInsert(msg)
-	}
+ pt = loadTable(dbName, "trade")
+ dayList = startDate..endDate
+ if(dayList.size()>12) dayList = dayList.cut(12)
+ for(days in dayList){
+  //计算分钟 K 线
+  res = select first(TradePrice) as open, max(TradePrice) as high, min(TradePrice) as low, last(TradePrice) as close, sum(tradeQty) as volume,sum(TradePrice*TradeQty) as amount,sum(TradePrice*TradeQty)\sum(TradeQty) as vwap from pt where date(tradeTime) in days group by date(tradeTime) as TradeDate,minute(tradeTime) as TradeTime, SecurityID
+  msg = "Start to append minute factor result , the days is: [" + concat(days, ",")+"]"
+  print(msg)
+  infoTb.tableInsert(msg)
+  //分钟 K 线入库
+  factorTb.append!(res)
+  msg = "Successfully append the minute factor result to databse, the days is: [" + concat(days, ",")+"]"
+  print(msg)
+  infoTb.tableInsert(msg)
+ }
 }
 ```
 
@@ -517,19 +510,19 @@ module dataCheck::stockCheck
 
 def checkStockCounts(idate,dbName)
 {
-	// 校验逐笔委托、快照行情、逐笔成交表的股票个数是否一致
+ // 校验逐笔委托、快照行情、逐笔成交表的股票个数是否一致
 
-	getCodes = def (dbName,tbName,idate) {
-		tb = loadTable(dbName,tbName)
-		return exec distinct(SecurityID) from tb where date(tradetime)=idate and ((Market=`sh and SecurityID like "6%")or(Market=`sz and (SecurityID like "0%" or SecurityID like "3%" ) )) 
-	}
-	entrustCodes = getCodes(dbName,"entrust",idate)
-	tradeCodes = getCodes(dbName,"trade",idate)
+ getCodes = def (dbName,tbName,idate) {
+  tb = loadTable(dbName,tbName)
+  return exec distinct(SecurityID) from tb where date(tradetime)=idate and ((Market=`sh and SecurityID like "6%")or(Market=`sz and (SecurityID like "0%" or SecurityID like "3%" ) )) 
+ }
+ entrustCodes = getCodes(dbName,"entrust",idate)
+ tradeCodes = getCodes(dbName,"trade",idate)
     snapshotCodes = exec distinct(SecurityID) from loadTable(dbName,"snapshot") where date(tradetime)=idate and ((Market=`sh and SecurityID like "6%")or(Market=`sz and (SecurityID like "0%" or SecurityID like "3%" ))) and  HighPrice != 0
-	if(entrustCodes.size() != snapshotCodes.size() or entrustCodes.size() != tradeCodes.size() or snapshotCodes.size() != tradeCodes.size())
-	{
-		throw "逐笔委托股票数量：" + size(entrustCodes) + " 快照行情股票数量：" + size(snapshotCodes) + " 逐笔成交股票数量：" + size(tradeCodes) + ", 它们数量不一致！"
-	}
+ if(entrustCodes.size() != snapshotCodes.size() or entrustCodes.size() != tradeCodes.size() or snapshotCodes.size() != tradeCodes.size())
+ {
+  throw "逐笔委托股票数量：" + size(entrustCodes) + " 快照行情股票数量：" + size(snapshotCodes) + " 逐笔成交股票数量：" + size(tradeCodes) + ", 它们数量不一致！"
+ }
 }
 ```
 
@@ -540,24 +533,24 @@ module dataCheck::minFactorCheck
 
 def checkHighLowPrice(idate,dbName,tbName)
 {
-	// 分钟线最高价指标与最低价指标校验
-	tb= loadTable(dbName,tbName)
-	temp=select * from tb where tradedate=idate and High < Low 
-	if(size(temp)>0)
-	{
-		throw "分钟线计算错误！分钟线最高价小于最低价！"
-	}
+ // 分钟线最高价指标与最低价指标校验
+ tb= loadTable(dbName,tbName)
+ temp=select * from tb where tradedate=idate and High < Low 
+ if(size(temp)>0)
+ {
+  throw "分钟线计算错误！分钟线最高价小于最低价！"
+ }
 }
 
 def checkVolumeAmount(idate,dbName,tbName)
 {
-	// 分钟线交易量与交易额指标校验
-	tb = loadTable(dbName,tbName)
-	temp = select * from loadTable(dbName,tbName) where tradedate=idate and ((Volume == 0 and Amount != 0) or (Volume != 0 and Amount == 0))
-	if(size(temp)>0)
-	{
-		throw "分钟线计算错误！交易量和交易额不同时为0！"
-	}
+ // 分钟线交易量与交易额指标校验
+ tb = loadTable(dbName,tbName)
+ temp = select * from loadTable(dbName,tbName) where tradedate=idate and ((Volume == 0 and Amount != 0) or (Volume != 0 and Amount == 0))
+ if(size(temp)>0)
+ {
+  throw "分钟线计算错误！交易量和交易额不同时为0！"
+ }
 }
 ```
 
@@ -589,18 +582,18 @@ use stockData::stockDataLoad
 // 定义函数
 def loadEntrustFV(userName="admin" , userPassword="123456", startDate = 2023.02.01, endDate = 2023.02.01, dbName = "dfs://stockData", tbName = "entrust", filePath = "/hdd/hdd8/ymchen", loadType = "daily")
 {
-	infoTb = table(1:0,["info"] ,[STRING])
-	if(loadType == "daily")
-	{
-		sDate = today()
-		eDate = today()
-		loadEntrust(userName, userPassword, sDate, eDate, dbName, tbName, filePath, loadType,infoTb)
-	}
-	else if(loadType == "batch")
-	{
-		loadEntrust(userName, userPassword, date(startDate), date(endDate), dbName, tbName, filePath, loadType,infoTb)
-	}
-	return infoTb
+ infoTb = table(1:0,["info"] ,[STRING])
+ if(loadType == "daily")
+ {
+  sDate = today()
+  eDate = today()
+  loadEntrust(userName, userPassword, sDate, eDate, dbName, tbName, filePath, loadType,infoTb)
+ }
+ else if(loadType == "batch")
+ {
+  loadEntrust(userName, userPassword, date(startDate), date(endDate), dbName, tbName, filePath, loadType,infoTb)
+ }
+ return infoTb
 }
 ```
 
@@ -628,17 +621,17 @@ loadEntrustFV(startDate=${startDate},endDate=${endDate},loadType="batch");
 
 我们需要在DolphinScheduler上创建两个工作流，一个是定时任务工作流，一个是历史批量任务工作流。在每个工作流中需要根据ETL流程编排具有逻辑关系的任务节点。以**历史批量任务**为例，创建如下工作流：
 
-<img src="images/dolphinscheduler_integration/13.png">
+<img src="./images/dolphinscheduler_integration/13.png">
 
 创建任务工作流之后，点击**运行**按钮就可以开始执行，点击**定时**按钮就可以进行定时管理
 
-<img src="images/dolphinscheduler_integration/14.png">
+<img src="./images/dolphinscheduler_integration/14.png">
 
 运行任务后，工作流实例为绿色代表整个工作流运行成功；黑色则表示存在失败任务，可以通过双击失败的工作流实例查看具体是哪个任务执行失败。
 
 在DolphinScheduler中，可以**导入工作流**和**导出工作流**，以上介绍的DolphinDB每日任务与批量任务，可以直接通过附件中对应的**json文件**直接导入。
 
-<img src="images/dolphinscheduler_integration/15.png">
+<img src="./images/dolphinscheduler_integration/15.png">
 
 - **调度DolphinDB ETL 工作流**
 
@@ -652,15 +645,15 @@ loadEntrustFV(startDate=${startDate},endDate=${endDate},loadType="batch");
 
 - 进入工作流界面，可以看到所有工作流实例的状态，在状态栏，齿轮形状代表正在运行，绿色打勾代表工作流任务成功运行，黑色打叉代表工作流任务运行失败。
 
-<img src="images/dolphinscheduler_integration/16.png">
+<img src="./images/dolphinscheduler_integration/16.png">
 
 - 在工作流实例名称下，点击想要查看的工作流实例，进入该工作流详情界面：
 
-<img src="images/dolphinscheduler_integration/17.png">
+<img src="./images/dolphinscheduler_integration/17.png">
 
 - 如上图所示，我们可以看到股票委托、快照、成交数据导入任务成功了，但是股票数据校验任务失败了，导致整个工作流任务执行失败。在该任务节点上点击**鼠标右键**，然后点击**查看日志**，就可以查看该任务节点具体的**报错信息：**
 
-<img src="images/dolphinscheduler_integration/18.png">
+<img src="./images/dolphinscheduler_integration/18.png">
 
 #### 2.5.2 获取 DolphinDB 任务运行过程中的信息
 
@@ -776,19 +769,19 @@ def loadEntrustFV(userName="admin" , userPassword="123456", startDate = 2023.02.
 "\n[DOLPHINDB INFO] " + concat(exec * from loadEntrustFV(startDate=${startDate},endDate=${endDate},loadType="batch"),"\n[DOLPHINDB INFO] ");
 ```
 
-<img src="images/dolphinscheduler_integration/19.png">
+<img src="./images/dolphinscheduler_integration/19.png">
 
 ​　　　　b. 在SQL查询类型的前置任务中用于获取运行信息表，在SQL语句中将该表转化成目标格式。
 
-<img src="images/dolphinscheduler_integration/20.png">
+<img src="./images/dolphinscheduler_integration/20.png">
 
 4. 整个工作流结构图如下所示：
 
-<img src="images/dolphinscheduler_integration/21.png">
+<img src="./images/dolphinscheduler_integration/21.png">
 
 5. 通过**鼠标右键点击**相应任务节点，选择**查看日志**选项，可以查看对应DolphinDB任务节点的运行信息。
 
-<img src="images/dolphinscheduler_integration/22.png">
+<img src="./images/dolphinscheduler_integration/22.png">
 
 ### 2.6 DolphinDB脚本开发注意事项
 
@@ -856,5 +849,5 @@ Airflow也是一款具有不错性能的调度软件，关于它与DolphinDB相�
 ## 5. 附录
 
 - **ETL脚本模块**：[ETLCase.zip](script/dolphinscheduler_integration/ETLCase.zip)  
-- **示例数据**：[20230201.zip](data/dolphinscheduler_integration/20230201.zip) 
+- **示例数据**：[20230201.zip](data/dolphinscheduler_integration/20230201.zip)
 - **MySQL插件**：[mysql-connector-j-8.0.31.jar](plugin/dolphinscheduler_integration/mysql-connector-j-8.0.31.jar)

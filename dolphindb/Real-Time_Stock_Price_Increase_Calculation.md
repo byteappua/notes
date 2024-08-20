@@ -7,27 +7,26 @@
 本教程主要提供一种基于 DolphinDB 流数据处理框架，实时计算 1 分钟、5 分钟和10 分钟涨幅榜的低延时解决方案。
 
 本教程包含内容：
+
 - [1. 应用场景描述](#1-应用场景描述)
-	- [1.1 数据源](#11-数据源)
-	- [1.2 计算指标](#12-计算指标)
-	- [1.3 实时计算方案](#13-实时计算方案)
+  - [1.1 数据源](#11-数据源)
+  - [1.2 计算指标](#12-计算指标)
+  - [1.3 实时计算方案](#13-实时计算方案)
 - [2. 代码开发](#2-代码开发)
-	- [2.1 创建存储历史数据的库表](#21-创建存储历史数据的库表)
-	- [2.2 导入上交所历史快照数据](#22-导入上交所历史快照数据)
-	- [2.3 清理环境并创建相关流数据表](#23-清理环境并创建相关流数据表)
-	- [2.4 注册流计算引擎和订阅流数据表](#24-注册流计算引擎和订阅流数据表)
-	- [2.5 Grafana 实时展示涨幅榜](#25-grafana-实时展示涨幅榜)
-	- [2.6 历史数据回放](#26-历史数据回放)
+  - [2.1 创建存储历史数据的库表](#21-创建存储历史数据的库表)
+  - [2.2 导入上交所历史快照数据](#22-导入上交所历史快照数据)
+  - [2.3 清理环境并创建相关流数据表](#23-清理环境并创建相关流数据表)
+  - [2.4 注册流计算引擎和订阅流数据表](#24-注册流计算引擎和订阅流数据表)
+  - [2.5 Grafana 实时展示涨幅榜](#25-grafana-实时展示涨幅榜)
+  - [2.6 历史数据回放](#26-历史数据回放)
 - [3. 结果展示](#3-结果展示)
-	- [3.1 节点内的计算结果表](#31-节点内的计算结果表)
-	- [3.2 Grafana实时监控结果](#32-grafana实时监控结果)
+  - [3.1 节点内的计算结果表](#31-节点内的计算结果表)
+  - [3.2 Grafana实时监控结果](#32-grafana实时监控结果)
 - [4. 性能测试](#4-性能测试)
-	- [4.1 单次响应计算性能测试](#41-单次响应计算性能测试)
-	- [4.2 连续响应计算性能测试](#42-连续响应计算性能测试)
+  - [4.1 单次响应计算性能测试](#41-单次响应计算性能测试)
+  - [4.2 连续响应计算性能测试](#42-连续响应计算性能测试)
 - [5. 总结](#5-总结)
 - [附件](#附件)
-
-
 
 ## 1. 应用场景描述
 
@@ -95,59 +94,59 @@
 
 ```
 def createDfsTb(dbName, tbName){
-	//create database
-	if(existsDatabase(dbName)){
-		dropDatabase(dbName)
-	}
-	db1 = database(, VALUE, 2020.01.01..2021.01.01)
-	db2 = database(, HASH, [SYMBOL, 30])
-	db = database(dbName, COMPO, [db1, db2], , "TSDB")
-	//create table
-	schemaTable = table(
-		array(SYMBOL, 0) as SecurityID,
-		array(TIMESTAMP, 0) as DateTime,
-		array(DOUBLE, 0) as PreClosePx,
-		array(DOUBLE, 0) as OpenPx,
-		array(DOUBLE, 0) as HighPx,
-		array(DOUBLE, 0) as LowPx,
-		array(DOUBLE, 0) as LastPx,
-		array(INT, 0) as TotalVolumeTrade,
-		array(DOUBLE, 0) as TotalValueTrade,
-		array(SYMBOL, 0) as InstrumentStatus,
-		array(DOUBLE[], 0) as BidPrice,
-		array(INT[], 0) as BidOrderQty,
-		array(INT[], 0) as BidNumOrders,
-		array(INT[], 0) as BidOrders,
-		array(DOUBLE[], 0) as OfferPrice,
-		array(INT[], 0) as OfferOrderQty,
-		array(INT[], 0) as OfferNumOrders,
-		array(INT[], 0) as OfferOrders,
-		array(INT, 0) as NumTrades,
-		array(DOUBLE, 0) as IOPV,
-		array(INT, 0) as TotalBidQty,
-		array(INT, 0) as TotalOfferQty,
-		array(DOUBLE, 0) as WeightedAvgBidPx,
-		array(DOUBLE, 0) as WeightedAvgOfferPx,
-		array(INT, 0) as TotalBidNumber,
-		array(INT, 0) as TotalOfferNumber,
-		array(INT, 0) as BidTradeMaxDuration,
-		array(INT, 0) as OfferTradeMaxDuration,
-		array(INT, 0) as NumBidOrders,
-		array(INT, 0) as NumOfferOrders,
-		array(INT, 0) as WithdrawBuyNumber,
-		array(INT, 0) as WithdrawBuyAmount,
-		array(DOUBLE, 0) as WithdrawBuyMoney,
-		array(INT, 0) as WithdrawSellNumber,
-		array(INT, 0) as WithdrawSellAmount,
-		array(DOUBLE, 0) as WithdrawSellMoney,
-		array(INT, 0) as ETFBuyNumber,
-		array(INT, 0) as ETFBuyAmount,
-		array(DOUBLE, 0) as ETFBuyMoney,
-		array(INT, 0) as ETFSellNumber,
-		array(INT, 0) as ETFSellAmount,
-		array(DOUBLE, 0) as ETFSellMoney
-	)
-	db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`DateTime`SecurityID, compressMethods={DateTime:"delta"}, sortColumns=`SecurityID`DateTime, keepDuplicates=ALL)
+ //create database
+ if(existsDatabase(dbName)){
+  dropDatabase(dbName)
+ }
+ db1 = database(, VALUE, 2020.01.01..2021.01.01)
+ db2 = database(, HASH, [SYMBOL, 30])
+ db = database(dbName, COMPO, [db1, db2], , "TSDB")
+ //create table
+ schemaTable = table(
+  array(SYMBOL, 0) as SecurityID,
+  array(TIMESTAMP, 0) as DateTime,
+  array(DOUBLE, 0) as PreClosePx,
+  array(DOUBLE, 0) as OpenPx,
+  array(DOUBLE, 0) as HighPx,
+  array(DOUBLE, 0) as LowPx,
+  array(DOUBLE, 0) as LastPx,
+  array(INT, 0) as TotalVolumeTrade,
+  array(DOUBLE, 0) as TotalValueTrade,
+  array(SYMBOL, 0) as InstrumentStatus,
+  array(DOUBLE[], 0) as BidPrice,
+  array(INT[], 0) as BidOrderQty,
+  array(INT[], 0) as BidNumOrders,
+  array(INT[], 0) as BidOrders,
+  array(DOUBLE[], 0) as OfferPrice,
+  array(INT[], 0) as OfferOrderQty,
+  array(INT[], 0) as OfferNumOrders,
+  array(INT[], 0) as OfferOrders,
+  array(INT, 0) as NumTrades,
+  array(DOUBLE, 0) as IOPV,
+  array(INT, 0) as TotalBidQty,
+  array(INT, 0) as TotalOfferQty,
+  array(DOUBLE, 0) as WeightedAvgBidPx,
+  array(DOUBLE, 0) as WeightedAvgOfferPx,
+  array(INT, 0) as TotalBidNumber,
+  array(INT, 0) as TotalOfferNumber,
+  array(INT, 0) as BidTradeMaxDuration,
+  array(INT, 0) as OfferTradeMaxDuration,
+  array(INT, 0) as NumBidOrders,
+  array(INT, 0) as NumOfferOrders,
+  array(INT, 0) as WithdrawBuyNumber,
+  array(INT, 0) as WithdrawBuyAmount,
+  array(DOUBLE, 0) as WithdrawBuyMoney,
+  array(INT, 0) as WithdrawSellNumber,
+  array(INT, 0) as WithdrawSellAmount,
+  array(DOUBLE, 0) as WithdrawSellMoney,
+  array(INT, 0) as ETFBuyNumber,
+  array(INT, 0) as ETFBuyAmount,
+  array(DOUBLE, 0) as ETFBuyMoney,
+  array(INT, 0) as ETFSellNumber,
+  array(INT, 0) as ETFSellAmount,
+  array(DOUBLE, 0) as ETFSellMoney
+ )
+ db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`DateTime`SecurityID, compressMethods={DateTime:"delta"}, sortColumns=`SecurityID`DateTime, keepDuplicates=ALL)
 }
 
 dbName, tbName = "dfs://snapshot", "snapshot"
@@ -164,20 +163,20 @@ createDfsTb(dbName, tbName)
 
 ```
 def transform(t){
-	temp = select lpad(string(SecurityID), 6, "0") as SecurityID, DateTime, PreClosePx, OpenPx, HighPx, LowPx, LastPx, TotalVolumeTrade, TotalValueTrade, InstrumentStatus,
-			fixedLengthArrayVector(BidPrice0, BidPrice1, BidPrice2, BidPrice3,  BidPrice4, BidPrice5, BidPrice6, BidPrice7, BidPrice8, BidPrice9) as BidPrice,
-			fixedLengthArrayVector(BidOrderQty0, BidOrderQty1, BidOrderQty2, BidOrderQty3,  BidOrderQty4, BidOrderQty5, BidOrderQty6, BidOrderQty7, BidOrderQty8, BidOrderQty9) as BidOrderQty,
-			fixedLengthArrayVector(BidNumOrders0, BidNumOrders1, BidNumOrders2, BidNumOrders3,  BidNumOrders4, BidNumOrders5, BidNumOrders6, BidNumOrders7, BidNumOrders8, BidNumOrders9) as BidNumOrders,
-			fixedLengthArrayVector(BidOrders0, BidOrders1, BidOrders2, BidOrders3,  BidOrders4, BidOrders5, BidOrders6, BidOrders7, BidOrders8, BidOrders9, BidOrders10, BidOrders11, BidOrders12, BidOrders13,  BidOrders14, BidOrders15, BidOrders16, BidOrders17, BidOrders18, BidOrders19, BidOrders20, BidOrders21, BidOrders22, BidOrders23,  BidOrders24, BidOrders25, BidOrders26, BidOrders27, BidOrders28, BidOrders29, BidOrders30, BidOrders31, BidOrders32, BidOrders33,  BidOrders34, BidOrders35, BidOrders36, BidOrders37, BidOrders38, BidOrders39, BidOrders40, BidOrders41, BidOrders42, BidOrders43,  BidOrders44, BidOrders45, BidOrders46, BidOrders47, BidOrders48, BidOrders49) as BidOrders,
-			fixedLengthArrayVector(OfferPrice0, OfferPrice1, OfferPrice2, OfferPrice3,  OfferPrice4, OfferPrice5, OfferPrice6, OfferPrice7, OfferPrice8, OfferPrice9) as OfferPrice,
-			fixedLengthArrayVector(OfferOrderQty0, OfferOrderQty1, OfferOrderQty2, OfferOrderQty3,  OfferOrderQty4, OfferOrderQty5, OfferOrderQty6, OfferOrderQty7, OfferOrderQty8, OfferOrderQty9) as OfferOrderQty,
-			fixedLengthArrayVector(OfferNumOrders0, OfferNumOrders1, OfferNumOrders2, OfferNumOrders3,  OfferNumOrders4, OfferNumOrders5, OfferNumOrders6, OfferNumOrders7, OfferNumOrders8, OfferNumOrders9) as OfferNumOrders,
-			fixedLengthArrayVector(OfferOrders0, OfferOrders1, OfferOrders2, OfferOrders3,  OfferOrders4, OfferOrders5, OfferOrders6, OfferOrders7, OfferOrders8, OfferOrders9, OfferOrders10, OfferOrders11, OfferOrders12, OfferOrders13,  OfferOrders14, OfferOrders15, OfferOrders16, OfferOrders17, OfferOrders18, OfferOrders19, OfferOrders20, OfferOrders21, OfferOrders22, OfferOrders23,  OfferOrders24, OfferOrders25, OfferOrders26, OfferOrders27, OfferOrders28, OfferOrders29, OfferOrders30, OfferOrders31, OfferOrders32, OfferOrders33,  OfferOrders34, OfferOrders35, OfferOrders36, OfferOrders37, OfferOrders38, OfferOrders39, OfferOrders40, OfferOrders41, OfferOrders42, OfferOrders43,  OfferOrders44, OfferOrders45, OfferOrders46, OfferOrders47, OfferOrders48, OfferOrders49) as OfferOrders,
-			NumTrades, IOPV, TotalBidQty, TotalOfferQty, WeightedAvgBidPx, WeightedAvgOfferPx, TotalBidNumber, TotalOfferNumber, BidTradeMaxDuration, OfferTradeMaxDuration, 
-			NumBidOrders, NumOfferOrders, WithdrawBuyNumber, WithdrawBuyAmount, WithdrawBuyMoney,WithdrawSellNumber, WithdrawSellAmount, WithdrawSellMoney, ETFBuyNumber, ETFBuyAmount, 
-			ETFBuyMoney, ETFSellNumber, ETFSellAmount, ETFSellMoney
-			from t
-	return temp
+ temp = select lpad(string(SecurityID), 6, "0") as SecurityID, DateTime, PreClosePx, OpenPx, HighPx, LowPx, LastPx, TotalVolumeTrade, TotalValueTrade, InstrumentStatus,
+   fixedLengthArrayVector(BidPrice0, BidPrice1, BidPrice2, BidPrice3,  BidPrice4, BidPrice5, BidPrice6, BidPrice7, BidPrice8, BidPrice9) as BidPrice,
+   fixedLengthArrayVector(BidOrderQty0, BidOrderQty1, BidOrderQty2, BidOrderQty3,  BidOrderQty4, BidOrderQty5, BidOrderQty6, BidOrderQty7, BidOrderQty8, BidOrderQty9) as BidOrderQty,
+   fixedLengthArrayVector(BidNumOrders0, BidNumOrders1, BidNumOrders2, BidNumOrders3,  BidNumOrders4, BidNumOrders5, BidNumOrders6, BidNumOrders7, BidNumOrders8, BidNumOrders9) as BidNumOrders,
+   fixedLengthArrayVector(BidOrders0, BidOrders1, BidOrders2, BidOrders3,  BidOrders4, BidOrders5, BidOrders6, BidOrders7, BidOrders8, BidOrders9, BidOrders10, BidOrders11, BidOrders12, BidOrders13,  BidOrders14, BidOrders15, BidOrders16, BidOrders17, BidOrders18, BidOrders19, BidOrders20, BidOrders21, BidOrders22, BidOrders23,  BidOrders24, BidOrders25, BidOrders26, BidOrders27, BidOrders28, BidOrders29, BidOrders30, BidOrders31, BidOrders32, BidOrders33,  BidOrders34, BidOrders35, BidOrders36, BidOrders37, BidOrders38, BidOrders39, BidOrders40, BidOrders41, BidOrders42, BidOrders43,  BidOrders44, BidOrders45, BidOrders46, BidOrders47, BidOrders48, BidOrders49) as BidOrders,
+   fixedLengthArrayVector(OfferPrice0, OfferPrice1, OfferPrice2, OfferPrice3,  OfferPrice4, OfferPrice5, OfferPrice6, OfferPrice7, OfferPrice8, OfferPrice9) as OfferPrice,
+   fixedLengthArrayVector(OfferOrderQty0, OfferOrderQty1, OfferOrderQty2, OfferOrderQty3,  OfferOrderQty4, OfferOrderQty5, OfferOrderQty6, OfferOrderQty7, OfferOrderQty8, OfferOrderQty9) as OfferOrderQty,
+   fixedLengthArrayVector(OfferNumOrders0, OfferNumOrders1, OfferNumOrders2, OfferNumOrders3,  OfferNumOrders4, OfferNumOrders5, OfferNumOrders6, OfferNumOrders7, OfferNumOrders8, OfferNumOrders9) as OfferNumOrders,
+   fixedLengthArrayVector(OfferOrders0, OfferOrders1, OfferOrders2, OfferOrders3,  OfferOrders4, OfferOrders5, OfferOrders6, OfferOrders7, OfferOrders8, OfferOrders9, OfferOrders10, OfferOrders11, OfferOrders12, OfferOrders13,  OfferOrders14, OfferOrders15, OfferOrders16, OfferOrders17, OfferOrders18, OfferOrders19, OfferOrders20, OfferOrders21, OfferOrders22, OfferOrders23,  OfferOrders24, OfferOrders25, OfferOrders26, OfferOrders27, OfferOrders28, OfferOrders29, OfferOrders30, OfferOrders31, OfferOrders32, OfferOrders33,  OfferOrders34, OfferOrders35, OfferOrders36, OfferOrders37, OfferOrders38, OfferOrders39, OfferOrders40, OfferOrders41, OfferOrders42, OfferOrders43,  OfferOrders44, OfferOrders45, OfferOrders46, OfferOrders47, OfferOrders48, OfferOrders49) as OfferOrders,
+   NumTrades, IOPV, TotalBidQty, TotalOfferQty, WeightedAvgBidPx, WeightedAvgOfferPx, TotalBidNumber, TotalOfferNumber, BidTradeMaxDuration, OfferTradeMaxDuration, 
+   NumBidOrders, NumOfferOrders, WithdrawBuyNumber, WithdrawBuyAmount, WithdrawBuyMoney,WithdrawSellNumber, WithdrawSellAmount, WithdrawSellMoney, ETFBuyNumber, ETFBuyAmount, 
+   ETFBuyMoney, ETFSellNumber, ETFSellAmount, ETFSellMoney
+   from t
+ return temp
 }
 
 csvDataPath = "/home/v2/下载/data/20211201snapshot_30stocks.csv"
@@ -207,19 +206,19 @@ use ops
 
 // clean up environment
 def cleanEnvironment(){
-	cancelJobEx()
-	try{ unsubscribeTable(tableName=`snapshotStreamTable, actionName="snapshotFilter") } catch(ex){ print(ex) }
-	try{ dropStreamEngine("calChange")} catch(ex){ print(ex) }
-	try{ dropStreamEngine("crossSectionalEngine") } catch(ex){ print(ex) }
-	try{ undef("snapshotStreamTable", SHARED) } catch(ex){ print(ex) }
-	try{ undef("changeCrossSectionalTable", SHARED) } catch(ex){ print(ex) }
+ cancelJobEx()
+ try{ unsubscribeTable(tableName=`snapshotStreamTable, actionName="snapshotFilter") } catch(ex){ print(ex) }
+ try{ dropStreamEngine("calChange")} catch(ex){ print(ex) }
+ try{ dropStreamEngine("crossSectionalEngine") } catch(ex){ print(ex) }
+ try{ undef("snapshotStreamTable", SHARED) } catch(ex){ print(ex) }
+ try{ undef("changeCrossSectionalTable", SHARED) } catch(ex){ print(ex) }
 }
 
 // create stream table
 def createStreamTable(dbName, tbName){
-	schemaTB = loadTable(dbName, tbName).schema().colDefs
-	share(streamTable(40000:0, schemaTB.name, schemaTB.typeString), `snapshotStreamTable)
-	share(keyedTable(`SecurityID, 50:0, `DateTime`SecurityID`factor_1min`rank_1min`factor_5min`rank_5min`factor_10min`rank_10min, [TIMESTAMP, SYMBOL, DOUBLE,  INT, DOUBLE, INT, DOUBLE, INT]), `changeCrossSectionalTable)
+ schemaTB = loadTable(dbName, tbName).schema().colDefs
+ share(streamTable(40000:0, schemaTB.name, schemaTB.typeString), `snapshotStreamTable)
+ share(keyedTable(`SecurityID, 50:0, `DateTime`SecurityID`factor_1min`rank_1min`factor_5min`rank_5min`factor_10min`rank_10min, [TIMESTAMP, SYMBOL, DOUBLE,  INT, DOUBLE, INT, DOUBLE, INT]), `changeCrossSectionalTable)
 }
 
 cleanEnvironment()
@@ -237,8 +236,8 @@ createStreamTable(dbName, tbName)
 
 ```
 def snapshotFilter(engineName, mutable data){
-	t = select * from data where left(SecurityID, 2)="60" and time(DateTime)>=09:25:00.000
-	getStreamEngine(engineName).append!(t)
+ t = select * from data where left(SecurityID, 2)="60" and time(DateTime)>=09:25:00.000
+ getStreamEngine(engineName).append!(t)
 }
 
 subscribeTable(tableName="snapshotStreamTable", actionName="snapshotFilter", offset=-1, handler=snapshotFilter{"calChange"}, msgAsTable=true, hash=0)
@@ -253,10 +252,10 @@ subscribeTable(tableName="snapshotStreamTable", actionName="snapshotFilter", off
 ```
 @state
 def calculateChange(DateTime, LastPx, lag){
-	windowFirstPx = tmfirst(DateTime, LastPx, lag)
-	preMinutePx = tmove(DateTime, LastPx, lag)
-	prevLastPx = iif(preMinutePx == NULL, windowFirstPx, preMinutePx)
-	return 100 * (LastPx - prevLastPx) \ prevLastPx
+ windowFirstPx = tmfirst(DateTime, LastPx, lag)
+ preMinutePx = tmove(DateTime, LastPx, lag)
+ prevLastPx = iif(preMinutePx == NULL, windowFirstPx, preMinutePx)
+ return 100 * (LastPx - prevLastPx) \ prevLastPx
 }
 
 createReactiveStateEngine(name="calChange", metrics=<[DateTime, calculateChange(DateTime, LastPx, lag=1m), calculateChange(DateTime, LastPx, lag=5m), calculateChange(DateTime, LastPx, lag=10m)]>, dummyTable=objByName("snapshotStreamTable"), outputTable=getStreamEngine("crossSectionalEngine"), keyColumn=`SecurityID, filter=<time(DateTime) >= 09:30:00.000>)
@@ -365,16 +364,16 @@ DolphinDB 内置的流数据框架支持流数据的发布，订阅，预处理�
 
 **业务代码**
 
- [01.创建存储快照数据的库表并导入数据.txt](script/Real-Time_Stock_Price_Increase_Calculation/01.创建存储快照数据的库表并导入数据.txt) 
+ [01.创建存储快照数据的库表并导入数据.txt](script/Real-Time_Stock_Price_Increase_Calculation/01.创建存储快照数据的库表并导入数据.txt)
 
- [02.清理环境并创建相关流数据表.txt](script/Real-Time_Stock_Price_Increase_Calculation/02.清理环境并创建相关流数据表.txt) 
+ [02.清理环境并创建相关流数据表.txt](script/Real-Time_Stock_Price_Increase_Calculation/02.清理环境并创建相关流数据表.txt)
 
- [03.注册流计算引擎和订阅流数据表.txt](script/Real-Time_Stock_Price_Increase_Calculation/03.注册流计算引擎和订阅流数据表.txt) 
+ [03.注册流计算引擎和订阅流数据表.txt](script/Real-Time_Stock_Price_Increase_Calculation/03.注册流计算引擎和订阅流数据表.txt)
 
- [04.历史数据回放.txt](script/Real-Time_Stock_Price_Increase_Calculation/04.历史数据回放.txt) 
+ [04.历史数据回放.txt](script/Real-Time_Stock_Price_Increase_Calculation/04.历史数据回放.txt)
 
- [05.性能测试.txt](script/Real-Time_Stock_Price_Increase_Calculation/05.性能测试.txt) 
+ [05.性能测试.txt](script/Real-Time_Stock_Price_Increase_Calculation/05.性能测试.txt)
 
 **示例数据**
 
-[20211201snapshot_30stocks.zip](data/Real-Time_Stock_Price_Increase_Calculation/20211201snapshot_30stocks.zip) 
+[20211201snapshot_30stocks.zip](data/Real-Time_Stock_Price_Increase_Calculation/20211201snapshot_30stocks.zip)

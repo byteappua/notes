@@ -2,19 +2,19 @@
 # 中高频多因子库存储最佳实践
 
 - [中高频多因子库存储最佳实践](#中高频多因子库存储最佳实践)
-	- [1. 概述](#1-概述)
-		- [1.1. 中高频多因子存储面临的挑战](#11-中高频多因子存储面临的挑战)
-		- [1.2. 中高频多因子存储场景需求](#12-中高频多因子存储场景需求)
-	- [2. DolphinDB 的存储特性](#2-dolphindb-的存储特性)
-		- [2.1. 分区存储](#21-分区存储)
-		- [2.2 分区内分组排序存储](#22-分区内分组排序存储)
-	- [3. 十分钟级一万因子存储场景解决方案](#3-十分钟级一万因子存储场景解决方案)
-		- [3.1. 存储方案设计](#31-存储方案设计)
-		- [3.2. 数据准备](#32-数据准备)
-		- [3.3. 测试案例一：HDD 存储](#33-测试案例一hdd-存储)
-		- [3.4. 测试案例二：SSD 存储](#34-测试案例二ssd-存储)
-		- [3.5. 中高频多因子库存储的最佳实践：SSD vs HDD](#35-中高频多因子库存储的最佳实践ssd-vs-hdd)
-	- [附录](#附录)
+  - [1. 概述](#1-概述)
+    - [1.1. 中高频多因子存储面临的挑战](#11-中高频多因子存储面临的挑战)
+    - [1.2. 中高频多因子存储场景需求](#12-中高频多因子存储场景需求)
+  - [2. DolphinDB 的存储特性](#2-dolphindb-的存储特性)
+    - [2.1. 分区存储](#21-分区存储)
+    - [2.2 分区内分组排序存储](#22-分区内分组排序存储)
+  - [3. 十分钟级一万因子存储场景解决方案](#3-十分钟级一万因子存储场景解决方案)
+    - [3.1. 存储方案设计](#31-存储方案设计)
+    - [3.2. 数据准备](#32-数据准备)
+    - [3.3. 测试案例一：HDD 存储](#33-测试案例一hdd-存储)
+    - [3.4. 测试案例二：SSD 存储](#34-测试案例二ssd-存储)
+    - [3.5. 中高频多因子库存储的最佳实践：SSD vs HDD](#35-中高频多因子库存储的最佳实践ssd-vs-hdd)
+  - [附录](#附录)
 
 ## 1. 概述
 
@@ -26,7 +26,7 @@
 
 在数据高频次和因子高数量的双重叠加之下，数据量将轻易达到 TB 级别，那么中高频多因子的存储方案就必须同时面对以下问题：
 
-* 庞大的数据量
+- 庞大的数据量
 
 因子计算通常有4个维度包括股票、因子、频率和时间。国内股票总个数按5,000来算。因子个数一般机构大约为1,000起，多的甚至有10,000个因子。时间频率最高的是每3秒钟生成一次数据，频率低的也有10分钟一次，也就是说，一只股票一个因子一天会生成24到4,800条 tick 数据。
 
@@ -48,13 +48,13 @@
 
 面对如此庞大的数据量，如何保证高效的数据写入和数据压缩是因子库存储的一大挑战，如果不能支持并充分发挥多块磁盘的 I/O，写入耗时将达数小时以上。
 
-* 因子库动态变化
+- 因子库动态变化
 
 因子库经常会发生变化，往往需要新增因子、修改因子定义，或加入新的股票等。面对 TB 级的因子数据，单个因子的新增、修改、删除耗时应该保证在秒级才能确保量化投研的效率。
 
 对于上述问题，我们在设计方案时，除了尽可能优化每一项操作的性能，更重要的是每项性能不能出现明显短板，否则在数据操作量级大幅上升后，会大幅度降低整体的生产效率。
 
-* 多因子对齐输出
+- 多因子对齐输出
 
 金融行业的数据分析通常需要数据支持面板格式。对于读取随机标的（A 股市场目前约5,000只股票）、随机多个因子（10,000个因子中随机查询1,000个因子）的场景，需要在操作时能够尽可能高速并精准读取数据，减少无效 I/O ，并以需要的方式（通常是因子面板模式）将数据读取出来。
 
@@ -62,9 +62,9 @@
 
 总体来看，中高频多因子的存储方案需要满足以下几点：
 
-* 保证写入高效性；
-* 支持高效的因子库运维（新增因子及因子数据的修改、删除）；
-* 支持高效、灵活的读取方式，且以最适合金融计算的方式输出。
+- 保证写入高效性；
+- 支持高效的因子库运维（新增因子及因子数据的修改、删除）；
+- 支持高效、灵活的读取方式，且以最适合金融计算的方式输出。
 
 ## 2. DolphinDB 的存储特性
 
@@ -102,15 +102,15 @@ DolphinDB 中同时支持宽表和窄表的两种模式数据存储。结合 Dol
 
 **方案 1：窄表模式**
 
-*   TradeTime 按月值分区 + FactorName 值分区
-*   排序字段: SecurityID + TradeTime
+- TradeTime 按月值分区 + FactorName 值分区
+- 排序字段: SecurityID + TradeTime
 
 把时间分区调整到月，对因子分区调整到每个因子单独分区，并对每个分区内的数据按照 SecurityID 分组，组内按照 TradeTime 排序。这样的好处是每个分区数据大小适合，在数据检索时，既可以按照时间和因子名进行分区剪枝干，又可以按照股票 ID 近一步的精确定位数据，满足在随意组合因子、标的场景下精准地读取数据。
 
 **方案 2：宽表模式**
 
-*   TradeTime 按月值分区 + SecurityID 值分区
-*   排序字段: SecurityID + TradeTime
+- TradeTime 按月值分区 + SecurityID 值分区
+- 排序字段: SecurityID + TradeTime
 
 在 SecurityID 上进行分区剪枝，因子维度上通过选择不同的列来进行数据筛选。
 
@@ -124,11 +124,11 @@ DolphinDB 中同时支持宽表和窄表的两种模式数据存储。结合 Dol
 
 ```
 def createFactorNamesAndSymbolNamse(num_factors,num_symbols){
-	factor_names = lpad(string(1..num_factors),6,"f00000")
-	symbols_preliminary = lpad(string(1..num_symbols),6,"000000")+"."
-	areas = rand(["SZ","SH"],num_symbols)
-	symbols = symbols_preliminary + areas
-	return factor_names,symbols
+ factor_names = lpad(string(1..num_factors),6,"f00000")
+ symbols_preliminary = lpad(string(1..num_symbols),6,"000000")+"."
+ areas = rand(["SZ","SH"],num_symbols)
+ symbols = symbols_preliminary + areas
+ return factor_names,symbols
 }
 ```
 
@@ -136,13 +136,13 @@ def createFactorNamesAndSymbolNamse(num_factors,num_symbols){
 
 ```
 def createColnameAndColtype(mode,factor_names){
-	if(mode == "single"){
-		return ["tradetime","symbol","factorname","value"],[DATETIME,SYMBOL,SYMBOL,DOUBLE]
-	}else{
-		col_names = ["tradetime","symbol"].append!(factor_names)
-		col_types = [DATETIME,SYMBOL].append!(take(DOUBLE,factor_names.size()))
-		return col_names,col_types
-	}
+ if(mode == "single"){
+  return ["tradetime","symbol","factorname","value"],[DATETIME,SYMBOL,SYMBOL,DOUBLE]
+ }else{
+  col_names = ["tradetime","symbol"].append!(factor_names)
+  col_types = [DATETIME,SYMBOL].append!(take(DOUBLE,factor_names.size()))
+  return col_names,col_types
+ }
 }
 ```
 
@@ -150,10 +150,10 @@ def createColnameAndColtype(mode,factor_names){
 
 服务器配置：
 
-*   CPU：64核
-*   内存：512G
-*   磁盘：9块 HDD 硬盘
-*   数据库设置：单机集群三数据节点
+- CPU：64核
+- 内存：512G
+- 磁盘：9块 HDD 硬盘
+- 数据库设置：单机集群三数据节点
 
 **因子写入**
 
@@ -162,24 +162,24 @@ def createColnameAndColtype(mode,factor_names){
 ```
 // 窄表模式写入某个时间范围数据
 def writeSingleModelData(dbname,tbname,start_date,end_date,symbols,factor_names){
-	total_time_range = getTimeList(start_date,end_date)
-	nodes = exec value from pnodeRun(getNodeAlias)
-	for(j in 0..(total_time_range.size()-1)){
-		for(i in 0..(factor_names.size()-1)){
-			rpc(nodes[i%(nodes.size())],submitJob,"singleModel"+j+"and"+i,dbname,singleModelPartitionData,dbname,tbname,total_time_range[j],symbols,factor_names,factor_names[i])
-		}
-	}
+ total_time_range = getTimeList(start_date,end_date)
+ nodes = exec value from pnodeRun(getNodeAlias)
+ for(j in 0..(total_time_range.size()-1)){
+  for(i in 0..(factor_names.size()-1)){
+   rpc(nodes[i%(nodes.size())],submitJob,"singleModel"+j+"and"+i,dbname,singleModelPartitionData,dbname,tbname,total_time_range[j],symbols,factor_names,factor_names[i])
+  }
+ }
 }
 
 // 宽表模式写入某个时间范围数据
 def writeWideModelData(dbname,tbname,start_date,end_date,symbols,factor_names){
-	total_time_range = getTimeList(start_date,end_date)
-	nodes = exec value from pnodeRun(getNodeAlias)
-	for(j in 0..(total_time_range.size()-1)){
-		for(i in 0..(symbols.size()-1)){
-			rpc(nodes[i%(nodes.size())],submitJob,"wideModel"+j+"and"+i,dbname,wideModelPartitionData,dbname,tbname,total_time_range[j],factor_names,symbols[i])
-		}
-	}
+ total_time_range = getTimeList(start_date,end_date)
+ nodes = exec value from pnodeRun(getNodeAlias)
+ for(j in 0..(total_time_range.size()-1)){
+  for(i in 0..(symbols.size()-1)){
+   rpc(nodes[i%(nodes.size())],submitJob,"wideModel"+j+"and"+i,dbname,wideModelPartitionData,dbname,tbname,total_time_range[j],factor_names,symbols[i])
+  }
+ }
 }
 ```
 
@@ -198,18 +198,18 @@ def writeWideModelData(dbname,tbname,start_date,end_date,symbols,factor_names){
 ```
 // 窄表模式查询随机1000因子
 def querySingleModel(dbname,tbname,start_time,end_time,aim_factor){
-	return select value from loadTable(dbname,tbname) where tradetime>=start_time and tradetime<= end_time and  factorname in aim_factor pivot by tradetime,symbol,factorname
+ return select value from loadTable(dbname,tbname) where tradetime>=start_time and tradetime<= end_time and  factorname in aim_factor pivot by tradetime,symbol,factorname
 }
 
 // 宽表模式查询随机1000因子
 def queryWideModel(dbname,tbname,start_time,end_time,aim_factor){
-	ll = aim_factor[0]
-	for(i in 1..(aim_factor.size()-1)){
-		ll = ll+","+aim_factor[i]
-	}
-	script = "select tradetime,symbol,"+ll+"from loadTable("+'"'+dbname+'"'+","+'"'+tbname+'"'+")" + "where tradetime>="+start_time+"and tradetime<="+end_time
-	tt = parseExpr(script).eval()
-	return tt
+ ll = aim_factor[0]
+ for(i in 1..(aim_factor.size()-1)){
+  ll = ll+","+aim_factor[i]
+ }
+ script = "select tradetime,symbol,"+ll+"from loadTable("+'"'+dbname+'"'+","+'"'+tbname+'"'+")" + "where tradetime>="+start_time+"and tradetime<="+end_time
+ tt = parseExpr(script).eval()
+ return tt
 }
 ```
 
@@ -228,7 +228,7 @@ def queryWideModel(dbname,tbname,start_time,end_time,aim_factor){
 
 因子数据的运维包括新增因子、更新因子、删除因子。
 
-* 新增因子
+- 新增因子
 
 在新增因子的场景，窄表模式可以使用 [append!](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/a/append!.html) 插入新的因子数据；而宽表模式需要先进行 [addColumn](https://www.dolphindb.cn/cn/help/FunctionsandCommands/CommandsReferences/a/addColumn.html) 操作，然后通过 [update](https://www.dolphindb.cn/cn/help/SQLStatements/update.html) 操作更新新增因子列数据。在 DolphinDB 当前的设计下，更新宽表模式中某一列因子，需要将分区数据全部重写，耗时较长
 
@@ -237,44 +237,44 @@ def queryWideModel(dbname,tbname,start_time,end_time,aim_factor){
 ```
 //窄表模式新增1个因子
 def singleModelAddNewFactor(dbname,tbname,start_date,end_date,symbols,factor_names,new_factor){
-	time_list = getTimeList(start_date,end_date).flatten()
-	num_row = symbols.size()*time_list.size()
-	col_names,col_types = createColnameAndColtype("single",factor_names)
-	t = table(num_row:num_row,col_names,col_types)
-	t["tradetime"] = stretch(time_list,num_row)
-	t["symbol"] = take(symbols,num_row)
-	t["factorname"] = take(new_factor,num_row)
-	t["value"] = rand(100.0,num_row)
-	pt = loadTable(dbname,tbname)
-	pt.append!(t)	
+ time_list = getTimeList(start_date,end_date).flatten()
+ num_row = symbols.size()*time_list.size()
+ col_names,col_types = createColnameAndColtype("single",factor_names)
+ t = table(num_row:num_row,col_names,col_types)
+ t["tradetime"] = stretch(time_list,num_row)
+ t["symbol"] = take(symbols,num_row)
+ t["factorname"] = take(new_factor,num_row)
+ t["value"] = rand(100.0,num_row)
+ pt = loadTable(dbname,tbname)
+ pt.append!(t) 
 }
 
 //宽表模型新增一个因子
 def wideModelAddNewFactor(dbname,tbname,start_date,end_date,symbols,new_factor,parallel = true){   //parallel=true表示并行,=false表示串行
-	pt = loadTable(dbname,tbname)
-	addColumn(pt,[new_factor],[DOUBLE])
-	time_list = getTimeList(start_date,end_date)
-	start_time_list,end_time_list = [],[] 
-	for(i in 0..(time_list.size()-1)){
-		start_time_list.append!(time_list[i][0])
-		idx = time_list[i].size()-1
-		end_time_list.append!(time_list[i][idx])
-	}
-	if(!parallel){
-		for(i in 0..(start_time_list.size()-1)){
-			for(j in 0..(symbols.size()-1)){
-				wideModelSinglePartitionUpdate(dbname,tbname,start_time_list[i],end_time_list[i],new_factor,symbols[j])
-			}
-		}
-	}else{
-		for(i in 0..(start_time_list.size()-1)){
-			ploop(wideModelSinglePartitionUpdate{dbname,tbname,start_time_list[i],end_time_list[i],new_factor,},symbols)
-		}
-	}
+ pt = loadTable(dbname,tbname)
+ addColumn(pt,[new_factor],[DOUBLE])
+ time_list = getTimeList(start_date,end_date)
+ start_time_list,end_time_list = [],[] 
+ for(i in 0..(time_list.size()-1)){
+  start_time_list.append!(time_list[i][0])
+  idx = time_list[i].size()-1
+  end_time_list.append!(time_list[i][idx])
+ }
+ if(!parallel){
+  for(i in 0..(start_time_list.size()-1)){
+   for(j in 0..(symbols.size()-1)){
+    wideModelSinglePartitionUpdate(dbname,tbname,start_time_list[i],end_time_list[i],new_factor,symbols[j])
+   }
+  }
+ }else{
+  for(i in 0..(start_time_list.size()-1)){
+   ploop(wideModelSinglePartitionUpdate{dbname,tbname,start_time_list[i],end_time_list[i],new_factor,},symbols)
+  }
+ }
 }
 ```
 
-* 更新因子
+- 更新因子
 
 量化投研中，重新计算因子数据是常见的场景。根据窄表模式下的分区规则，对指定因子数据更新时，可以精确定位到因子所在分区，并进行修改，所以耗时在秒级；而宽表模式的更新方式如上节所述原因，耗时较长。
 
@@ -283,56 +283,56 @@ def wideModelAddNewFactor(dbname,tbname,start_date,end_date,symbols,new_factor,p
 ```
 //窄表模式更新1个因子
 def singleModelUpdateFactor(dbname,tbname,start_date,end_date,update_factor,parallel = false){   //parallel=true表示并行更新
-	time_list = getTimeList(start_date,end_date)
-	start_time_list,end_time_list = [],[] 
-	for(i in 0..(time_list.size()-1)){
-		start_time_list.append!(time_list[i][0])
-		idx = time_list[i].size()-1
-		end_time_list.append!(time_list[i][idx])
-	}
-	if(!parallel){
-		for(i in 0..(start_time_list.size()-1)){
-			singleModelSinglePartitionUpdate(dbname,tbname,start_time_list[i],end_time_list[i],update_factor)
-		}		
-	}else{
-		ploop(singleModelSinglePartitionUpdate{dbname,tbname,,,update_factor},start_time_list,end_time_list)
-	}
+ time_list = getTimeList(start_date,end_date)
+ start_time_list,end_time_list = [],[] 
+ for(i in 0..(time_list.size()-1)){
+  start_time_list.append!(time_list[i][0])
+  idx = time_list[i].size()-1
+  end_time_list.append!(time_list[i][idx])
+ }
+ if(!parallel){
+  for(i in 0..(start_time_list.size()-1)){
+   singleModelSinglePartitionUpdate(dbname,tbname,start_time_list[i],end_time_list[i],update_factor)
+  }  
+ }else{
+  ploop(singleModelSinglePartitionUpdate{dbname,tbname,,,update_factor},start_time_list,end_time_list)
+ }
 }
 
 //宽表模型更新1个因子
 def wideModelUpdateFactor(dbname,tbname,start_date,end_date,update_factor,symbols,parallel = true){  //parallel=true表示并行更新,=false表示串行
-	time_list = getTimeList(start_date,end_date)
-	start_time_list,end_time_list = [],[] 
-	for(i in 0..(time_list.size()-1)){
-		start_time_list.append!(time_list[i][0])
-		idx = time_list[i].size()-1
-		end_time_list.append!(time_list[i][idx])
-	}
-	if(!parallel){
-		for(i in 0..(start_time_list.size()-1)){
-			for(j in 0..(symbols.size()-1)){
-				wideModelSinglePartitionUpdate(dbname,tbname,start_time_list[i],end_time_list[i],update_factor,symbols[j])	
-			}
-		}
-	}else{
-		for(i in 0..(start_time_list.size()-1)){
-			ploop(wideModelSinglePartitionUpdate{dbname,tbname,start_time_list[i],end_time_list[i],update_factor,},symbols)
-		}
-	}
+ time_list = getTimeList(start_date,end_date)
+ start_time_list,end_time_list = [],[] 
+ for(i in 0..(time_list.size()-1)){
+  start_time_list.append!(time_list[i][0])
+  idx = time_list[i].size()-1
+  end_time_list.append!(time_list[i][idx])
+ }
+ if(!parallel){
+  for(i in 0..(start_time_list.size()-1)){
+   for(j in 0..(symbols.size()-1)){
+    wideModelSinglePartitionUpdate(dbname,tbname,start_time_list[i],end_time_list[i],update_factor,symbols[j]) 
+   }
+  }
+ }else{
+  for(i in 0..(start_time_list.size()-1)){
+   ploop(wideModelSinglePartitionUpdate{dbname,tbname,start_time_list[i],end_time_list[i],update_factor,},symbols)
+  }
+ }
 }
 ```
 
-* 删除因子
+- 删除因子
 
 删除因子虽然不是必须的，但可以释放存储空间，以及提供其他便利。当前窄表模型的分区方案在删除指定因子时耗时在秒级，脚本如下所示，TSDB 引擎下的宽表模式目前不支持删除因子列。
 
 ```
 // 单值模型删除一个因子
 def singleModelDeleteFactor(dbname,tbname,start_date,end_date,delete_factor){
-	pt = loadTable(dbname,tbname)
-	time_list = getTimeList(start_date,end_date).flatten()
-	start_time,end_time = time_list[0],time_list[time_list.size()-1]
-	delete  from pt where tradetime >= start_time and tradetime <= end_time and factorname = delete_factor
+ pt = loadTable(dbname,tbname)
+ time_list = getTimeList(start_date,end_date).flatten()
+ start_time,end_time = time_list[0],time_list[time_list.size()-1]
+ delete  from pt where tradetime >= start_time and tradetime <= end_time and factorname = delete_factor
 }
 ```
 
@@ -351,10 +351,10 @@ def singleModelDeleteFactor(dbname,tbname,start_date,end_date,delete_factor){
 
 服务器配置：
 
-* CPU 48 核
-* 内存：512G
-* 磁盘：4 块 SSD 硬盘
-* 数据库设置：单机集群二数据节点
+- CPU 48 核
+- 内存：512G
+- 磁盘：4 块 SSD 硬盘
+- 数据库设置：单机集群二数据节点
 
 **因子写入**
 

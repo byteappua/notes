@@ -11,22 +11,20 @@ DolphinDB 提供的异步复制功能通过异步方式，将主集群复制到�
 
 本教程将从以下几方面对 DolphinDB 的异步复制方案进行介绍：
 
-
-  - [1. 概述](#1-概述)
-    - [1.1 原理](#11-原理)
-    - [1.2 支持性](#12-支持性)
-  - [2. 环境配置](#2-环境配置)
-    - [2.1 主集群配置](#21-主集群配置)
-    - [2.2 从集群配置](#22-从集群配置)
-  - [3. 使用异步复制](#3-使用异步复制)
-    - [3.1 开启集群间异步复制](#31-开启集群间异步复制)
-    - [3.2 查询异步复制状态](#32-查询异步复制状态)
-    - [3.3 停止或关闭异步复制](#33-停止或关闭异步复制)
-  - [4. 常见问题](#4-常见问题)
-    - [4.1 Replication is not enabled](#41-replication-is-not-enabled)
-    - [4.2 异步复制任务异常中止](#42-异步复制任务异常中止)
-  - [5. 附录](#5-附录)
-
+- [1. 概述](#1-概述)
+  - [1.1 原理](#11-原理)
+  - [1.2 支持性](#12-支持性)
+- [2. 环境配置](#2-环境配置)
+  - [2.1 主集群配置](#21-主集群配置)
+  - [2.2 从集群配置](#22-从集群配置)
+- [3. 使用异步复制](#3-使用异步复制)
+  - [3.1 开启集群间异步复制](#31-开启集群间异步复制)
+  - [3.2 查询异步复制状态](#32-查询异步复制状态)
+  - [3.3 停止或关闭异步复制](#33-停止或关闭异步复制)
+- [4. 常见问题](#4-常见问题)
+  - [4.1 Replication is not enabled](#41-replication-is-not-enabled)
+  - [4.2 异步复制任务异常中止](#42-异步复制任务异常中止)
+- [5. 附录](#5-附录)
 
 ## 1. 概述
 
@@ -255,7 +253,7 @@ rpc(getControllerAlias(), getMasterReplicationStatus)
 
 主集群生成了三个异步复制任务，分别对应创建数据库、创建表和插入数据。关于上图中各参数的介绍请参考[函数介绍](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getMasterReplicationStatus.html)。
 
-与之相对应，在 dataNodeSlave 上使用 [getSlaveReplicationStatus](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getSlaveReplicationStatus.html)[ ](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getSlaveReplicationStatus.html?highlight=异步复制)可以查询从集群任务执行队列的状态：
+与之相对应，在 dataNodeSlave 上使用 [getSlaveReplicationStatus](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getSlaveReplicationStatus.html)[](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getSlaveReplicationStatus.html?highlight=异步复制)可以查询从集群任务执行队列的状态：
 
 ```
 rpc(getControllerAlias(), getSlaveReplicationStatus)
@@ -347,14 +345,8 @@ rpc(getControllerAlias(), startClusterReplication)
 
 异步复制主集群Demo：
 
-demo_asynMaster.dos:  [Asynchronous_Replication](script/Asynchronous_Replication) 
-
-
+demo_asynMaster.dos:  [Asynchronous_Replication](script/Asynchronous_Replication)
 
 异步复制从集群Demo：
 
-demo_asynSlave.dos:  [Asynchronous_Replication](script/Asynchronous_Replication) 
-
-
-
- 
+demo_asynSlave.dos:  [Asynchronous_Replication](script/Asynchronous_Replication)
