@@ -5,6 +5,7 @@ export default defineConfig({
   title: "My Awesome Project",
   description: "A VitePress Site",
   lang: "zh-CN",
+  base: "/code-note",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
