@@ -4,12 +4,12 @@
 
 namespace hello_algo.utils;
 
-/* 鏈結串列節點 */
+/* 链表节点 */
 public class ListNode(int x) {
     public int val = x;
     public ListNode? next;
 
-    /* 將陣列反序列化為鏈結串列 */
+    /* 将数组反序列化为链表 */
     public static ListNode? ArrToLinkedList(int[] arr) {
         ListNode dum = new(0);
         ListNode head = dum;

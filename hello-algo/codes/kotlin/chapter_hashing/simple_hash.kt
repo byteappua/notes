@@ -6,7 +6,7 @@
 
 package chapter_hashing
 
-/* 加法雜湊 */
+/* 加法哈希 */
 fun addHash(key: String): Int {
     var hash = 0L
     val MODULUS = 1000000007
@@ -16,7 +16,7 @@ fun addHash(key: String): Int {
     return hash.toInt()
 }
 
-/* 乘法雜湊 */
+/* 乘法哈希 */
 fun mulHash(key: String): Int {
     var hash = 0L
     val MODULUS = 1000000007
@@ -26,7 +26,7 @@ fun mulHash(key: String): Int {
     return hash.toInt()
 }
 
-/* 互斥或雜湊 */
+/* 异或哈希 */
 fun xorHash(key: String): Int {
     var hash = 0
     val MODULUS = 1000000007
@@ -36,7 +36,7 @@ fun xorHash(key: String): Int {
     return hash and MODULUS
 }
 
-/* 旋轉雜湊 */
+/* 旋转哈希 */
 fun rotHash(key: String): Int {
     var hash = 0L
     val MODULUS = 1000000007
@@ -48,17 +48,17 @@ fun rotHash(key: String): Int {
 
 /* Driver Code */
 fun main() {
-    val key = "Hello 演算法"
+    val key = "Hello 算法"
 
     var hash = addHash(key)
-    println("加法雜湊值為 $hash")
+    println("加法哈希值为 $hash")
 
     hash = mulHash(key)
-    println("乘法雜湊值為 $hash")
+    println("乘法哈希值为 $hash")
 
     hash = xorHash(key)
-    println("互斥或雜湊值為 $hash")
+    println("异或哈希值为 $hash")
 
     hash = rotHash(key)
-    println("旋轉雜湊值為 $hash")
+    println("旋转哈希值为 $hash")
 }

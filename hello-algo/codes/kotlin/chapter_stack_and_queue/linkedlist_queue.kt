@@ -6,33 +6,33 @@
 
 package chapter_stack_and_queue
 
-/* 基於鏈結串列實現的佇列 */
+/* 基于链表实现的队列 */
 class LinkedListQueue(
-    // 頭節點 front ，尾節點 rear
+    // 头节点 front ，尾节点 rear
     private var front: ListNode? = null,
     private var rear: ListNode? = null,
     private var queSize: Int = 0
 ) {
 
-    /* 獲取佇列的長度 */
+    /* 获取队列的长度 */
     fun size(): Int {
         return queSize
     }
 
-    /* 判斷佇列是否為空 */
+    /* 判断队列是否为空 */
     fun isEmpty(): Boolean {
         return size() == 0
     }
 
-    /* 入列 */
+    /* 入队 */
     fun push(num: Int) {
-        // 在尾節點後新增 num
+        // 在尾节点后添加 num
         val node = ListNode(num)
-        // 如果佇列為空，則令頭、尾節點都指向該節點
+        // 如果队列为空，则令头、尾节点都指向该节点
         if (front == null) {
             front = node
             rear = node
-            // 如果佇列不為空，則將該節點新增到尾節點後
+            // 如果队列不为空，则将该节点添加到尾节点后
         } else {
             rear?.next = node
             rear = node
@@ -40,22 +40,22 @@ class LinkedListQueue(
         queSize++
     }
 
-    /* 出列 */
+    /* 出队 */
     fun pop(): Int {
         val num = peek()
-        // 刪除頭節點
+        // 删除头节点
         front = front?.next
         queSize--
         return num
     }
 
-    /* 訪問佇列首元素 */
+    /* 访问队首元素 */
     fun peek(): Int {
         if (isEmpty()) throw IndexOutOfBoundsException()
         return front!!._val
     }
 
-    /* 將鏈結串列轉化為 Array 並返回 */
+    /* 将链表转化为 Array 并返回 */
     fun toArray(): IntArray {
         var node = front
         val res = IntArray(size())
@@ -69,30 +69,30 @@ class LinkedListQueue(
 
 /* Driver Code */
 fun main() {
-    /* 初始化佇列 */
+    /* 初始化队列 */
     val queue = LinkedListQueue()
 
-    /* 元素入列 */
+    /* 元素入队 */
     queue.push(1)
     queue.push(3)
     queue.push(2)
     queue.push(5)
     queue.push(4)
-    println("佇列 queue = ${queue.toArray().contentToString()}")
+    println("队列 queue = ${queue.toArray().contentToString()}")
 
-    /* 訪問佇列首元素 */
+    /* 访问队首元素 */
     val peek = queue.peek()
-    println("佇列首元素 peek = $peek")
+    println("队首元素 peek = $peek")
 
-    /* 元素出列 */
+    /* 元素出队 */
     val pop = queue.pop()
-    println("出列元素 pop = $pop，出列後 queue = ${queue.toArray().contentToString()}")
+    println("出队元素 pop = $pop，出队后 queue = ${queue.toArray().contentToString()}")
 
-    /* 獲取佇列的長度 */
+    /* 获取队列的长度 */
     val size = queue.size()
-    println("佇列長度 size = $size")
+    println("队列长度 size = $size")
 
-    /* 判斷佇列是否為空 */
+    /* 判断队列是否为空 */
     val isEmpty = queue.isEmpty()
-    println("佇列是否為空 = $isEmpty")
+    println("队列是否为空 = $isEmpty")
 }

@@ -6,13 +6,13 @@
 
 #include "../utils/common.h"
 
-/* 基於鏈結串列實現的堆疊 */
+/* 基于链表实现的栈 */
 typedef struct {
-    ListNode *top; // 將頭節點作為堆疊頂
-    int size;      // 堆疊的長度
+    ListNode *top; // 将头节点作为栈顶
+    int size;      // 栈的长度
 } LinkedListStack;
 
-/* 建構子 */
+/* 构造函数 */
 LinkedListStack *newLinkedListStack() {
     LinkedListStack *s = malloc(sizeof(LinkedListStack));
     s->top = NULL;
@@ -20,7 +20,7 @@ LinkedListStack *newLinkedListStack() {
     return s;
 }
 
-/* 析構函式 */
+/* 析构函数 */
 void delLinkedListStack(LinkedListStack *s) {
     while (s->top) {
         ListNode *n = s->top->next;
@@ -30,40 +30,40 @@ void delLinkedListStack(LinkedListStack *s) {
     free(s);
 }
 
-/* 獲取堆疊的長度 */
+/* 获取栈的长度 */
 int size(LinkedListStack *s) {
     return s->size;
 }
 
-/* 判斷堆疊是否為空 */
+/* 判断栈是否为空 */
 bool isEmpty(LinkedListStack *s) {
     return size(s) == 0;
 }
 
-/* 入堆疊 */
+/* 入栈 */
 void push(LinkedListStack *s, int num) {
     ListNode *node = (ListNode *)malloc(sizeof(ListNode));
-    node->next = s->top; // 更新新加節點指標域
-    node->val = num;     // 更新新加節點資料域
-    s->top = node;       // 更新堆疊頂
-    s->size++;           // 更新堆疊大小
+    node->next = s->top; // 更新新加节点指针域
+    node->val = num;     // 更新新加节点数据域
+    s->top = node;       // 更新栈顶
+    s->size++;           // 更新栈大小
 }
 
-/* 訪問堆疊頂元素 */
+/* 访问栈顶元素 */
 int peek(LinkedListStack *s) {
     if (s->size == 0) {
-        printf("堆疊為空\n");
+        printf("栈为空\n");
         return INT_MAX;
     }
     return s->top->val;
 }
 
-/* 出堆疊 */
+/* 出栈 */
 int pop(LinkedListStack *s) {
     int val = peek(s);
     ListNode *tmp = s->top;
     s->top = s->top->next;
-    // 釋放記憶體
+    // 释放内存
     free(tmp);
     s->size--;
     return val;
@@ -71,36 +71,36 @@ int pop(LinkedListStack *s) {
 
 /* Driver Code */
 int main() {
-    /* 初始化堆疊 */
+    /* 初始化栈 */
     LinkedListStack *stack = newLinkedListStack();
 
-    /* 元素入堆疊 */
+    /* 元素入栈 */
     push(stack, 1);
     push(stack, 3);
     push(stack, 2);
     push(stack, 5);
     push(stack, 4);
 
-    printf("堆疊 stack = ");
+    printf("栈 stack = ");
     printLinkedList(stack->top);
 
-    /* 訪問堆疊頂元素 */
+    /* 访问栈顶元素 */
     int val = peek(stack);
-    printf("堆疊頂元素 top = %d\r\n", val);
+    printf("栈顶元素 top = %d\r\n", val);
 
-    /* 元素出堆疊 */
+    /* 元素出栈 */
     val = pop(stack);
-    printf("出堆疊元素 pop = %d, 出堆疊後 stack =  ", val);
+    printf("出栈元素 pop = %d, 出栈后 stack =  ", val);
     printLinkedList(stack->top);
 
-    /* 獲取堆疊的長度 */
-    printf("堆疊的長度 size = %d\n", size(stack));
+    /* 获取栈的长度 */
+    printf("栈的长度 size = %d\n", size(stack));
 
-    /* 判斷是否為空 */
+    /* 判断是否为空 */
     bool empty = isEmpty(stack);
-    printf("堆疊是否為空 = %s\n", empty ? "true" : "false");
+    printf("栈是否为空 = %s\n", empty ? "true" : "false");
 
-    // 釋放記憶體
+    // 释放内存
     delLinkedListStack(stack);
 
     return 0;

@@ -6,12 +6,12 @@
 
 package utils
 
-/* 鏈結串列節點 */
+/* 链表节点 */
 class ListNode(var _val: Int) {
     var next: ListNode? = null
 
     companion object {
-        /* 將串列反序列化為鏈結串列 */
+        /* 将列表反序列化为链表 */
         fun arrToLinkedList(arr: IntArray): ListNode? {
             val dum = ListNode(0)
             var head = dum

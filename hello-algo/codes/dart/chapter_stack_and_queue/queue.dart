@@ -7,31 +7,31 @@
 import 'dart:collection';
 
 void main() {
-  /* 初始化佇列 */
-  // 在 Dart 中，一般將雙向佇列類別 Queue 看作佇列使用
+  /* 初始化队列 */
+  // 在 Dart 中，一般将双向队列类 Queue 看作队列使用
   final Queue<int> queue = Queue();
 
-  /* 元素入列 */
+  /* 元素入队 */
   queue.add(1);
   queue.add(3);
   queue.add(2);
   queue.add(5);
   queue.add(4);
-  print("佇列 queue = $queue");
+  print("队列 queue = $queue");
 
-  /* 訪問佇列首元素 */
+  /* 访问队首元素 */
   final int peek = queue.first;
-  print("佇列首元素 peek = $peek");
+  print("队首元素 peek = $peek");
 
-  /* 元素出列 */
+  /* 元素出队 */
   final int pop = queue.removeFirst();
-  print("出列元素 pop = $pop ，出列後 queue = $queue");
+  print("出队元素 pop = $pop ，出队后 queue = $queue");
 
-  /* 獲取佇列長度 */
+  /* 获取队列长度 */
   final int size = queue.length;
-  print("佇列長度 size = $size");
+  print("队列长度 size = $size");
 
-  /* 判斷佇列是否為空 */
+  /* 判断队列是否为空 */
   final bool isEmpty = queue.isEmpty;
-  print("佇列是否為空 = $isEmpty");
+  print("队列是否为空 = $isEmpty");
 }

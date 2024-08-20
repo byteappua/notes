@@ -5,31 +5,31 @@
  */
 
 /* Driver Code */
-/* 初始化堆疊 */
-// JavaScript 沒有內建的堆疊類別，可以把 Array 當作堆疊來使用
+/* 初始化栈 */
+// JavaScript 没有内置的栈类，可以把 Array 当作栈来使用
 const stack = [];
 
-/* 元素入堆疊 */
+/* 元素入栈 */
 stack.push(1);
 stack.push(3);
 stack.push(2);
 stack.push(5);
 stack.push(4);
-console.log('堆疊 stack =', stack);
+console.log('栈 stack =', stack);
 
-/* 訪問堆疊頂元素 */
+/* 访问栈顶元素 */
 const peek = stack[stack.length - 1];
-console.log('堆疊頂元素 peek =', peek);
+console.log('栈顶元素 peek =', peek);
 
-/* 元素出堆疊 */
+/* 元素出栈 */
 const pop = stack.pop();
-console.log('出堆疊元素 pop =', pop);
-console.log('出堆疊後 stack =', stack);
+console.log('出栈元素 pop =', pop);
+console.log('出栈后 stack =', stack);
 
-/* 獲取堆疊的長度 */
+/* 获取栈的长度 */
 const size = stack.length;
-console.log('堆疊的長度 size =', size);
+console.log('栈的长度 size =', size);
 
-/* 判斷是否為空 */
+/* 判断是否为空 */
 const isEmpty = stack.length === 0;
-console.log('堆疊是否為空 =', isEmpty);
+console.log('栈是否为空 =', isEmpty);

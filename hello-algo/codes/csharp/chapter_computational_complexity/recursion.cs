@@ -7,53 +7,53 @@
 namespace hello_algo.chapter_computational_complexity;
 
 public class recursion {
-    /* 遞迴 */
+    /* 递归 */
     int Recur(int n) {
-        // 終止條件
+        // 终止条件
         if (n == 1)
             return 1;
-        // 遞：遞迴呼叫
+        // 递：递归调用
         int res = Recur(n - 1);
-        // 迴：返回結果
+        // 归：返回结果
         return n + res;
     }
 
-    /* 使用迭代模擬遞迴 */
+    /* 使用迭代模拟递归 */
     int ForLoopRecur(int n) {
-        // 使用一個顯式的堆疊來模擬系統呼叫堆疊
+        // 使用一个显式的栈来模拟系统调用栈
         Stack<int> stack = new();
         int res = 0;
-        // 遞：遞迴呼叫
+        // 递：递归调用
         for (int i = n; i > 0; i--) {
-            // 透過“入堆疊操作”模擬“遞”
+            // 通过“入栈操作”模拟“递”
             stack.Push(i);
         }
-        // 迴：返回結果
+        // 归：返回结果
         while (stack.Count > 0) {
-            // 透過“出堆疊操作”模擬“迴”
+            // 通过“出栈操作”模拟“归”
             res += stack.Pop();
         }
         // res = 1+2+3+...+n
         return res;
     }
 
-    /* 尾遞迴 */
+    /* 尾递归 */
     int TailRecur(int n, int res) {
-        // 終止條件
+        // 终止条件
         if (n == 0)
             return res;
-        // 尾遞迴呼叫
+        // 尾递归调用
         return TailRecur(n - 1, res + n);
     }
 
-    /* 費波那契數列：遞迴 */
+    /* 斐波那契数列：递归 */
     int Fib(int n) {
-        // 終止條件 f(1) = 0, f(2) = 1
+        // 终止条件 f(1) = 0, f(2) = 1
         if (n == 1 || n == 2)
             return n - 1;
-        // 遞迴呼叫 f(n) = f(n-1) + f(n-2)
+        // 递归调用 f(n) = f(n-1) + f(n-2)
         int res = Fib(n - 1) + Fib(n - 2);
-        // 返回結果 f(n)
+        // 返回结果 f(n)
         return res;
     }
 
@@ -64,15 +64,15 @@ public class recursion {
         int res;
 
         res = Recur(n);
-        Console.WriteLine("\n遞迴函式的求和結果 res = " + res);
+        Console.WriteLine("\n递归函数的求和结果 res = " + res);
 
         res = ForLoopRecur(n);
-        Console.WriteLine("\n使用迭代模擬遞迴求和結果 res = " + res);
+        Console.WriteLine("\n使用迭代模拟递归求和结果 res = " + res);
 
         res = TailRecur(n, 0);
-        Console.WriteLine("\n尾遞迴函式的求和結果 res = " + res);
+        Console.WriteLine("\n尾递归函数的求和结果 res = " + res);
 
         res = Fib(n);
-        Console.WriteLine("\n費波那契數列的第 " + n + " 項為 " + res);
+        Console.WriteLine("\n斐波那契数列的第 " + n + " 项为 " + res);
     }
 }

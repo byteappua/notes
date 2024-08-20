@@ -8,33 +8,33 @@ include!("../include/include.rs");
 
 /* Driver Code */
 pub fn main() {
-    // 初始化堆疊
-    // 在 rust 中，推薦將 Vec 當作堆疊來使用
+    // 初始化栈
+    // 在 rust 中，推荐将 Vec 当作栈来使用
     let mut stack: Vec<i32> = Vec::new();
 
-    // 元素入堆疊
+    // 元素入栈
     stack.push(1);
     stack.push(3);
     stack.push(2);
     stack.push(5);
     stack.push(4);
-    print!("堆疊 stack = ");
+    print!("栈 stack = ");
     print_util::print_array(&stack);
 
-    // 訪問堆疊頂元素
+    // 访问栈顶元素
     let peek = stack.last().unwrap();
-    print!("\n堆疊頂元素 peek = {peek}");
+    print!("\n栈顶元素 peek = {peek}");
 
-    // 元素出堆疊
+    // 元素出栈
     let pop = stack.pop().unwrap();
-    print!("\n出堆疊元素 pop = {pop}，出堆疊後 stack = ");
+    print!("\n出栈元素 pop = {pop}，出栈后 stack = ");
     print_util::print_array(&stack);
 
-    // 獲取堆疊的長度
+    // 获取栈的长度
     let size = stack.len();
-    print!("\n堆疊的長度 size = {size}");
+    print!("\n栈的长度 size = {size}");
 
-    // 判斷堆疊是否為空
+    // 判断栈是否为空
     let is_empty = stack.is_empty();
-    print!("\n堆疊是否為空 = {is_empty}");
+    print!("\n栈是否为空 = {is_empty}");
 }

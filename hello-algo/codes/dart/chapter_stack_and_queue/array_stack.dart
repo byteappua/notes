@@ -4,74 +4,74 @@
  * Author: liuyuxin (gvenusleo@gmail.com)
  */
 
-/* 基於陣列實現的堆疊 */
+/* 基于数组实现的栈 */
 class ArrayStack {
   late List<int> _stack;
   ArrayStack() {
     _stack = [];
   }
 
-  /* 獲取堆疊的長度 */
+  /* 获取栈的长度 */
   int size() {
     return _stack.length;
   }
 
-  /* 判斷堆疊是否為空 */
+  /* 判断栈是否为空 */
   bool isEmpty() {
     return _stack.isEmpty;
   }
 
-  /* 入堆疊 */
+  /* 入栈 */
   void push(int _num) {
     _stack.add(_num);
   }
 
-  /* 出堆疊 */
+  /* 出栈 */
   int pop() {
     if (isEmpty()) {
-      throw Exception("堆疊為空");
+      throw Exception("栈为空");
     }
     return _stack.removeLast();
   }
 
-  /* 訪問堆疊頂元素 */
+  /* 访问栈顶元素 */
   int peek() {
     if (isEmpty()) {
-      throw Exception("堆疊為空");
+      throw Exception("栈为空");
     }
     return _stack.last;
   }
 
-  /* 將堆疊轉化為 Array 並返回 */
+  /* 将栈转化为 Array 并返回 */
   List<int> toArray() => _stack;
 }
 
 /* Driver Code */
 void main() {
-  /* 初始化堆疊 */
+  /* 初始化栈 */
   final ArrayStack stack = ArrayStack();
 
-  /* 元素入堆疊 */
+  /* 元素入栈 */
   stack.push(1);
   stack.push(3);
   stack.push(2);
   stack.push(5);
   stack.push(4);
-  print("堆疊 stack = ${stack.toArray()}");
+  print("栈 stack = ${stack.toArray()}");
 
-  /* 訪問堆疊頂元素 */
+  /* 访问栈顶元素 */
   final int peek = stack.peek();
-  print("堆疊頂元素 peek = $peek");
+  print("栈顶元素 peek = $peek");
 
-  /* 元素出堆疊 */
+  /* 元素出栈 */
   final int pop = stack.pop();
-  print("出堆疊元素 pop = $pop ，出堆疊後 stack = ${stack.toArray()}");
+  print("出栈元素 pop = $pop ，出栈后 stack = ${stack.toArray()}");
 
-  /* 獲取堆疊的長度 */
+  /* 获取栈的长度 */
   final int size = stack.size();
-  print("堆疊的長度 size = $size");
+  print("栈的长度 size = $size");
 
-  /* 判斷是否為空 */
+  /* 判断是否为空 */
   final bool isEmpty = stack.isEmpty();
-  print("堆疊是否為空 = $isEmpty");
+  print("栈是否为空 = $isEmpty");
 }

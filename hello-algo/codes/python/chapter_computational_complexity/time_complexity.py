@@ -6,7 +6,7 @@ Author: krahets (krahets@163.com)
 
 
 def constant(n: int) -> int:
-    """常數階"""
+    """常数阶"""
     count = 0
     size = 100000
     for _ in range(size):
@@ -15,7 +15,7 @@ def constant(n: int) -> int:
 
 
 def linear(n: int) -> int:
-    """線性階"""
+    """线性阶"""
     count = 0
     for _ in range(n):
         count += 1
@@ -23,18 +23,18 @@ def linear(n: int) -> int:
 
 
 def array_traversal(nums: list[int]) -> int:
-    """線性階（走訪陣列）"""
+    """线性阶（遍历数组）"""
     count = 0
-    # 迴圈次數與陣列長度成正比
+    # 循环次数与数组长度成正比
     for num in nums:
         count += 1
     return count
 
 
 def quadratic(n: int) -> int:
-    """平方階"""
+    """平方阶"""
     count = 0
-    # 迴圈次數與資料大小 n 成平方關係
+    # 循环次数与数据大小 n 成平方关系
     for i in range(n):
         for j in range(n):
             count += 1
@@ -42,26 +42,26 @@ def quadratic(n: int) -> int:
 
 
 def bubble_sort(nums: list[int]) -> int:
-    """平方階（泡沫排序）"""
-    count = 0  # 計數器
-    # 外迴圈：未排序區間為 [0, i]
+    """平方阶（冒泡排序）"""
+    count = 0  # 计数器
+    # 外循环：未排序区间为 [0, i]
     for i in range(len(nums) - 1, 0, -1):
-        # 內迴圈：將未排序區間 [0, i] 中的最大元素交換至該區間的最右端
+        # 内循环：将未排序区间 [0, i] 中的最大元素交换至该区间的最右端
         for j in range(i):
             if nums[j] > nums[j + 1]:
-                # 交換 nums[j] 與 nums[j + 1]
+                # 交换 nums[j] 与 nums[j + 1]
                 tmp: int = nums[j]
                 nums[j] = nums[j + 1]
                 nums[j + 1] = tmp
-                count += 3  # 元素交換包含 3 個單元操作
+                count += 3  # 元素交换包含 3 个单元操作
     return count
 
 
 def exponential(n: int) -> int:
-    """指數階（迴圈實現）"""
+    """指数阶（循环实现）"""
     count = 0
     base = 1
-    # 細胞每輪一分為二，形成數列 1, 2, 4, 8, ..., 2^(n-1)
+    # 细胞每轮一分为二，形成数列 1, 2, 4, 8, ..., 2^(n-1)
     for _ in range(n):
         for _ in range(base):
             count += 1
@@ -71,14 +71,14 @@ def exponential(n: int) -> int:
 
 
 def exp_recur(n: int) -> int:
-    """指數階（遞迴實現）"""
+    """指数阶（递归实现）"""
     if n == 1:
         return 1
     return exp_recur(n - 1) + exp_recur(n - 1) + 1
 
 
 def logarithmic(n: int) -> int:
-    """對數階（迴圈實現）"""
+    """对数阶（循环实现）"""
     count = 0
     while n > 1:
         n = n / 2
@@ -87,30 +87,30 @@ def logarithmic(n: int) -> int:
 
 
 def log_recur(n: int) -> int:
-    """對數階（遞迴實現）"""
+    """对数阶（递归实现）"""
     if n <= 1:
         return 0
     return log_recur(n / 2) + 1
 
 
 def linear_log_recur(n: int) -> int:
-    """線性對數階"""
+    """线性对数阶"""
     if n <= 1:
         return 1
-    # 一分為二，子問題的規模減小一半
+    # 一分为二，子问题的规模减小一半
     count = linear_log_recur(n // 2) + linear_log_recur(n // 2)
-    # 當前子問題包含 n 個操作
+    # 当前子问题包含 n 个操作
     for _ in range(n):
         count += 1
     return count
 
 
 def factorial_recur(n: int) -> int:
-    """階乘階（遞迴實現）"""
+    """阶乘阶（递归实现）"""
     if n == 0:
         return 1
     count = 0
-    # 從 1 個分裂出 n 個
+    # 从 1 个分裂出 n 个
     for _ in range(n):
         count += factorial_recur(n - 1)
     return count
@@ -118,36 +118,36 @@ def factorial_recur(n: int) -> int:
 
 """Driver Code"""
 if __name__ == "__main__":
-    # 可以修改 n 執行，體會一下各種複雜度的操作數量變化趨勢
+    # 可以修改 n 运行，体会一下各种复杂度的操作数量变化趋势
     n = 8
-    print("輸入資料大小 n =", n)
+    print("输入数据大小 n =", n)
 
     count = constant(n)
-    print("常數階的操作數量 =", count)
+    print("常数阶的操作数量 =", count)
 
     count = linear(n)
-    print("線性階的操作數量 =", count)
+    print("线性阶的操作数量 =", count)
     count = array_traversal([0] * n)
-    print("線性階（走訪陣列）的操作數量 =", count)
+    print("线性阶（遍历数组）的操作数量 =", count)
 
     count = quadratic(n)
-    print("平方階的操作數量 =", count)
+    print("平方阶的操作数量 =", count)
     nums = [i for i in range(n, 0, -1)]  # [n, n-1, ..., 2, 1]
     count = bubble_sort(nums)
-    print("平方階（泡沫排序）的操作數量 =", count)
+    print("平方阶（冒泡排序）的操作数量 =", count)
 
     count = exponential(n)
-    print("指數階（迴圈實現）的操作數量 =", count)
+    print("指数阶（循环实现）的操作数量 =", count)
     count = exp_recur(n)
-    print("指數階（遞迴實現）的操作數量 =", count)
+    print("指数阶（递归实现）的操作数量 =", count)
 
     count = logarithmic(n)
-    print("對數階（迴圈實現）的操作數量 =", count)
+    print("对数阶（循环实现）的操作数量 =", count)
     count = log_recur(n)
-    print("對數階（遞迴實現）的操作數量 =", count)
+    print("对数阶（递归实现）的操作数量 =", count)
 
     count = linear_log_recur(n)
-    print("線性對數階（遞迴實現）的操作數量 =", count)
+    print("线性对数阶（递归实现）的操作数量 =", count)
 
     count = factorial_recur(n)
-    print("階乘階（遞迴實現）的操作數量 =", count)
+    print("阶乘阶（递归实现）的操作数量 =", count)

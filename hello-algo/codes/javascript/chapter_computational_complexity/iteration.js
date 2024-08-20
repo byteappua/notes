@@ -4,48 +4,48 @@
  * Author: Gaofer Chou (gaofer-chou@qq.com)
  */
 
-/* for 迴圈 */
+/* for 循环 */
 function forLoop(n) {
     let res = 0;
-    // 迴圈求和 1, 2, ..., n-1, n
+    // 循环求和 1, 2, ..., n-1, n
     for (let i = 1; i <= n; i++) {
         res += i;
     }
     return res;
 }
 
-/* while 迴圈 */
+/* while 循环 */
 function whileLoop(n) {
     let res = 0;
-    let i = 1; // 初始化條件變數
-    // 迴圈求和 1, 2, ..., n-1, n
+    let i = 1; // 初始化条件变量
+    // 循环求和 1, 2, ..., n-1, n
     while (i <= n) {
         res += i;
-        i++; // 更新條件變數
+        i++; // 更新条件变量
     }
     return res;
 }
 
-/* while 迴圈（兩次更新） */
+/* while 循环（两次更新） */
 function whileLoopII(n) {
     let res = 0;
-    let i = 1; // 初始化條件變數
-    // 迴圈求和 1, 4, 10, ...
+    let i = 1; // 初始化条件变量
+    // 循环求和 1, 4, 10, ...
     while (i <= n) {
         res += i;
-        // 更新條件變數
+        // 更新条件变量
         i++;
         i *= 2;
     }
     return res;
 }
 
-/* 雙層 for 迴圈 */
+/* 双层 for 循环 */
 function nestedForLoop(n) {
     let res = '';
-    // 迴圈 i = 1, 2, ..., n-1, n
+    // 循环 i = 1, 2, ..., n-1, n
     for (let i = 1; i <= n; i++) {
-        // 迴圈 j = 1, 2, ..., n-1, n
+        // 循环 j = 1, 2, ..., n-1, n
         for (let j = 1; j <= n; j++) {
             res += `(${i}, ${j}), `;
         }
@@ -58,13 +58,13 @@ const n = 5;
 let res;
 
 res = forLoop(n);
-console.log(`for 迴圈的求和結果 res = ${res}`);
+console.log(`for 循环的求和结果 res = ${res}`);
 
 res = whileLoop(n);
-console.log(`while 迴圈的求和結果 res = ${res}`);
+console.log(`while 循环的求和结果 res = ${res}`);
 
 res = whileLoopII(n);
-console.log(`while 迴圈（兩次更新）求和結果 res = ${res}`);
+console.log(`while 循环（两次更新）求和结果 res = ${res}`);
 
 const resStr = nestedForLoop(n);
-console.log(`雙層 for 迴圈的走訪結果 ${resStr}`);
+console.log(`双层 for 循环的遍历结果 ${resStr}`);

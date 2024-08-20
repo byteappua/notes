@@ -19,7 +19,7 @@ class Trunk {
 };
 
 public class PrintUtil {
-    /* 列印矩陣（Array） */
+    /* 打印矩阵（Array） */
     public static <T> void printMatrix(T[][] matrix) {
         System.out.println("[");
         for (T[] row : matrix) {
@@ -28,7 +28,7 @@ public class PrintUtil {
         System.out.println("]");
     }
 
-    /* 列印矩陣（List） */
+    /* 打印矩阵（List） */
     public static <T> void printMatrix(List<List<T>> matrix) {
         System.out.println("[");
         for (List<T> row : matrix) {
@@ -37,7 +37,7 @@ public class PrintUtil {
         System.out.println("]");
     }
 
-    /* 列印鏈結串列 */
+    /* 打印链表 */
     public static void printLinkedList(ListNode head) {
         List<String> list = new ArrayList<>();
         while (head != null) {
@@ -47,13 +47,13 @@ public class PrintUtil {
         System.out.println(String.join(" -> ", list));
     }
 
-    /* 列印二元樹 */
+    /* 打印二叉树 */
     public static void printTree(TreeNode root) {
         printTree(root, null, false);
     }
 
     /**
-     * 列印二元樹
+     * 打印二叉树
      * This tree printer is borrowed from TECHIE DELIGHT
      * https://www.techiedelight.com/c-program-print-binary-tree/
      */
@@ -97,19 +97,19 @@ public class PrintUtil {
         System.out.print(p.str);
     }
 
-    /* 列印雜湊表 */
+    /* 打印哈希表 */
     public static <K, V> void printHashMap(Map<K, V> map) {
         for (Map.Entry<K, V> kv : map.entrySet()) {
             System.out.println(kv.getKey() + " -> " + kv.getValue());
         }
     }
 
-    /* 列印堆積（優先佇列） */
+    /* 打印堆（优先队列） */
     public static void printHeap(Queue<Integer> queue) {
         List<Integer> list = new ArrayList<>(queue);
-        System.out.print("堆積的陣列表示：");
+        System.out.print("堆的数组表示：");
         System.out.println(list);
-        System.out.println("堆積的樹狀表示：");
+        System.out.println("堆的树状表示：");
         TreeNode root = TreeNode.listToTree(list);
         printTree(root);
     }

@@ -4,28 +4,28 @@ Created Time: 2024-03-30
 Author: Xuan Khoa Tu Nguyen (ngxktuzkai2000@gmail.com)
 =end
 
-### 遞迴 ###
+### 递归 ###
 def recur(n)
-  # 終止條件
+  # 终止条件
   return 1 if n == 1
-  # 遞：遞迴呼叫
+  # 递：递归调用
   res = recur(n - 1)
-  # 迴：返回結果
+  # 归：返回结果
   n + res
 end
 
-### 使用迭代模擬遞迴 ###
+### 使用迭代模拟递归 ###
 def for_loop_recur(n)
-  # 使用一個顯式的堆疊來模擬系統呼叫堆疊
+  # 使用一个显式的栈来模拟系统调用栈
   stack = []
   res = 0
 
-  # 遞：遞迴呼叫
+  # 递：递归调用
   for i in n.downto(0)
-    # 透過“入堆疊操作”模擬“遞”
+    # 通过“入栈操作”模拟“递”
     stack << i
   end
-  # 迴：返回結果
+  # 归：返回结果
   while !stack.empty?
     res += stack.pop
   end
@@ -34,21 +34,21 @@ def for_loop_recur(n)
   res
 end
 
-### 尾遞迴 ###
+### 尾递归 ###
 def tail_recur(n, res)
-  # 終止條件
+  # 终止条件
   return res if n == 0
-  # 尾遞迴呼叫
+  # 尾递归调用
   tail_recur(n - 1, res + n)
 end
 
-### 費波那契數列：遞迴 ###
+### 斐波那契数列：递归 ###
 def fib(n)
-  # 終止條件 f(1) = 0, f(2) = 1
+  # 终止条件 f(1) = 0, f(2) = 1
   return n - 1 if n == 1 || n == 2
-  # 遞迴呼叫 f(n) = f(n-1) + f(n-2)
+  # 递归调用 f(n) = f(n-1) + f(n-2)
   res = fib(n - 1) + fib(n - 2)
-  # 返回結果 f(n)
+  # 返回结果 f(n)
   res
 end
 
@@ -57,14 +57,14 @@ if __FILE__ == $0
   n = 5
 
   res = recur(n)
-  puts "\n遞迴函式的求和結果 res = #{res}"
+  puts "\n递归函数的求和结果 res = #{res}"
 
   res = for_loop_recur(n)
-  puts "\n使用迭代模擬遞迴求和結果 res = #{res}"
+  puts "\n使用迭代模拟递归求和结果 res = #{res}"
 
   res = tail_recur(n, 0)
-  puts "\n尾遞迴函式的求和結果 res = #{res}"
+  puts "\n尾递归函数的求和结果 res = #{res}"
 
   res = fib(n)
-  puts "\n費波那契數列的第 #{n} 項為 #{res}"
+  puts "\n斐波那契数列的第 #{n} 项为 #{res}"
 end

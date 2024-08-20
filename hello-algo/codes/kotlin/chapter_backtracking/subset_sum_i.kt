@@ -6,7 +6,7 @@
 
 package chapter_backtracking.subset_sum_i
 
-/* 回溯演算法：子集和 I */
+/* 回溯算法：子集和 I */
 fun backtrack(
     state: MutableList<Int>,
     target: Int,
@@ -14,34 +14,34 @@ fun backtrack(
     start: Int,
     res: MutableList<MutableList<Int>?>
 ) {
-    // 子集和等於 target 時，記錄解
+    // 子集和等于 target 时，记录解
     if (target == 0) {
         res.add(state.toMutableList())
         return
     }
-    // 走訪所有選擇
-    // 剪枝二：從 start 開始走訪，避免生成重複子集
+    // 遍历所有选择
+    // 剪枝二：从 start 开始遍历，避免生成重复子集
     for (i in start..<choices.size) {
-        // 剪枝一：若子集和超過 target ，則直接結束迴圈
-        // 這是因為陣列已排序，後邊元素更大，子集和一定超過 target
+        // 剪枝一：若子集和超过 target ，则直接结束循环
+        // 这是因为数组已排序，后边元素更大，子集和一定超过 target
         if (target - choices[i] < 0) {
             break
         }
-        // 嘗試：做出選擇，更新 target, start
+        // 尝试：做出选择，更新 target, start
         state.add(choices[i])
-        // 進行下一輪選擇
+        // 进行下一轮选择
         backtrack(state, target - choices[i], choices, i, res)
-        // 回退：撤銷選擇，恢復到之前的狀態
+        // 回退：撤销选择，恢复到之前的状态
         state.removeAt(state.size - 1)
     }
 }
 
 /* 求解子集和 I */
 fun subsetSumI(nums: IntArray, target: Int): MutableList<MutableList<Int>?> {
-    val state = mutableListOf<Int>() // 狀態（子集）
-    nums.sort() // 對 nums 進行排序
-    val start = 0 // 走訪起始點
-    val res = mutableListOf<MutableList<Int>?>() // 結果串列（子集串列）
+    val state = mutableListOf<Int>() // 状态（子集）
+    nums.sort() // 对 nums 进行排序
+    val start = 0 // 遍历起始点
+    val res = mutableListOf<MutableList<Int>?>() // 结果列表（子集列表）
     backtrack(state, target, nums, start, res)
     return res
 }
@@ -53,6 +53,6 @@ fun main() {
 
     val res = subsetSumI(nums, target)
 
-    println("輸入陣列 nums = ${nums.contentToString()}, target = $target")
-    println("所有和等於 $target 的子集 res = $res")
+    println("输入数组 nums = ${nums.contentToString()}, target = $target")
+    println("所有和等于 $target 的子集 res = $res")
 }

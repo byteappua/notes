@@ -6,63 +6,63 @@ Author: Xuan Khoa Tu Nguyen (ngxktuzkai2000@gmail.com)
 
 require_relative './array_hash_map'
 
-### 鍵式位址雜湊表 ###
+### 键式地址哈希表 ###
 class HashMapChaining
-  ### 建構子 ###
+  ### 构造方法 ###
   def initialize
-    @size = 0 # 鍵值對數量
-    @capacity = 4 # 雜湊表容量
-    @load_thres = 2.0 / 3.0 # 觸發擴容的負載因子閾值
-    @extend_ratio = 2 # 擴容倍數
-    @buckets = Array.new(@capacity) { [] } # 桶陣列
+    @size = 0 # 键值对数量
+    @capacity = 4 # 哈希表容量
+    @load_thres = 2.0 / 3.0 # 触发扩容的负载因子阈值
+    @extend_ratio = 2 # 扩容倍数
+    @buckets = Array.new(@capacity) { [] } # 桶数组
   end
 
-  ### 雜湊函式 ###
+  ### 哈希函数 ###
   def hash_func(key)
     key % @capacity
   end
 
-  ### 負載因子 ###
+  ### 负载因子 ###
   def load_factor
     @size / @capacity
   end
 
-  ### 查詢操作 ###
+  ### 查询操作 ###
   def get(key)
     index = hash_func(key)
     bucket = @buckets[index]
-    # 走訪桶，若找到 key ，則返回對應 val
+    # 遍历桶，若找到 key ，则返回对应 val
     for pair in bucket
       return pair.val if pair.key == key
     end
-    # 若未找到 key , 則返回 nil
+    # 若未找到 key , 则返回 nil
     nil
   end
 
-  ### 新增操作 ###
+  ### 添加操作 ###
   def put(key, val)
-    # 當負載因子超過閾值時，執行擴容
+    # 当负载因子超过阈值时，执行扩容
     extend if load_factor > @load_thres
     index = hash_func(key)
     bucket = @buckets[index]
-    # 走訪桶，若遇到指定 key ，則更新對應 val 並返回
+    # 遍历桶，若遇到指定 key ，则更新对应 val 并返回
     for pair in bucket
       if pair.key == key
         pair.val = val
         return
       end
     end
-    # 若無該 key ，則將鍵值對新增至尾部
+    # 若无该 key ，则将键值对添加至尾部
     pair = Pair.new(key, val)
     bucket << pair
     @size += 1
   end
 
-  ### 刪除操作 ###
+  ### 删除操作 ###
   def remove(key)
     index = hash_func(key)
     bucket = @buckets[index]
-    # 走訪桶，從中刪除鍵值對
+    # 遍历桶，从中删除键值对
     for pair in bucket
       if pair.key == key
         bucket.delete(pair)
@@ -72,15 +72,15 @@ class HashMapChaining
     end
   end
 
-  ### 擴容雜湊表 ###
+  ### 扩容哈希表 ###
   def extend
-    # 暫存原雜湊表
+    # 暫存原哈希表
     buckets = @buckets
-    # 初始化擴容後的新雜湊表
+    # 初始化扩容后的新哈希表
     @capacity *= @extend_ratio
     @buckets = Array.new(@capacity) { [] }
     @size = 0
-    # 將鍵值對從原雜湊表搬運至新雜湊表
+    # 将键值对从原哈希表搬运至新哈希表
     for bucket in buckets
       for pair in bucket
         put(pair.key, pair.val)
@@ -88,7 +88,7 @@ class HashMapChaining
     end
   end
 
-  ### 列印雜湊表 ###
+  ### 打印哈希表 ###
   def print
     for bucket in @buckets
       res = []
@@ -102,27 +102,27 @@ end
 
 ### Driver Code ###
 if __FILE__ == $0
-  ### 初始化雜湊表
+  ### 初始化哈希表
   hashmap = HashMapChaining.new
 
-  # 新增操作
-  # 在雜湊表中新增鍵值對 (key, value)
+  # 添加操作
+  # 在哈希表中添加键值对 (key, value)
   hashmap.put(12836, "小哈")
-  hashmap.put(15937, "小囉")
+  hashmap.put(15937, "小啰")
   hashmap.put(16750, "小算")
   hashmap.put(13276, "小法")
-  hashmap.put(10583, "小鴨")
-  puts "\n新增完成後，雜湊表為\n[Key1 -> Value1, Key2 -> Value2, ...]"
+  hashmap.put(10583, "小鸭")
+  puts "\n添加完成后，哈希表为\n[Key1 -> Value1, Key2 -> Value2, ...]"
   hashmap.print
 
-  # 查詢操作
-  # 向雜湊表中輸入鍵 key ，得到值 value
+  # 查询操作
+  # 向哈希表中输入键 key ，得到值 value
   name = hashmap.get(13276)
-  puts "\n輸入學號 13276 ，查詢到姓名 #{name}"
+  puts "\n输入学号 13276 ，查询到姓名 #{name}"
 
-  # 刪除操作
-  # 在雜湊表中刪除鍵值對 (key, value)
+  # 删除操作
+  # 在哈希表中删除键值对 (key, value)
   hashmap.remove(12836)
-  puts "\n刪除 12836 後，雜湊表為\n[Key1 -> Value1, Key2 -> Value2, ...]"
+  puts "\n删除 12836 后，哈希表为\n[Key1 -> Value1, Key2 -> Value2, ...]"
   hashmap.print
 end

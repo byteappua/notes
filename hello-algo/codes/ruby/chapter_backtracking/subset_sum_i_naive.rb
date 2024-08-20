@@ -4,32 +4,32 @@ Created Time: 2024-05-22
 Author: Xuan Khoa Tu Nguyen (ngxktuzkai2000@gmail.com)
 =end
 
-### 回溯演算法：子集和 I ###
+### 回溯算法：子集和 I ###
 def backtrack(state, target, total, choices, res)
-  # 子集和等於 target 時，記錄解
+  # 子集和等于 target 时，记录解
   if total == target
     res << state.dup
     return
   end
 
-  # 走訪所有選擇
+  # 遍历所有选择
   for i in 0...choices.length
-    # 剪枝：若子集和超過 target ，則跳過該選擇
+    # 剪枝：若子集和超过 target ，则跳过该选择
     next if total + choices[i] > target
-    # 嘗試：做出選擇，更新元素和 total
+    # 尝试：做出选择，更新元素和 total
     state << choices[i]
-    # 進行下一輪選擇
+    # 进行下一轮选择
     backtrack(state, target, total + choices[i], choices, res)
-    # 回退：撤銷選擇，恢復到之前的狀態
+    # 回退：撤销选择，恢复到之前的状态
     state.pop
   end
 end
 
-### 求解子集和 I（包含重複子集）###
+### 求解子集和 I（包含重复子集）###
 def subset_sum_i_naive(nums, target)
-  state = [] # 狀態（子集）
+  state = [] # 状态（子集）
   total = 0 # 子集和
-  res = [] # 結果串列（子集串列）
+  res = [] # 结果列表（子集列表）
   backtrack(state, target, total, nums, res)
   res
 end
@@ -40,7 +40,7 @@ if __FILE__ == $0
   target = 9
   res = subset_sum_i_naive(nums, target)
 
-  puts "輸入陣列 nums = #{nums}, target = #{target}"
-  puts "所有和等於 #{target} 的子集 res = #{res}"
-  puts "請注意，該方法輸出的結果包含重複集合"
+  puts "输入数组 nums = #{nums}, target = #{target}"
+  puts "所有和等于 #{target} 的子集 res = #{res}"
+  puts "请注意，该方法输出的结果包含重复集合"
 end

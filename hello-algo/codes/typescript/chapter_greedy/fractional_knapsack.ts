@@ -7,7 +7,7 @@
 /* 物品 */
 class Item {
     w: number; // 物品重量
-    v: number; // 物品價值
+    v: number; // 物品价值
 
     constructor(w: number, v: number) {
         this.w = w;
@@ -15,23 +15,23 @@ class Item {
     }
 }
 
-/* 分數背包：貪婪 */
+/* 分数背包：贪心 */
 function fractionalKnapsack(wgt: number[], val: number[], cap: number): number {
-    // 建立物品串列，包含兩個屬性：重量、價值
+    // 创建物品列表，包含两个属性：重量、价值
     const items: Item[] = wgt.map((w, i) => new Item(w, val[i]));
-    // 按照單位價值 item.v / item.w 從高到低進行排序
+    // 按照单位价值 item.v / item.w 从高到低进行排序
     items.sort((a, b) => b.v / b.w - a.v / a.w);
-    // 迴圈貪婪選擇
+    // 循环贪心选择
     let res = 0;
     for (const item of items) {
         if (item.w <= cap) {
-            // 若剩餘容量充足，則將當前物品整個裝進背包
+            // 若剩余容量充足，则将当前物品整个装进背包
             res += item.v;
             cap -= item.w;
         } else {
-            // 若剩餘容量不足，則將當前物品的一部分裝進背包
+            // 若剩余容量不足，则将当前物品的一部分装进背包
             res += (item.v / item.w) * cap;
-            // 已無剩餘容量，因此跳出迴圈
+            // 已无剩余容量，因此跳出循环
             break;
         }
     }
@@ -43,8 +43,8 @@ const wgt: number[] = [10, 20, 30, 40, 50];
 const val: number[] = [50, 120, 150, 210, 240];
 const cap: number = 50;
 
-// 貪婪演算法
+// 贪心算法
 const res: number = fractionalKnapsack(wgt, val, cap);
-console.log(`不超過背包容量的最大物品價值為 ${res}`);
+console.log(`不超过背包容量的最大物品价值为 ${res}`);
 
 export {};

@@ -7,43 +7,43 @@
 import '../utils/print_util.dart';
 import '../utils/tree_node.dart';
 
-/* 陣列表示下的二元樹類別 */
+/* 数组表示下的二叉树类 */
 class ArrayBinaryTree {
   late List<int?> _tree;
 
-  /* 建構子 */
+  /* 构造方法 */
   ArrayBinaryTree(this._tree);
 
-  /* 串列容量 */
+  /* 列表容量 */
   int size() {
     return _tree.length;
   }
 
-  /* 獲取索引為 i 節點的值 */
+  /* 获取索引为 i 节点的值 */
   int? val(int i) {
-    // 若索引越界，則返回 null ，代表空位
+    // 若索引越界，则返回 null ，代表空位
     if (i < 0 || i >= size()) {
       return null;
     }
     return _tree[i];
   }
 
-  /* 獲取索引為 i 節點的左子節點的索引 */
+  /* 获取索引为 i 节点的左子节点的索引 */
   int? left(int i) {
     return 2 * i + 1;
   }
 
-  /* 獲取索引為 i 節點的右子節點的索引 */
+  /* 获取索引为 i 节点的右子节点的索引 */
   int? right(int i) {
     return 2 * i + 2;
   }
 
-  /* 獲取索引為 i 節點的父節點的索引 */
+  /* 获取索引为 i 节点的父节点的索引 */
   int? parent(int i) {
     return (i - 1) ~/ 2;
   }
 
-  /* 層序走訪 */
+  /* 层序遍历 */
   List<int> levelOrder() {
     List<int> res = [];
     for (int i = 0; i < size(); i++) {
@@ -54,43 +54,43 @@ class ArrayBinaryTree {
     return res;
   }
 
-  /* 深度優先走訪 */
+  /* 深度优先遍历 */
   void dfs(int i, String order, List<int?> res) {
-    // 若為空位，則返回
+    // 若为空位，则返回
     if (val(i) == null) {
       return;
     }
-    // 前序走訪
+    // 前序遍历
     if (order == 'pre') {
       res.add(val(i));
     }
     dfs(left(i)!, order, res);
-    // 中序走訪
+    // 中序遍历
     if (order == 'in') {
       res.add(val(i));
     }
     dfs(right(i)!, order, res);
-    // 後序走訪
+    // 后序遍历
     if (order == 'post') {
       res.add(val(i));
     }
   }
 
-  /* 前序走訪 */
+  /* 前序遍历 */
   List<int?> preOrder() {
     List<int?> res = [];
     dfs(0, 'pre', res);
     return res;
   }
 
-  /* 中序走訪 */
+  /* 中序遍历 */
   List<int?> inOrder() {
     List<int?> res = [];
     dfs(0, 'in', res);
     return res;
   }
 
-  /* 後序走訪 */
+  /* 后序遍历 */
   List<int?> postOrder() {
     List<int?> res = [];
     dfs(0, 'post', res);
@@ -100,8 +100,8 @@ class ArrayBinaryTree {
 
 /* Driver Code */
 void main() {
-  // 初始化二元樹
-  // 這裡藉助了一個從陣列直接生成二元樹的函式
+  // 初始化二叉树
+  // 这里借助了一个从数组直接生成二叉树的函数
   List<int?> arr = [
     1,
     2,
@@ -121,32 +121,32 @@ void main() {
   ];
 
   TreeNode? root = listToTree(arr);
-  print("\n初始化二元樹\n");
-  print("二元樹的陣列表示：");
+  print("\n初始化二叉树\n");
+  print("二叉树的数组表示：");
   print(arr);
-  print("二元樹的鏈結串列表示：");
+  print("二叉树的链表表示：");
   printTree(root);
 
-  // 陣列表示下的二元樹類別
+  // 数组表示下的二叉树类
   ArrayBinaryTree abt = ArrayBinaryTree(arr);
 
-  // 訪問節點
+  // 访问节点
   int i = 1;
   int? l = abt.left(i);
   int? r = abt.right(i);
   int? p = abt.parent(i);
-  print("\n當前節點的索引為 $i ，值為 ${abt.val(i)}");
-  print("其左子節點的索引為 $l ，值為 ${(l == null ? "null" : abt.val(l))}");
-  print("其右子節點的索引為 $r ，值為 ${(r == null ? "null" : abt.val(r))}");
-  print("其父節點的索引為 $p ，值為 ${(p == null ? "null" : abt.val(p))}");
+  print("\n当前节点的索引为 $i ，值为 ${abt.val(i)}");
+  print("其左子节点的索引为 $l ，值为 ${(l == null ? "null" : abt.val(l))}");
+  print("其右子节点的索引为 $r ，值为 ${(r == null ? "null" : abt.val(r))}");
+  print("其父节点的索引为 $p ，值为 ${(p == null ? "null" : abt.val(p))}");
 
-  // 走訪樹
+  // 遍历树
   List<int?> res = abt.levelOrder();
-  print("\n層序走訪為：$res");
+  print("\n层序遍历为：$res");
   res = abt.preOrder();
-  print("前序走訪為 $res");
+  print("前序遍历为 $res");
   res = abt.inOrder();
-  print("中序走訪為 $res");
+  print("中序遍历为 $res");
   res = abt.postOrder();
-  print("後序走訪為 $res");
+  print("后序遍历为 $res");
 }

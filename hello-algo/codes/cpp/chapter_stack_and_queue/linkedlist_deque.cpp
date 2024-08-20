@@ -6,29 +6,29 @@
 
 #include "../utils/common.hpp"
 
-/* 雙向鏈結串列節點 */
+/* 双向链表节点 */
 struct DoublyListNode {
-    int val;              // 節點值
-    DoublyListNode *next; // 後繼節點指標
-    DoublyListNode *prev; // 前驅節點指標
+    int val;              // 节点值
+    DoublyListNode *next; // 后继节点指针
+    DoublyListNode *prev; // 前驱节点指针
     DoublyListNode(int val) : val(val), prev(nullptr), next(nullptr) {
     }
 };
 
-/* 基於雙向鏈結串列實現的雙向佇列 */
+/* 基于双向链表实现的双向队列 */
 class LinkedListDeque {
   private:
-    DoublyListNode *front, *rear; // 頭節點 front ，尾節點 rear
-    int queSize = 0;              // 雙向佇列的長度
+    DoublyListNode *front, *rear; // 头节点 front ，尾节点 rear
+    int queSize = 0;              // 双向队列的长度
 
   public:
-    /* 建構子 */
+    /* 构造方法 */
     LinkedListDeque() : front(nullptr), rear(nullptr) {
     }
 
-    /* 析構方法 */
+    /* 析构方法 */
     ~LinkedListDeque() {
-        // 走訪鏈結串列刪除節點，釋放記憶體
+        // 遍历链表删除节点，释放内存
         DoublyListNode *pre, *cur = front;
         while (cur != nullptr) {
             pre = cur;
@@ -37,105 +37,105 @@ class LinkedListDeque {
         }
     }
 
-    /* 獲取雙向佇列的長度 */
+    /* 获取双向队列的长度 */
     int size() {
         return queSize;
     }
 
-    /* 判斷雙向佇列是否為空 */
+    /* 判断双向队列是否为空 */
     bool isEmpty() {
         return size() == 0;
     }
 
-    /* 入列操作 */
+    /* 入队操作 */
     void push(int num, bool isFront) {
         DoublyListNode *node = new DoublyListNode(num);
-        // 若鏈結串列為空，則令 front 和 rear 都指向 node
+        // 若链表为空，则令 front 和 rear 都指向 node
         if (isEmpty())
             front = rear = node;
-        // 佇列首入列操作
+        // 队首入队操作
         else if (isFront) {
-            // 將 node 新增至鏈結串列頭部
+            // 将 node 添加至链表头部
             front->prev = node;
             node->next = front;
-            front = node; // 更新頭節點
-        // 佇列尾入列操作
+            front = node; // 更新头节点
+        // 队尾入队操作
         } else {
-            // 將 node 新增至鏈結串列尾部
+            // 将 node 添加至链表尾部
             rear->next = node;
             node->prev = rear;
-            rear = node; // 更新尾節點
+            rear = node; // 更新尾节点
         }
-        queSize++; // 更新佇列長度
+        queSize++; // 更新队列长度
     }
 
-    /* 佇列首入列 */
+    /* 队首入队 */
     void pushFirst(int num) {
         push(num, true);
     }
 
-    /* 佇列尾入列 */
+    /* 队尾入队 */
     void pushLast(int num) {
         push(num, false);
     }
 
-    /* 出列操作 */
+    /* 出队操作 */
     int pop(bool isFront) {
         if (isEmpty())
-            throw out_of_range("佇列為空");
+            throw out_of_range("队列为空");
         int val;
-        // 佇列首出列操作
+        // 队首出队操作
         if (isFront) {
-            val = front->val; // 暫存頭節點值
-            // 刪除頭節點
+            val = front->val; // 暂存头节点值
+            // 删除头节点
             DoublyListNode *fNext = front->next;
             if (fNext != nullptr) {
                 fNext->prev = nullptr;
                 front->next = nullptr;
             }
             delete front;
-            front = fNext; // 更新頭節點
-        // 佇列尾出列操作
+            front = fNext; // 更新头节点
+        // 队尾出队操作
         } else {
-            val = rear->val; // 暫存尾節點值
-            // 刪除尾節點
+            val = rear->val; // 暂存尾节点值
+            // 删除尾节点
             DoublyListNode *rPrev = rear->prev;
             if (rPrev != nullptr) {
                 rPrev->next = nullptr;
                 rear->prev = nullptr;
             }
             delete rear;
-            rear = rPrev; // 更新尾節點
+            rear = rPrev; // 更新尾节点
         }
-        queSize--; // 更新佇列長度
+        queSize--; // 更新队列长度
         return val;
     }
 
-    /* 佇列首出列 */
+    /* 队首出队 */
     int popFirst() {
         return pop(true);
     }
 
-    /* 佇列尾出列 */
+    /* 队尾出队 */
     int popLast() {
         return pop(false);
     }
 
-    /* 訪問佇列首元素 */
+    /* 访问队首元素 */
     int peekFirst() {
         if (isEmpty())
-            throw out_of_range("雙向佇列為空");
+            throw out_of_range("双向队列为空");
         return front->val;
     }
 
-    /* 訪問佇列尾元素 */
+    /* 访问队尾元素 */
     int peekLast() {
         if (isEmpty())
-            throw out_of_range("雙向佇列為空");
+            throw out_of_range("双向队列为空");
         return rear->val;
     }
 
-    /* 返回陣列用於列印 */
+    /* 返回数组用于打印 */
     vector<int> toVector() {
         DoublyListNode *node = front;
         vector<int> res(size());
@@ -149,45 +149,45 @@ class LinkedListDeque {
 
 /* Driver Code */
 int main() {
-    /* 初始化雙向佇列 */
+    /* 初始化双向队列 */
     LinkedListDeque *deque = new LinkedListDeque();
     deque->pushLast(3);
     deque->pushLast(2);
     deque->pushLast(5);
-    cout << "雙向佇列 deque = ";
+    cout << "双向队列 deque = ";
     printVector(deque->toVector());
 
-    /* 訪問元素 */
+    /* 访问元素 */
     int peekFirst = deque->peekFirst();
-    cout << "佇列首元素 peekFirst = " << peekFirst << endl;
+    cout << "队首元素 peekFirst = " << peekFirst << endl;
     int peekLast = deque->peekLast();
-    cout << "佇列尾元素 peekLast = " << peekLast << endl;
+    cout << "队尾元素 peekLast = " << peekLast << endl;
 
-    /* 元素入列 */
+    /* 元素入队 */
     deque->pushLast(4);
-    cout << "元素 4 佇列尾入列後 deque =";
+    cout << "元素 4 队尾入队后 deque =";
     printVector(deque->toVector());
     deque->pushFirst(1);
-    cout << "元素 1 佇列首入列後 deque = ";
+    cout << "元素 1 队首入队后 deque = ";
     printVector(deque->toVector());
 
-    /* 元素出列 */
+    /* 元素出队 */
     int popLast = deque->popLast();
-    cout << "佇列尾出列元素 = " << popLast << "，佇列尾出列後 deque = ";
+    cout << "队尾出队元素 = " << popLast << "，队尾出队后 deque = ";
     printVector(deque->toVector());
     int popFirst = deque->popFirst();
-    cout << "佇列首出列元素 = " << popFirst << "，佇列首出列後 deque = ";
+    cout << "队首出队元素 = " << popFirst << "，队首出队后 deque = ";
     printVector(deque->toVector());
 
-    /* 獲取雙向佇列的長度 */
+    /* 获取双向队列的长度 */
     int size = deque->size();
-    cout << "雙向佇列長度 size = " << size << endl;
+    cout << "双向队列长度 size = " << size << endl;
 
-    /* 判斷雙向佇列是否為空 */
+    /* 判断双向队列是否为空 */
     bool isEmpty = deque->isEmpty();
-    cout << "雙向佇列是否為空 = " << boolalpha << isEmpty << endl;
+    cout << "双向队列是否为空 = " << boolalpha << isEmpty << endl;
 
-    // 釋放記憶體
+    // 释放内存
     delete deque;
 
     return 0;

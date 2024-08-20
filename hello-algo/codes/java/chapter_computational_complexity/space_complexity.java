@@ -10,58 +10,58 @@ import utils.*;
 import java.util.*;
 
 public class space_complexity {
-    /* 函式 */
+    /* 函数 */
     static int function() {
-        // 執行某些操作
+        // 执行某些操作
         return 0;
     }
 
-    /* 常數階 */
+    /* 常数阶 */
     static void constant(int n) {
-        // 常數、變數、物件佔用 O(1) 空間
+        // 常量、变量、对象占用 O(1) 空间
         final int a = 0;
         int b = 0;
         int[] nums = new int[10000];
         ListNode node = new ListNode(0);
-        // 迴圈中的變數佔用 O(1) 空間
+        // 循环中的变量占用 O(1) 空间
         for (int i = 0; i < n; i++) {
             int c = 0;
         }
-        // 迴圈中的函式佔用 O(1) 空間
+        // 循环中的函数占用 O(1) 空间
         for (int i = 0; i < n; i++) {
             function();
         }
     }
 
-    /* 線性階 */
+    /* 线性阶 */
     static void linear(int n) {
-        // 長度為 n 的陣列佔用 O(n) 空間
+        // 长度为 n 的数组占用 O(n) 空间
         int[] nums = new int[n];
-        // 長度為 n 的串列佔用 O(n) 空間
+        // 长度为 n 的列表占用 O(n) 空间
         List<ListNode> nodes = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             nodes.add(new ListNode(i));
         }
-        // 長度為 n 的雜湊表佔用 O(n) 空間
+        // 长度为 n 的哈希表占用 O(n) 空间
         Map<Integer, String> map = new HashMap<>();
         for (int i = 0; i < n; i++) {
             map.put(i, String.valueOf(i));
         }
     }
 
-    /* 線性階（遞迴實現） */
+    /* 线性阶（递归实现） */
     static void linearRecur(int n) {
-        System.out.println("遞迴 n = " + n);
+        System.out.println("递归 n = " + n);
         if (n == 1)
             return;
         linearRecur(n - 1);
     }
 
-    /* 平方階 */
+    /* 平方阶 */
     static void quadratic(int n) {
-        // 矩陣佔用 O(n^2) 空間
+        // 矩阵占用 O(n^2) 空间
         int[][] numMatrix = new int[n][n];
-        // 二維串列佔用 O(n^2) 空間
+        // 二维列表占用 O(n^2) 空间
         List<List<Integer>> numList = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             List<Integer> tmp = new ArrayList<>();
@@ -72,17 +72,17 @@ public class space_complexity {
         }
     }
 
-    /* 平方階（遞迴實現） */
+    /* 平方阶（递归实现） */
     static int quadraticRecur(int n) {
         if (n <= 0)
             return 0;
-        // 陣列 nums 長度為 n, n-1, ..., 2, 1
+        // 数组 nums 长度为 n, n-1, ..., 2, 1
         int[] nums = new int[n];
-        System.out.println("遞迴 n = " + n + " 中的 nums 長度 = " + nums.length);
+        System.out.println("递归 n = " + n + " 中的 nums 长度 = " + nums.length);
         return quadraticRecur(n - 1);
     }
 
-    /* 指數階（建立滿二元樹） */
+    /* 指数阶（建立满二叉树） */
     static TreeNode buildTree(int n) {
         if (n == 0)
             return null;
@@ -95,15 +95,15 @@ public class space_complexity {
     /* Driver Code */
     public static void main(String[] args) {
         int n = 5;
-        // 常數階
+        // 常数阶
         constant(n);
-        // 線性階
+        // 线性阶
         linear(n);
         linearRecur(n);
-        // 平方階
+        // 平方阶
         quadratic(n);
         quadraticRecur(n);
-        // 指數階
+        // 指数阶
         TreeNode root = buildTree(n);
         PrintUtil.printTree(root);
     }

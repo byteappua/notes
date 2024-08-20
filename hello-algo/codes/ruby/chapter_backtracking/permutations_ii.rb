@@ -4,26 +4,26 @@ Created Time: 2024-05-22
 Author: Xuan Khoa Tu Nguyen (ngxktuzkai2000@gmail.com)
 =end
 
-### 回溯演算法：全排列 II ###
+### 回溯算法：全排列 II ###
 def backtrack(state, choices, selected, res)
-  # 當狀態長度等於元素數量時，記錄解
+  # 当状态长度等于元素数量时，记录解
   if state.length == choices.length
     res << state.dup
     return
   end
 
-  # 走訪所有選擇
+  # 遍历所有选择
   duplicated = Set.new
   choices.each_with_index do |choice, i|
-    # 剪枝：不允許重複選擇元素 且 不允許重複選擇相等元素
+    # 剪枝：不允许重复选择元素 且 不允许重复选择相等元素
     if !selected[i] && !duplicated.include?(choice)
-      # 嘗試：做出選擇，更新狀態
+      # 尝试：做出选择，更新状态
       duplicated.add(choice)
       selected[i] = true
       state << choice
-      # 進行下一輪選擇
+      # 进行下一轮选择
       backtrack(state, choices, selected, res)
-      # 回退：撤銷選擇，恢復到之前的狀態
+      # 回退：撤销选择，恢复到之前的状态
       selected[i] = false
       state.pop
     end
@@ -43,6 +43,6 @@ if __FILE__ == $0
 
   res = permutations_ii(nums)
 
-  puts "輸入陣列 nums = #{nums}"
+  puts "输入数组 nums = #{nums}"
   puts "所有排列 res = #{res}"
 end

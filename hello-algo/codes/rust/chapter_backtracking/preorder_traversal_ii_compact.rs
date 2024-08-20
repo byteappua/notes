@@ -9,7 +9,7 @@ include!("../include/include.rs");
 use std::{cell::RefCell, rc::Rc};
 use tree_node::{vec_to_tree, TreeNode};
 
-/* 前序走訪：例題二 */
+/* 前序遍历：例题二 */
 fn pre_order(
     res: &mut Vec<Vec<Rc<RefCell<TreeNode>>>>,
     path: &mut Vec<Rc<RefCell<TreeNode>>>,
@@ -19,10 +19,10 @@ fn pre_order(
         return;
     }
     if let Some(node) = root {
-        // 嘗試
+        // 尝试
         path.push(node.clone());
         if node.borrow().val == 7 {
-            // 記錄解
+            // 记录解
             res.push(path.clone());
         }
         pre_order(res, path, node.borrow().left.as_ref());
@@ -35,15 +35,15 @@ fn pre_order(
 /* Driver Code */
 pub fn main() {
     let root = vec_to_tree([1, 7, 3, 4, 5, 6, 7].map(|x| Some(x)).to_vec());
-    println!("初始化二元樹");
+    println!("初始化二叉树");
     print_util::print_tree(root.as_ref().unwrap());
 
-    // 前序走訪
+    // 前序遍历
     let mut path = Vec::new();
     let mut res = Vec::new();
     pre_order(&mut res, &mut path, root.as_ref());
 
-    println!("\n輸出所有根節點到節點 7 的路徑");
+    println!("\n输出所有根节点到节点 7 的路径");
     for path in res {
         let mut vals = Vec::new();
         for node in path {

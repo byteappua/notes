@@ -8,113 +8,113 @@
 
 #define MAX_SIZE 5000
 
-/* 大頂堆積 */
+/* 大顶堆 */
 typedef struct {
-    // size 代表的是實際元素的個數
+    // size 代表的是实际元素的个数
     int size;
-    // 使用預先分配記憶體的陣列，避免擴容
+    // 使用预先分配内存的数组，避免扩容
     int data[MAX_SIZE];
 } MaxHeap;
 
-// 函式宣告
+// 函数声明
 void siftDown(MaxHeap *maxHeap, int i);
 void siftUp(MaxHeap *maxHeap, int i);
 int parent(MaxHeap *maxHeap, int i);
 
-/* 建構子，根據切片建堆積 */
+/* 构造函数，根据切片建堆 */
 MaxHeap *newMaxHeap(int nums[], int size) {
-    // 所有元素入堆積
+    // 所有元素入堆
     MaxHeap *maxHeap = (MaxHeap *)malloc(sizeof(MaxHeap));
     maxHeap->size = size;
     memcpy(maxHeap->data, nums, size * sizeof(int));
     for (int i = parent(maxHeap, size - 1); i >= 0; i--) {
-        // 堆積化除葉節點以外的其他所有節點
+        // 堆化除叶节点以外的其他所有节点
         siftDown(maxHeap, i);
     }
     return maxHeap;
 }
 
-/* 析構函式 */
+/* 析构函数 */
 void delMaxHeap(MaxHeap *maxHeap) {
-    // 釋放記憶體
+    // 释放内存
     free(maxHeap);
 }
 
-/* 獲取左子節點的索引 */
+/* 获取左子节点的索引 */
 int left(MaxHeap *maxHeap, int i) {
     return 2 * i + 1;
 }
 
-/* 獲取右子節點的索引 */
+/* 获取右子节点的索引 */
 int right(MaxHeap *maxHeap, int i) {
     return 2 * i + 2;
 }
 
-/* 獲取父節點的索引 */
+/* 获取父节点的索引 */
 int parent(MaxHeap *maxHeap, int i) {
     return (i - 1) / 2; // 向下取整
 }
 
-/* 交換元素 */
+/* 交换元素 */
 void swap(MaxHeap *maxHeap, int i, int j) {
     int temp = maxHeap->data[i];
     maxHeap->data[i] = maxHeap->data[j];
     maxHeap->data[j] = temp;
 }
 
-/* 獲取堆積大小 */
+/* 获取堆大小 */
 int size(MaxHeap *maxHeap) {
     return maxHeap->size;
 }
 
-/* 判斷堆積是否為空 */
+/* 判断堆是否为空 */
 int isEmpty(MaxHeap *maxHeap) {
     return maxHeap->size == 0;
 }
 
-/* 訪問堆積頂元素 */
+/* 访问堆顶元素 */
 int peek(MaxHeap *maxHeap) {
     return maxHeap->data[0];
 }
 
-/* 元素入堆積 */
+/* 元素入堆 */
 void push(MaxHeap *maxHeap, int val) {
-    // 預設情況下，不應該新增這麼多節點
+    // 默认情况下，不应该添加这么多节点
     if (maxHeap->size == MAX_SIZE) {
         printf("heap is full!");
         return;
     }
-    // 新增節點
+    // 添加节点
     maxHeap->data[maxHeap->size] = val;
     maxHeap->size++;
 
-    // 從底至頂堆積化
+    // 从底至顶堆化
     siftUp(maxHeap, maxHeap->size - 1);
 }
 
-/* 元素出堆積 */
+/* 元素出堆 */
 int pop(MaxHeap *maxHeap) {
-    // 判空處理
+    // 判空处理
     if (isEmpty(maxHeap)) {
         printf("heap is empty!");
         return INT_MAX;
     }
-    // 交換根節點與最右葉節點（交換首元素與尾元素）
+    // 交换根节点与最右叶节点（交换首元素与尾元素）
     swap(maxHeap, 0, size(maxHeap) - 1);
-    // 刪除節點
+    // 删除节点
     int val = maxHeap->data[maxHeap->size - 1];
     maxHeap->size--;
-    // 從頂至底堆積化
+    // 从顶至底堆化
     siftDown(maxHeap, 0);
 
-    // 返回堆積頂元素
+    // 返回堆顶元素
     return val;
 }
 
-/* 從節點 i 開始，從頂至底堆積化 */
+/* 从节点 i 开始，从顶至底堆化 */
 void siftDown(MaxHeap *maxHeap, int i) {
     while (true) {
-        // 判斷節點 i, l, r 中值最大的節點，記為 max
+        // 判断节点 i, l, r 中值最大的节点，记为 max
         int l = left(maxHeap, i);
         int r = right(maxHeap, i);
         int max = i;
@@ -124,29 +124,29 @@ void siftDown(MaxHeap *maxHeap, int i) {
         if (r < size(maxHeap) && maxHeap->data[r] > maxHeap->data[max]) {
             max = r;
         }
-        // 若節點 i 最大或索引 l, r 越界，則無須繼續堆積化，跳出
+        // 若节点 i 最大或索引 l, r 越界，则无须继续堆化，跳出
         if (max == i) {
             break;
         }
-        // 交換兩節點
+        // 交换两节点
         swap(maxHeap, i, max);
-        // 迴圈向下堆積化
+        // 循环向下堆化
         i = max;
     }
 }
 
-/* 從節點 i 開始，從底至頂堆積化 */
+/* 从节点 i 开始，从底至顶堆化 */
 void siftUp(MaxHeap *maxHeap, int i) {
     while (true) {
-        // 獲取節點 i 的父節點
+        // 获取节点 i 的父节点
         int p = parent(maxHeap, i);
-        // 當“越過根節點”或“節點無須修復”時，結束堆積化
+        // 当“越过根节点”或“节点无须修复”时，结束堆化
         if (p < 0 || maxHeap->data[i] <= maxHeap->data[p]) {
             break;
         }
-        // 交換兩節點
+        // 交换两节点
         swap(maxHeap, i, p);
-        // 迴圈向上堆積化
+        // 循环向上堆化
         i = p;
     }
 }

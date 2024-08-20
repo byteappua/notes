@@ -14,47 +14,47 @@ type binarySearchTree struct {
 
 func newBinarySearchTree() *binarySearchTree {
 	bst := &binarySearchTree{}
-	// 初始化空樹
+	// 初始化空树
 	bst.root = nil
 	return bst
 }
 
-/* 獲取根節點 */
+/* 获取根节点 */
 func (bst *binarySearchTree) getRoot() *TreeNode {
 	return bst.root
 }
 
-/* 查詢節點 */
+/* 查找节点 */
 func (bst *binarySearchTree) search(num int) *TreeNode {
 	node := bst.root
-	// 迴圈查詢，越過葉節點後跳出
+	// 循环查找，越过叶节点后跳出
 	for node != nil {
 		if node.Val.(int) < num {
-			// 目標節點在 cur 的右子樹中
+			// 目标节点在 cur 的右子树中
 			node = node.Right
 		} else if node.Val.(int) > num {
-			// 目標節點在 cur 的左子樹中
+			// 目标节点在 cur 的左子树中
 			node = node.Left
 		} else {
-			// 找到目標節點，跳出迴圈
+			// 找到目标节点，跳出循环
 			break
 		}
 	}
-	// 返回目標節點
+	// 返回目标节点
 	return node
 }
 
-/* 插入節點 */
+/* 插入节点 */
 func (bst *binarySearchTree) insert(num int) {
 	cur := bst.root
-	// 若樹為空，則初始化根節點
+	// 若树为空，则初始化根节点
 	if cur == nil {
 		bst.root = NewTreeNode(num)
 		return
 	}
-	// 待插入節點之前的節點位置
+	// 待插入节点之前的节点位置
 	var pre *TreeNode = nil
-	// 迴圈查詢，越過葉節點後跳出
+	// 循环查找，越过叶节点后跳出
 	for cur != nil {
 		if cur.Val == num {
 			return
@@ -66,7 +66,7 @@ func (bst *binarySearchTree) insert(num int) {
 			cur = cur.Left
 		}
 	}
-	// 插入節點
+	// 插入节点
 	node := NewTreeNode(num)
 	if pre.Val.(int) < num {
 		pre.Right = node
@@ -75,43 +75,43 @@ func (bst *binarySearchTree) insert(num int) {
 	}
 }
 
-/* 刪除節點 */
+/* 删除节点 */
 func (bst *binarySearchTree) remove(num int) {
 	cur := bst.root
-	// 若樹為空，直接提前返回
+	// 若树为空，直接提前返回
 	if cur == nil {
 		return
 	}
-	// 待刪除節點之前的節點位置
+	// 待删除节点之前的节点位置
 	var pre *TreeNode = nil
-	// 迴圈查詢，越過葉節點後跳出
+	// 循环查找，越过叶节点后跳出
 	for cur != nil {
 		if cur.Val == num {
 			break
 		}
 		pre = cur
 		if cur.Val.(int) < num {
-			// 待刪除節點在右子樹中
+			// 待删除节点在右子树中
 			cur = cur.Right
 		} else {
-			// 待刪除節點在左子樹中
+			// 待删除节点在左子树中
 			cur = cur.Left
 		}
 	}
-	// 若無待刪除節點，則直接返回
+	// 若无待删除节点，则直接返回
 	if cur == nil {
 		return
 	}
-	// 子節點數為 0 或 1
+	// 子节点数为 0 或 1
 	if cur.Left == nil || cur.Right == nil {
 		var child *TreeNode = nil
-		// 取出待刪除節點的子節點
+		// 取出待删除节点的子节点
 		if cur.Left != nil {
 			child = cur.Left
 		} else {
 			child = cur.Right
 		}
-		// 刪除節點 cur
+		// 删除节点 cur
 		if cur != bst.root {
 			if pre.Left == cur {
 				pre.Left = child
@@ -119,24 +119,24 @@ func (bst *binarySearchTree) remove(num int) {
 				pre.Right = child
 			}
 		} else {
-			// 若刪除節點為根節點，則重新指定根節點
+			// 若删除节点为根节点，则重新指定根节点
 			bst.root = child
 		}
-		// 子節點數為 2
+		// 子节点数为 2
 	} else {
-		// 獲取中序走訪中待刪除節點 cur 的下一個節點
+		// 获取中序遍历中待删除节点 cur 的下一个节点
 		tmp := cur.Right
 		for tmp.Left != nil {
 			tmp = tmp.Left
 		}
-		// 遞迴刪除節點 tmp
+		// 递归删除节点 tmp
 		bst.remove(tmp.Val.(int))
-		// 用 tmp 覆蓋 cur
+		// 用 tmp 覆盖 cur
 		cur.Val = tmp.Val
 	}
 }
 
-/* 列印二元搜尋樹 */
+/* 打印二叉搜索树 */
 func (bst *binarySearchTree) print() {
 	PrintTree(bst.root)
 }

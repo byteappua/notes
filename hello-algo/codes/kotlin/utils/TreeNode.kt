@@ -6,20 +6,20 @@
 
 package utils
 
-/* 二元樹節點類別 */
-/* 建構子 */
+/* 二叉树节点类 */
+/* 构造方法 */
 class TreeNode(
-    var _val: Int // 節點值
+    var _val: Int // 节点值
 ) {
-    var height: Int = 0 // 節點高度
-    var left: TreeNode? = null // 左子節點引用
-    var right: TreeNode? = null // 右子節點引用
+    var height: Int = 0 // 节点高度
+    var left: TreeNode? = null // 左子节点引用
+    var right: TreeNode? = null // 右子节点引用
 
-    // 序列化編碼規則請參考：
+    // 序列化编码规则请参考：
     // https://www.hello-algo.com/chapter_tree/array_representation_of_tree/
-    // 二元樹的陣列表示：
+    // 二叉树的数组表示：
     // [1, 2, 3, 4, None, 6, 7, 8, 9, None, None, 12, None, None, 15]
-    // 二元樹的鏈結串列表示：
+    // 二叉树的链表表示：
     //             /——— 15
     //         /——— 7
     //     /——— 3
@@ -31,7 +31,7 @@ class TreeNode(
     //         \——— 4
     //             \——— 8
 
-    /* 將串列反序列化為二元樹：遞迴 */
+    /* 将列表反序列化为二叉树：递归 */
     companion object {
         private fun listToTreeDFS(arr: MutableList<Int?>, i: Int): TreeNode? {
             if (i < 0 || i >= arr.size || arr[i] == null) {
@@ -43,12 +43,12 @@ class TreeNode(
             return root
         }
 
-        /* 將串列反序列化為二元樹 */
+        /* 将列表反序列化为二叉树 */
         fun listToTree(arr: MutableList<Int?>): TreeNode? {
             return listToTreeDFS(arr, 0)
         }
 
-        /* 將二元樹序列化為串列：遞迴 */
+        /* 将二叉树序列化为列表：递归 */
         private fun treeToListDFS(root: TreeNode?, i: Int, res: MutableList<Int?>) {
             if (root == null) return
             while (i >= res.size) {
@@ -59,7 +59,7 @@ class TreeNode(
             treeToListDFS(root.right, 2 * i + 2, res)
         }
 
-        /* 將二元樹序列化為串列 */
+        /* 将二叉树序列化为列表 */
         fun treeToList(root: TreeNode?): MutableList<Int?> {
             val res = mutableListOf<Int?>()
             treeToListDFS(root, 0, res)

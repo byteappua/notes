@@ -1,9 +1,9 @@
-# 樹
+# 树
 
-![樹](../assets/covers/chapter_tree.jpg)
+![树](../assets/covers/chapter_tree.jpg)
 
 !!! abstract
 
-    參天大樹充滿生命力，根深葉茂，分枝扶疏。
+    参天大树充满生命力，根深叶茂，分枝扶疏。
     
-    它為我們展現了資料分治的生動形態。
+    它为我们展现了数据分治的生动形态。

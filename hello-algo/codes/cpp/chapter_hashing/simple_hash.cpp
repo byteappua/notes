@@ -6,7 +6,7 @@
 
 #include "../utils/common.hpp"
 
-/* 加法雜湊 */
+/* 加法哈希 */
 int addHash(string key) {
     long long hash = 0;
     const int MODULUS = 1000000007;
@@ -16,7 +16,7 @@ int addHash(string key) {
     return (int)hash;
 }
 
-/* 乘法雜湊 */
+/* 乘法哈希 */
 int mulHash(string key) {
     long long hash = 0;
     const int MODULUS = 1000000007;
@@ -26,7 +26,7 @@ int mulHash(string key) {
     return (int)hash;
 }
 
-/* 互斥或雜湊 */
+/* 异或哈希 */
 int xorHash(string key) {
     int hash = 0;
     const int MODULUS = 1000000007;
@@ -36,7 +36,7 @@ int xorHash(string key) {
     return hash & MODULUS;
 }
 
-/* 旋轉雜湊 */
+/* 旋转哈希 */
 int rotHash(string key) {
     long long hash = 0;
     const int MODULUS = 1000000007;
@@ -48,19 +48,19 @@ int rotHash(string key) {
 
 /* Driver Code */
 int main() {
-    string key = "Hello 演算法";
+    string key = "Hello 算法";
 
     int hash = addHash(key);
-    cout << "加法雜湊值為 " << hash << endl;
+    cout << "加法哈希值为 " << hash << endl;
 
     hash = mulHash(key);
-    cout << "乘法雜湊值為 " << hash << endl;
+    cout << "乘法哈希值为 " << hash << endl;
 
     hash = xorHash(key);
-    cout << "互斥或雜湊值為 " << hash << endl;
+    cout << "异或哈希值为 " << hash << endl;
 
     hash = rotHash(key);
-    cout << "旋轉雜湊值為 " << hash << endl;
+    cout << "旋转哈希值为 " << hash << endl;
 
     return 0;
 }

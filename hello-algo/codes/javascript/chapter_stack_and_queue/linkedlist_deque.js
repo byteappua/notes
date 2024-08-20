@@ -4,11 +4,11 @@
  * Author: Zhuo Qinyue (1403450829@qq.com)
  */
 
-/* 雙向鏈結串列節點 */
+/* 双向链表节点 */
 class ListNode {
-    prev; // 前驅節點引用 (指標)
-    next; // 後繼節點引用 (指標)
-    val; // 節點值
+    prev; // 前驱节点引用 (指针)
+    next; // 后继节点引用 (指针)
+    val; // 节点值
 
     constructor(val) {
         this.val = val;
@@ -17,11 +17,11 @@ class ListNode {
     }
 }
 
-/* 基於雙向鏈結串列實現的雙向佇列 */
+/* 基于双向链表实现的双向队列 */
 class LinkedListDeque {
-    #front; // 頭節點 front
-    #rear; // 尾節點 rear
-    #queSize; // 雙向佇列的長度
+    #front; // 头节点 front
+    #rear; // 尾节点 rear
+    #queSize; // 双向队列的长度
 
     constructor() {
         this.#front = null;
@@ -29,93 +29,93 @@ class LinkedListDeque {
         this.#queSize = 0;
     }
 
-    /* 佇列尾入列操作 */
+    /* 队尾入队操作 */
     pushLast(val) {
         const node = new ListNode(val);
-        // 若鏈結串列為空，則令 front 和 rear 都指向 node
+        // 若链表为空，则令 front 和 rear 都指向 node
         if (this.#queSize === 0) {
             this.#front = node;
             this.#rear = node;
         } else {
-            // 將 node 新增至鏈結串列尾部
+            // 将 node 添加至链表尾部
             this.#rear.next = node;
             node.prev = this.#rear;
-            this.#rear = node; // 更新尾節點
+            this.#rear = node; // 更新尾节点
         }
         this.#queSize++;
     }
 
-    /* 佇列首入列操作 */
+    /* 队首入队操作 */
     pushFirst(val) {
         const node = new ListNode(val);
-        // 若鏈結串列為空，則令 front 和 rear 都指向 node
+        // 若链表为空，则令 front 和 rear 都指向 node
         if (this.#queSize === 0) {
             this.#front = node;
             this.#rear = node;
         } else {
-            // 將 node 新增至鏈結串列頭部
+            // 将 node 添加至链表头部
             this.#front.prev = node;
             node.next = this.#front;
-            this.#front = node; // 更新頭節點
+            this.#front = node; // 更新头节点
         }
         this.#queSize++;
     }
 
-    /* 佇列尾出列操作 */
+    /* 队尾出队操作 */
     popLast() {
         if (this.#queSize === 0) {
             return null;
         }
-        const value = this.#rear.val; // 儲存尾節點值
-        // 刪除尾節點
+        const value = this.#rear.val; // 存储尾节点值
+        // 删除尾节点
         let temp = this.#rear.prev;
         if (temp !== null) {
             temp.next = null;
             this.#rear.prev = null;
         }
-        this.#rear = temp; // 更新尾節點
+        this.#rear = temp; // 更新尾节点
         this.#queSize--;
         return value;
     }
 
-    /* 佇列首出列操作 */
+    /* 队首出队操作 */
     popFirst() {
         if (this.#queSize === 0) {
             return null;
         }
-        const value = this.#front.val; // 儲存尾節點值
-        // 刪除頭節點
+        const value = this.#front.val; // 存储尾节点值
+        // 删除头节点
         let temp = this.#front.next;
         if (temp !== null) {
             temp.prev = null;
             this.#front.next = null;
         }
-        this.#front = temp; // 更新頭節點
+        this.#front = temp; // 更新头节点
         this.#queSize--;
         return value;
     }
 
-    /* 訪問佇列尾元素 */
+    /* 访问队尾元素 */
     peekLast() {
         return this.#queSize === 0 ? null : this.#rear.val;
     }
 
-    /* 訪問佇列首元素 */
+    /* 访问队首元素 */
     peekFirst() {
         return this.#queSize === 0 ? null : this.#front.val;
     }
 
-    /* 獲取雙向佇列的長度 */
+    /* 获取双向队列的长度 */
     size() {
         return this.#queSize;
     }
 
-    /* 判斷雙向佇列是否為空 */
+    /* 判断双向队列是否为空 */
     isEmpty() {
         return this.#queSize === 0;
     }
 
-    /* 列印雙向佇列 */
+    /* 打印双向队列 */
     print() {
         const arr = [];
         let temp = this.#front;
@@ -128,40 +128,40 @@ class LinkedListDeque {
 }
 
 /* Driver Code */
-/* 初始化雙向佇列 */
+/* 初始化双向队列 */
 const linkedListDeque = new LinkedListDeque();
 linkedListDeque.pushLast(3);
 linkedListDeque.pushLast(2);
 linkedListDeque.pushLast(5);
-console.log('雙向佇列 linkedListDeque = ');
+console.log('双向队列 linkedListDeque = ');
 linkedListDeque.print();
 
-/* 訪問元素 */
+/* 访问元素 */
 const peekFirst = linkedListDeque.peekFirst();
-console.log('佇列首元素 peekFirst = ' + peekFirst);
+console.log('队首元素 peekFirst = ' + peekFirst);
 const peekLast = linkedListDeque.peekLast();
-console.log('佇列尾元素 peekLast = ' + peekLast);
+console.log('队尾元素 peekLast = ' + peekLast);
 
-/* 元素入列 */
+/* 元素入队 */
 linkedListDeque.pushLast(4);
-console.log('元素 4 佇列尾入列後 linkedListDeque = ');
+console.log('元素 4 队尾入队后 linkedListDeque = ');
 linkedListDeque.print();
 linkedListDeque.pushFirst(1);
-console.log('元素 1 佇列首入列後 linkedListDeque = ');
+console.log('元素 1 队首入队后 linkedListDeque = ');
 linkedListDeque.print();
 
-/* 元素出列 */
+/* 元素出队 */
 const popLast = linkedListDeque.popLast();
-console.log('佇列尾出列元素 = ' + popLast + '，佇列尾出列後 linkedListDeque = ');
+console.log('队尾出队元素 = ' + popLast + '，队尾出队后 linkedListDeque = ');
 linkedListDeque.print();
 const popFirst = linkedListDeque.popFirst();
-console.log('佇列首出列元素 = ' + popFirst + '，佇列首出列後 linkedListDeque = ');
+console.log('队首出队元素 = ' + popFirst + '，队首出队后 linkedListDeque = ');
 linkedListDeque.print();
 
-/* 獲取雙向佇列的長度 */
+/* 获取双向队列的长度 */
 const size = linkedListDeque.size();
-console.log('雙向佇列長度 size = ' + size);
+console.log('双向队列长度 size = ' + size);
 
-/* 判斷雙向佇列是否為空 */
+/* 判断双向队列是否为空 */
 const isEmpty = linkedListDeque.isEmpty();
-console.log('雙向佇列是否為空 = ' + isEmpty);
+console.log('双向队列是否为空 = ' + isEmpty);

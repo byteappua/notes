@@ -6,126 +6,126 @@
 
 namespace hello_algo.chapter_stack_and_queue;
 
-/* 雙向鏈結串列節點 */
+/* 双向链表节点 */
 public class ListNode(int val) {
-    public int val = val;       // 節點值
-    public ListNode? next = null; // 後繼節點引用
-    public ListNode? prev = null; // 前驅節點引用
+    public int val = val;       // 节点值
+    public ListNode? next = null; // 后继节点引用
+    public ListNode? prev = null; // 前驱节点引用
 }
 
-/* 基於雙向鏈結串列實現的雙向佇列 */
+/* 基于双向链表实现的双向队列 */
 public class LinkedListDeque {
-    ListNode? front, rear; // 頭節點 front, 尾節點 rear
-    int queSize = 0;      // 雙向佇列的長度
+    ListNode? front, rear; // 头节点 front, 尾节点 rear
+    int queSize = 0;      // 双向队列的长度
 
     public LinkedListDeque() {
         front = null;
         rear = null;
     }
 
-    /* 獲取雙向佇列的長度 */
+    /* 获取双向队列的长度 */
     public int Size() {
         return queSize;
     }
 
-    /* 判斷雙向佇列是否為空 */
+    /* 判断双向队列是否为空 */
     public bool IsEmpty() {
         return Size() == 0;
     }
 
-    /* 入列操作 */
+    /* 入队操作 */
     void Push(int num, bool isFront) {
         ListNode node = new(num);
-        // 若鏈結串列為空，則令 front 和 rear 都指向 node
+        // 若链表为空，则令 front 和 rear 都指向 node
         if (IsEmpty()) {
             front = node;
             rear = node;
         }
-        // 佇列首入列操作
+        // 队首入队操作
         else if (isFront) {
-            // 將 node 新增至鏈結串列頭部
+            // 将 node 添加至链表头部
             front!.prev = node;
             node.next = front;
-            front = node; // 更新頭節點                           
+            front = node; // 更新头节点                           
         }
-        // 佇列尾入列操作
+        // 队尾入队操作
         else {
-            // 將 node 新增至鏈結串列尾部
+            // 将 node 添加至链表尾部
             rear!.next = node;
             node.prev = rear;
-            rear = node;  // 更新尾節點
+            rear = node;  // 更新尾节点
         }
 
-        queSize++; // 更新佇列長度
+        queSize++; // 更新队列长度
     }
 
-    /* 佇列首入列 */
+    /* 队首入队 */
     public void PushFirst(int num) {
         Push(num, true);
     }
 
-    /* 佇列尾入列 */
+    /* 队尾入队 */
     public void PushLast(int num) {
         Push(num, false);
     }
 
-    /* 出列操作 */
+    /* 出队操作 */
     int? Pop(bool isFront) {
         if (IsEmpty())
             throw new Exception();
         int? val;
-        // 佇列首出列操作
+        // 队首出队操作
         if (isFront) {
-            val = front?.val; // 暫存頭節點值
-            // 刪除頭節點
+            val = front?.val; // 暂存头节点值
+            // 删除头节点
             ListNode? fNext = front?.next;
             if (fNext != null) {
                 fNext.prev = null;
                 front!.next = null;
             }
-            front = fNext;   // 更新頭節點
+            front = fNext;   // 更新头节点
         }
-        // 佇列尾出列操作
+        // 队尾出队操作
         else {
-            val = rear?.val;  // 暫存尾節點值
-            // 刪除尾節點
+            val = rear?.val;  // 暂存尾节点值
+            // 删除尾节点
             ListNode? rPrev = rear?.prev;
             if (rPrev != null) {
                 rPrev.next = null;
                 rear!.prev = null;
             }
-            rear = rPrev;    // 更新尾節點
+            rear = rPrev;    // 更新尾节点
         }
 
-        queSize--; // 更新佇列長度
+        queSize--; // 更新队列长度
         return val;
     }
 
-    /* 佇列首出列 */
+    /* 队首出队 */
     public int? PopFirst() {
         return Pop(true);
     }
 
-    /* 佇列尾出列 */
+    /* 队尾出队 */
     public int? PopLast() {
         return Pop(false);
     }
 
-    /* 訪問佇列首元素 */
+    /* 访问队首元素 */
     public int? PeekFirst() {
         if (IsEmpty())
             throw new Exception();
         return front?.val;
     }
 
-    /* 訪問佇列尾元素 */
+    /* 访问队尾元素 */
     public int? PeekLast() {
         if (IsEmpty())
             throw new Exception();
         return rear?.val;
     }
 
-    /* 返回陣列用於列印 */
+    /* 返回数组用于打印 */
     public int?[] ToArray() {
         ListNode? node = front;
         int?[] res = new int?[Size()];
@@ -141,37 +141,37 @@ public class LinkedListDeque {
 public class linkedlist_deque {
     [Test]
     public void Test() {
-        /* 初始化雙向佇列 */
+        /* 初始化双向队列 */
         LinkedListDeque deque = new();
         deque.PushLast(3);
         deque.PushLast(2);
         deque.PushLast(5);
-        Console.WriteLine("雙向佇列 deque = " + string.Join(" ", deque.ToArray()));
+        Console.WriteLine("双向队列 deque = " + string.Join(" ", deque.ToArray()));
 
-        /* 訪問元素 */
+        /* 访问元素 */
         int? peekFirst = deque.PeekFirst();
-        Console.WriteLine("佇列首元素 peekFirst = " + peekFirst);
+        Console.WriteLine("队首元素 peekFirst = " + peekFirst);
         int? peekLast = deque.PeekLast();
-        Console.WriteLine("佇列尾元素 peekLast = " + peekLast);
+        Console.WriteLine("队尾元素 peekLast = " + peekLast);
 
-        /* 元素入列 */
+        /* 元素入队 */
         deque.PushLast(4);
-        Console.WriteLine("元素 4 佇列尾入列後 deque = " + string.Join(" ", deque.ToArray()));
+        Console.WriteLine("元素 4 队尾入队后 deque = " + string.Join(" ", deque.ToArray()));
         deque.PushFirst(1);
-        Console.WriteLine("元素 1 佇列首入列後 deque = " + string.Join(" ", deque.ToArray()));
+        Console.WriteLine("元素 1 队首入队后 deque = " + string.Join(" ", deque.ToArray()));
 
-        /* 元素出列 */
+        /* 元素出队 */
         int? popLast = deque.PopLast();
-        Console.WriteLine("佇列尾出列元素 = " + popLast + "，佇列尾出列後 deque = " + string.Join(" ", deque.ToArray()));
+        Console.WriteLine("队尾出队元素 = " + popLast + "，队尾出队后 deque = " + string.Join(" ", deque.ToArray()));
         int? popFirst = deque.PopFirst();
-        Console.WriteLine("佇列首出列元素 = " + popFirst + "，佇列首出列後 deque = " + string.Join(" ", deque.ToArray()));
+        Console.WriteLine("队首出队元素 = " + popFirst + "，队首出队后 deque = " + string.Join(" ", deque.ToArray()));
 
-        /* 獲取雙向佇列的長度 */
+        /* 获取双向队列的长度 */
         int size = deque.Size();
-        Console.WriteLine("雙向佇列長度 size = " + size);
+        Console.WriteLine("双向队列长度 size = " + size);
 
-        /* 判斷雙向佇列是否為空 */
+        /* 判断双向队列是否为空 */
         bool isEmpty = deque.IsEmpty();
-        Console.WriteLine("雙向佇列是否為空 = " + isEmpty);
+        Console.WriteLine("双向队列是否为空 = " + isEmpty);
     }
 }

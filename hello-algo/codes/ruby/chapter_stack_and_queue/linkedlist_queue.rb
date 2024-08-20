@@ -6,33 +6,33 @@ Author: Xuan Khoa Tu Nguyen (ngxktuzkai2000@gmail.com)
 
 require_relative '../utils/list_node'
 
-### 基於鏈結串列頭現的佇列 ###
+### 基于链表头现的队列 ###
 class LinkedListQueue
-  ### 獲取佇列的長度 ###
+  ### 获取队列的长度 ###
   attr_reader :size
 
-  ### 建構子 ###
+  ### 构造方法 ###
   def initialize
-    @front = nil  # 頭節點 front
-    @rear = nil   # 尾節點 rear
+    @front = nil  # 头节点 front
+    @rear = nil   # 尾节点 rear
     @size = 0
   end
 
-  ### 判斷佇列是否為空 ###
+  ### 判断队列是否为空 ###
   def is_empty?
     @front.nil?
   end
 
-  ### 入列 ###
+  ### 入队 ###
   def push(num)
-    # 在尾節點後新增 num
+    # 在尾节点后添加 num
     node = ListNode.new(num)
 
-    # 如果佇列為空，則令頭，尾節點都指向該節點
+    # 如果队列为空，则令头，尾节点都指向该节点
     if @front.nil?
       @front = node
       @rear = node
-    # 如果佇列不為空，則令該節點新增到尾節點後
+    # 如果队列不为空，则令该节点添加到尾节点后
     else
       @rear.next = node
       @rear = node
@@ -41,23 +41,23 @@ class LinkedListQueue
     @size += 1
   end
 
-  ### 出列 ###
+  ### 出队 ###
   def pop
     num = peek
-    # 刪除頭節點
+    # 删除头节点
     @front = @front.next
     @size -= 1
     num
   end
 
-  ### 訪問佇列首元素 ###
+  ### 访问队首元素 ###
   def peek
-    raise IndexError, '佇列為空' if is_empty?
+    raise IndexError, '队列为空' if is_empty?
 
     @front.val
   end
 
-  ### 將鏈結串列為 Array 並返回 ###
+  ### 将链表为 Array 并返回 ###
   def to_array
     queue = []
     temp = @front
@@ -71,31 +71,31 @@ end
 
 ### Driver Code ###
 if __FILE__ == $0
-  # 初始化佇列
+  # 初始化队列
   queue = LinkedListQueue.new
 
-  # 元素如隊
+  # 元素如队
   queue.push(1)
   queue.push(3)
   queue.push(2)
   queue.push(5)
   queue.push(4)
-  puts "佇列 queue = #{queue.to_array}"
+  puts "队列 queue = #{queue.to_array}"
 
-  # 訪問佇列首元素
+  # 访问队首元素
   peek = queue.peek
-  puts "佇列首元素 front = #{peek}"
+  puts "队首元素 front = #{peek}"
 
-  # 元素出列
+  # 元素出队
   pop_front = queue.pop
-  puts "出列元素 pop = #{pop_front}"
-  puts "出列後 queue = #{queue.to_array}"
+  puts "出队元素 pop = #{pop_front}"
+  puts "出队后 queue = #{queue.to_array}"
 
-  # 獲取佇列的長度
+  # 获取队列的长度
   size = queue.size
-  puts "佇列長度 size = #{size}"
+  puts "队列长度 size = #{size}"
 
-  # 判斷佇列是否為空
+  # 判断队列是否为空
   is_empty = queue.is_empty?
-  puts "佇列是否為空 = #{is_empty}"
+  puts "队列是否为空 = #{is_empty}"
 end

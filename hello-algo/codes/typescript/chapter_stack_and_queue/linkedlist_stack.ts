@@ -6,26 +6,26 @@
 
 import { ListNode } from '../modules/ListNode';
 
-/* 基於鏈結串列實現的堆疊 */
+/* 基于链表实现的栈 */
 class LinkedListStack {
-    private stackPeek: ListNode | null; // 將頭節點作為堆疊頂
-    private stkSize: number = 0; // 堆疊的長度
+    private stackPeek: ListNode | null; // 将头节点作为栈顶
+    private stkSize: number = 0; // 栈的长度
 
     constructor() {
         this.stackPeek = null;
     }
 
-    /* 獲取堆疊的長度 */
+    /* 获取栈的长度 */
     get size(): number {
         return this.stkSize;
     }
 
-    /* 判斷堆疊是否為空 */
+    /* 判断栈是否为空 */
     isEmpty(): boolean {
         return this.size === 0;
     }
 
-    /* 入堆疊 */
+    /* 入栈 */
     push(num: number): void {
         const node = new ListNode(num);
         node.next = this.stackPeek;
@@ -33,22 +33,22 @@ class LinkedListStack {
         this.stkSize++;
     }
 
-    /* 出堆疊 */
+    /* 出栈 */
     pop(): number {
         const num = this.peek();
-        if (!this.stackPeek) throw new Error('堆疊為空');
+        if (!this.stackPeek) throw new Error('栈为空');
         this.stackPeek = this.stackPeek.next;
         this.stkSize--;
         return num;
     }
 
-    /* 訪問堆疊頂元素 */
+    /* 访问栈顶元素 */
     peek(): number {
-        if (!this.stackPeek) throw new Error('堆疊為空');
+        if (!this.stackPeek) throw new Error('栈为空');
         return this.stackPeek.val;
     }
 
-    /* 將鏈結串列轉化為 Array 並返回 */
+    /* 将链表转化为 Array 并返回 */
     toArray(): number[] {
         let node = this.stackPeek;
         const res = new Array<number>(this.size);
@@ -61,31 +61,31 @@ class LinkedListStack {
 }
 
 /* Driver Code */
-/* 初始化堆疊 */
+/* 初始化栈 */
 const stack = new LinkedListStack();
 
-/* 元素入堆疊 */
+/* 元素入栈 */
 stack.push(1);
 stack.push(3);
 stack.push(2);
 stack.push(5);
 stack.push(4);
-console.log('堆疊 stack = ' + stack.toArray());
+console.log('栈 stack = ' + stack.toArray());
 
-/* 訪問堆疊頂元素 */
+/* 访问栈顶元素 */
 const peek = stack.peek();
-console.log('堆疊頂元素 peek = ' + peek);
+console.log('栈顶元素 peek = ' + peek);
 
-/* 元素出堆疊 */
+/* 元素出栈 */
 const pop = stack.pop();
-console.log('出堆疊元素 pop = ' + pop + '，出堆疊後 stack = ' + stack.toArray());
+console.log('出栈元素 pop = ' + pop + '，出栈后 stack = ' + stack.toArray());
 
-/* 獲取堆疊的長度 */
+/* 获取栈的长度 */
 const size = stack.size;
-console.log('堆疊的長度 size = ' + size);
+console.log('栈的长度 size = ' + size);
 
-/* 判斷是否為空 */
+/* 判断是否为空 */
 const isEmpty = stack.isEmpty();
-console.log('堆疊是否為空 = ' + isEmpty);
+console.log('栈是否为空 = ' + isEmpty);
 
 export {};

@@ -8,7 +8,7 @@ pub const ListNode = ListUtil.ListNode;
 pub const TreeUtil = @import("TreeNode.zig");
 pub const TreeNode = TreeUtil.TreeNode;
 
-// 列印陣列
+// 打印数组
 pub fn printArray(comptime T: type, nums: []T) void {
     std.debug.print("[", .{});
     if (nums.len > 0) {
@@ -20,7 +20,7 @@ pub fn printArray(comptime T: type, nums: []T) void {
     }
 }
 
-// 列印串列
+// 打印列表
 pub fn printList(comptime T: type, list: std.ArrayList(T)) void {
     std.debug.print("[", .{});
     if (list.items.len > 0) {
@@ -32,7 +32,7 @@ pub fn printList(comptime T: type, list: std.ArrayList(T)) void {
     }
 }
 
-// 列印鏈結串列
+// 打印链表
 pub fn printLinkedList(comptime T: type, node: ?*ListNode(T)) !void {
     if (node == null) return;
     var list = std.ArrayList(T).init(std.heap.page_allocator);
@@ -47,7 +47,7 @@ pub fn printLinkedList(comptime T: type, node: ?*ListNode(T)) !void {
     }
 }
 
-// 列印佇列
+// 打印队列
 pub fn printQueue(comptime T: type, queue: std.TailQueue(T)) void {
     var node = queue.first;
     std.debug.print("[", .{});
@@ -59,7 +59,7 @@ pub fn printQueue(comptime T: type, queue: std.TailQueue(T)) void {
     }
 }
 
-// 列印雜湊表
+// 打印哈希表
 pub fn printHashMap(comptime TKey: type, comptime TValue: type, map: std.AutoHashMap(TKey, TValue)) void {
     var it = map.iterator();
     while (it.next()) |kv| {
@@ -69,18 +69,18 @@ pub fn printHashMap(comptime TKey: type, comptime TValue: type, map: std.AutoHas
     }
 }
 
-// 列印堆積
+// 打印堆
 pub fn printHeap(comptime T: type, mem_allocator: std.mem.Allocator, queue: anytype) !void {
     var arr = queue.items;
     var len = queue.len;
-    std.debug.print("堆積的陣列表示：", .{});
+    std.debug.print("堆的数组表示：", .{});
     printArray(T, arr[0..len]);
-    std.debug.print("\n堆積的樹狀表示：\n", .{});
+    std.debug.print("\n堆的树状表示：\n", .{});
     var root = try TreeUtil.arrToTree(T, mem_allocator, arr[0..len]);
     try printTree(root, null, false);
 }
 
-// 列印二元樹
+// 打印二叉树
 // This tree printer is borrowed from TECHIE DELIGHT
 // https://www.techiedelight.com/c-program-print-binary-tree/
 const Trunk = struct {
@@ -99,7 +99,7 @@ pub fn showTrunks(p: ?*Trunk) void {
     std.debug.print("{s}", .{p.?.str});
 }
 
-// 列印二元樹
+// 打印二叉树
 pub fn printTree(root: ?*TreeNode(i32), prev: ?*Trunk, isRight: bool) !void {
     if (root == null) {
         return;

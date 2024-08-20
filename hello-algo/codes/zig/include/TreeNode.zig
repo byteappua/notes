@@ -4,15 +4,15 @@
 
 const std = @import("std");
 
-// 二元樹節點
+// 二叉树节点
 pub fn TreeNode(comptime T: type) type {
     return struct {
         const Self = @This();
 
-        val: T = undefined,         // 節點值
-        height: i32 = undefined,    // 節點高度
-        left: ?*Self = null,        // 左子節點指標
-        right: ?*Self = null,       // 右子節點指標
+        val: T = undefined,         // 节点值
+        height: i32 = undefined,    // 节点高度
+        left: ?*Self = null,        // 左子节点指针
+        right: ?*Self = null,       // 右子节点指针
 
         // Initialize a tree node with specific value
         pub fn init(self: *Self, x: i32) void {
@@ -24,7 +24,7 @@ pub fn TreeNode(comptime T: type) type {
     };   
 }
 
-// 將陣列反序列化為二元樹
+// 将数组反序列化为二叉树
 pub fn arrToTree(comptime T: type, mem_allocator: std.mem.Allocator, arr: []T) !?*TreeNode(T) {
     if (arr.len == 0) return null;
     var root = try mem_allocator.create(TreeNode(T));

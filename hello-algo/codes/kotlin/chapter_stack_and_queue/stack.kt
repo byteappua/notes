@@ -10,30 +10,30 @@ import java.util.*
 
 /* Driver Code */
 fun main() {
-    /* 初始化堆疊 */
+    /* 初始化栈 */
     val stack = Stack<Int>()
 
-    /* 元素入堆疊 */
+    /* 元素入栈 */
     stack.push(1)
     stack.push(3)
     stack.push(2)
     stack.push(5)
     stack.push(4)
-    println("堆疊 stack = $stack")
+    println("栈 stack = $stack")
 
-    /* 訪問堆疊頂元素 */
+    /* 访问栈顶元素 */
     val peek = stack.peek()
-    println("堆疊頂元素 peek = $peek")
+    println("栈顶元素 peek = $peek")
 
-    /* 元素出堆疊 */
+    /* 元素出栈 */
     val pop = stack.pop()
-    println("出堆疊元素 pop = $pop，出堆疊後 stack = $stack")
+    println("出栈元素 pop = $pop，出栈后 stack = $stack")
 
-    /* 獲取堆疊的長度 */
+    /* 获取栈的长度 */
     val size = stack.size
-    println("堆疊的長度 size = $size")
+    println("栈的长度 size = $size")
 
-    /* 判斷是否為空 */
+    /* 判断是否为空 */
     val isEmpty = stack.isEmpty()
-    println("堆疊是否為空 = $isEmpty")
+    println("栈是否为空 = $isEmpty")
 }

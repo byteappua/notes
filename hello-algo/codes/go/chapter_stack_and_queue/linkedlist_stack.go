@@ -8,25 +8,25 @@ import (
 	"container/list"
 )
 
-/* 基於鏈結串列實現的堆疊 */
+/* 基于链表实现的栈 */
 type linkedListStack struct {
-	// 使用內建包 list 來實現堆疊
+	// 使用内置包 list 来实现栈
 	data *list.List
 }
 
-/* 初始化堆疊 */
+/* 初始化栈 */
 func newLinkedListStack() *linkedListStack {
 	return &linkedListStack{
 		data: list.New(),
 	}
 }
 
-/* 入堆疊 */
+/* 入栈 */
 func (s *linkedListStack) push(value int) {
 	s.data.PushBack(value)
 }
 
-/* 出堆疊 */
+/* 出栈 */
 func (s *linkedListStack) pop() any {
 	if s.isEmpty() {
 		return nil
@@ -36,7 +36,7 @@ func (s *linkedListStack) pop() any {
 	return e.Value
 }
 
-/* 訪問堆疊頂元素 */
+/* 访问栈顶元素 */
 func (s *linkedListStack) peek() any {
 	if s.isEmpty() {
 		return nil
@@ -45,17 +45,17 @@ func (s *linkedListStack) peek() any {
 	return e.Value
 }
 
-/* 獲取堆疊的長度 */
+/* 获取栈的长度 */
 func (s *linkedListStack) size() int {
 	return s.data.Len()
 }
 
-/* 判斷堆疊是否為空 */
+/* 判断栈是否为空 */
 func (s *linkedListStack) isEmpty() bool {
 	return s.data.Len() == 0
 }
 
-/* 獲取 List 用於列印 */
+/* 获取 List 用于打印 */
 func (s *linkedListStack) toList() *list.List {
 	return s.data
 }

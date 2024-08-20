@@ -8,25 +8,25 @@ import (
 	"container/list"
 )
 
-/* 基於鏈結串列實現的佇列 */
+/* 基于链表实现的队列 */
 type linkedListQueue struct {
-	// 使用內建包 list 來實現佇列
+	// 使用内置包 list 来实现队列
 	data *list.List
 }
 
-/* 初始化佇列 */
+/* 初始化队列 */
 func newLinkedListQueue() *linkedListQueue {
 	return &linkedListQueue{
 		data: list.New(),
 	}
 }
 
-/* 入列 */
+/* 入队 */
 func (s *linkedListQueue) push(value any) {
 	s.data.PushBack(value)
 }
 
-/* 出列 */
+/* 出队 */
 func (s *linkedListQueue) pop() any {
 	if s.isEmpty() {
 		return nil
@@ -36,7 +36,7 @@ func (s *linkedListQueue) pop() any {
 	return e.Value
 }
 
-/* 訪問佇列首元素 */
+/* 访问队首元素 */
 func (s *linkedListQueue) peek() any {
 	if s.isEmpty() {
 		return nil
@@ -45,17 +45,17 @@ func (s *linkedListQueue) peek() any {
 	return e.Value
 }
 
-/* 獲取佇列的長度 */
+/* 获取队列的长度 */
 func (s *linkedListQueue) size() int {
 	return s.data.Len()
 }
 
-/* 判斷佇列是否為空 */
+/* 判断队列是否为空 */
 func (s *linkedListQueue) isEmpty() bool {
 	return s.data.Len() == 0
 }
 
-/* 獲取 List 用於列印 */
+/* 获取 List 用于打印 */
 func (s *linkedListQueue) toList() *list.List {
 	return s.data
 }

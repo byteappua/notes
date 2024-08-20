@@ -5,13 +5,13 @@
  */
 
 #[derive(Clone)]
-/* 鍵值對 */
+/* 键值对 */
 struct Pair {
     key: i32,
     val: String,
 }
 
-/* 鏈式位址雜湊表 */
+/* 链式地址哈希表 */
 struct HashMapChaining {
     size: i32,
     capacity: i32,
@@ -21,7 +21,7 @@ struct HashMapChaining {
 }
 
 impl HashMapChaining {
-    /* 建構子 */
+    /* 构造方法 */
     fn new() -> Self {
         Self {
             size: 0,
@@ -32,22 +32,22 @@ impl HashMapChaining {
         }
     }
 
-    /* 雜湊函式 */
+    /* 哈希函数 */
     fn hash_func(&self, key: i32) -> usize {
         key as usize % self.capacity as usize
     }
 
-    /* 負載因子 */
+    /* 负载因子 */
     fn load_factor(&self) -> f32 {
         self.size as f32 / self.capacity as f32
     }
 
-    /* 刪除操作 */
+    /* 删除操作 */
     fn remove(&mut self, key: i32) -> Option<String> {
         let index = self.hash_func(key);
         let bucket = &mut self.buckets[index];
 
-        // 走訪桶，從中刪除鍵值對
+        // 遍历桶，从中删除键值对
         for i in 0..bucket.len() {
             if bucket[i].key == key {
                 let pair = bucket.remove(i);
@@ -56,21 +56,21 @@ impl HashMapChaining {
             }
         }
 
-        // 若未找到 key ，則返回 None
+        // 若未找到 key ，则返回 None
         None
     }
 
-    /* 擴容雜湊表 */
+    /* 扩容哈希表 */
     fn extend(&mut self) {
-        // 暫存原雜湊表
+        // 暂存原哈希表
         let buckets_tmp = std::mem::replace(&mut self.buckets, vec![]);
 
-        // 初始化擴容後的新雜湊表
+        // 初始化扩容后的新哈希表
         self.capacity *= self.extend_ratio;
         self.buckets = vec![Vec::new(); self.capacity as usize];
         self.size = 0;
 
-        // 將鍵值對從原雜湊表搬運至新雜湊表
+        // 将键值对从原哈希表搬运至新哈希表
         for bucket in buckets_tmp {
             for pair in bucket {
                 self.put(pair.key, pair.val);
@@ -78,7 +78,7 @@ impl HashMapChaining {
         }
     }
 
-    /* 列印雜湊表 */
+    /* 打印哈希表 */
     fn print(&self) {
         for bucket in &self.buckets {
             let mut res = Vec::new();
@@ -89,9 +89,9 @@ impl HashMapChaining {
         }
     }
 
-    /* 新增操作 */
+    /* 添加操作 */
     fn put(&mut self, key: i32, val: String) {
-        // 當負載因子超過閾值時，執行擴容
+        // 当负载因子超过阈值时，执行扩容
         if self.load_factor() > self.load_thres {
             self.extend();
         }
@@ -99,7 +99,7 @@ impl HashMapChaining {
         let index = self.hash_func(key);
         let bucket = &mut self.buckets[index];
 
-        // 走訪桶，若遇到指定 key ，則更新對應 val 並返回
+        // 遍历桶，若遇到指定 key ，则更新对应 val 并返回
         for pair in bucket {
             if pair.key == key {
                 pair.val = val;
@@ -108,57 +108,57 @@ impl HashMapChaining {
         }
         let bucket = &mut self.buckets[index];
 
-        // 若無該 key ，則將鍵值對新增至尾部
+        // 若无该 key ，则将键值对添加至尾部
         let pair = Pair { key, val };
         bucket.push(pair);
         self.size += 1;
     }
 
-    /* 查詢操作 */
+    /* 查询操作 */
     fn get(&self, key: i32) -> Option<&str> {
         let index = self.hash_func(key);
         let bucket = &self.buckets[index];
 
-        // 走訪桶，若找到 key ，則返回對應 val
+        // 遍历桶，若找到 key ，则返回对应 val
         for pair in bucket {
             if pair.key == key {
                 return Some(&pair.val);
             }
         }
 
-        // 若未找到 key ，則返回 None
+        // 若未找到 key ，则返回 None
         None
     }
 }
 
 /* Driver Code */
 pub fn main() {
-    /* 初始化雜湊表 */
+    /* 初始化哈希表 */
     let mut map = HashMapChaining::new();
 
-    /* 新增操作 */
-    // 在雜湊表中新增鍵值對 (key, value)
+    /* 添加操作 */
+    // 在哈希表中添加键值对 (key, value)
     map.put(12836, "小哈".to_string());
-    map.put(15937, "小囉".to_string());
+    map.put(15937, "小啰".to_string());
     map.put(16750, "小算".to_string());
     map.put(13276, "小法".to_string());
-    map.put(10583, "小鴨".to_string());
-    println!("\n新增完成後，雜湊表為\nKey -> Value");
+    map.put(10583, "小鸭".to_string());
+    println!("\n添加完成后，哈希表为\nKey -> Value");
     map.print();
 
-    /* 查詢操作 */
-    // 向雜湊表中輸入鍵 key ，得到值 value
+    /* 查询操作 */
+    // 向哈希表中输入键 key ，得到值 value
     println!(
-        "\n輸入學號 13276,查詢到姓名 {}",
+        "\n输入学号 13276,查询到姓名 {}",
         match map.get(13276) {
             Some(value) => value,
             None => "Not a valid Key",
         }
     );
 
-    /* 刪除操作 */
-    // 在雜湊表中刪除鍵值對 (key, value)
+    /* 删除操作 */
+    // 在哈希表中删除键值对 (key, value)
     map.remove(12836);
-    println!("\n刪除 12836 後，雜湊表為\nKey -> Value");
+    println!("\n删除 12836 后，哈希表为\nKey -> Value");
     map.print();
 }

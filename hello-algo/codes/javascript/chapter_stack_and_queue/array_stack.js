@@ -4,37 +4,37 @@
  * Author: S-N-O-R-L-A-X (snorlax.xu@outlook.com)
  */
 
-/* 基於陣列實現的堆疊 */
+/* 基于数组实现的栈 */
 class ArrayStack {
     #stack;
     constructor() {
         this.#stack = [];
     }
 
-    /* 獲取堆疊的長度 */
+    /* 获取栈的长度 */
     get size() {
         return this.#stack.length;
     }
 
-    /* 判斷堆疊是否為空 */
+    /* 判断栈是否为空 */
     isEmpty() {
         return this.#stack.length === 0;
     }
 
-    /* 入堆疊 */
+    /* 入栈 */
     push(num) {
         this.#stack.push(num);
     }
 
-    /* 出堆疊 */
+    /* 出栈 */
     pop() {
-        if (this.isEmpty()) throw new Error('堆疊為空');
+        if (this.isEmpty()) throw new Error('栈为空');
         return this.#stack.pop();
     }
 
-    /* 訪問堆疊頂元素 */
+    /* 访问栈顶元素 */
     top() {
-        if (this.isEmpty()) throw new Error('堆疊為空');
+        if (this.isEmpty()) throw new Error('栈为空');
         return this.#stack[this.#stack.length - 1];
     }
 
@@ -45,31 +45,31 @@ class ArrayStack {
 }
 
 /* Driver Code */
-/* 初始化堆疊 */
+/* 初始化栈 */
 const stack = new ArrayStack();
 
-/* 元素入堆疊 */
+/* 元素入栈 */
 stack.push(1);
 stack.push(3);
 stack.push(2);
 stack.push(5);
 stack.push(4);
-console.log('堆疊 stack = ');
+console.log('栈 stack = ');
 console.log(stack.toArray());
 
-/* 訪問堆疊頂元素 */
+/* 访问栈顶元素 */
 const top = stack.top();
-console.log('堆疊頂元素 top = ' + top);
+console.log('栈顶元素 top = ' + top);
 
-/* 元素出堆疊 */
+/* 元素出栈 */
 const pop = stack.pop();
-console.log('出堆疊元素 pop = ' + pop + '，出堆疊後 stack = ');
+console.log('出栈元素 pop = ' + pop + '，出栈后 stack = ');
 console.log(stack.toArray());
 
-/* 獲取堆疊的長度 */
+/* 获取栈的长度 */
 const size = stack.size;
-console.log('堆疊的長度 size = ' + size);
+console.log('栈的长度 size = ' + size);
 
-/* 判斷是否為空 */
+/* 判断是否为空 */
 const isEmpty = stack.isEmpty();
-console.log('堆疊是否為空 = ' + isEmpty);
+console.log('栈是否为空 = ' + isEmpty);

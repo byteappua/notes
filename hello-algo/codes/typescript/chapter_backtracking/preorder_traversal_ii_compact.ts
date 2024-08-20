@@ -8,7 +8,7 @@ import { type TreeNode } from '../modules/TreeNode';
 import { arrToTree } from '../modules/TreeNode';
 import { printTree } from '../modules/PrintUtil';
 
-/* 前序走訪：例題二 */
+/* 前序遍历：例题二 */
 function preOrder(
     root: TreeNode | null,
     path: TreeNode[],
@@ -17,10 +17,10 @@ function preOrder(
     if (root === null) {
         return;
     }
-    // 嘗試
+    // 尝试
     path.push(root);
     if (root.val === 7) {
-        // 記錄解
+        // 记录解
         res.push([...path]);
     }
     preOrder(root.left, path, res);
@@ -31,15 +31,15 @@ function preOrder(
 
 // Driver Code
 const root = arrToTree([1, 7, 3, 4, 5, 6, 7]);
-console.log('\n初始化二元樹');
+console.log('\n初始化二叉树');
 printTree(root);
 
-// 前序走訪
+// 前序遍历
 const path: TreeNode[] = [];
 const res: TreeNode[][] = [];
 preOrder(root, path, res);
 
-console.log('\n輸出所有根節點到節點 7 的路徑');
+console.log('\n输出所有根节点到节点 7 的路径');
 res.forEach((path) => {
     console.log(path.map((node) => node.val));
 });

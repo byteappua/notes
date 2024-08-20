@@ -8,30 +8,30 @@ import (
 	"container/list"
 )
 
-/* 基於雙向鏈結串列實現的雙向佇列 */
+/* 基于双向链表实现的双向队列 */
 type linkedListDeque struct {
-	// 使用內建包 list
+	// 使用内置包 list
 	data *list.List
 }
 
-/* 初始化雙端佇列 */
+/* 初始化双端队列 */
 func newLinkedListDeque() *linkedListDeque {
 	return &linkedListDeque{
 		data: list.New(),
 	}
 }
 
-/* 佇列首元素入列 */
+/* 队首元素入队 */
 func (s *linkedListDeque) pushFirst(value any) {
 	s.data.PushFront(value)
 }
 
-/* 佇列尾元素入列 */
+/* 队尾元素入队 */
 func (s *linkedListDeque) pushLast(value any) {
 	s.data.PushBack(value)
 }
 
-/* 佇列首元素出列 */
+/* 队首元素出队 */
 func (s *linkedListDeque) popFirst() any {
 	if s.isEmpty() {
 		return nil
@@ -41,7 +41,7 @@ func (s *linkedListDeque) popFirst() any {
 	return e.Value
 }
 
-/* 佇列尾元素出列 */
+/* 队尾元素出队 */
 func (s *linkedListDeque) popLast() any {
 	if s.isEmpty() {
 		return nil
@@ -51,7 +51,7 @@ func (s *linkedListDeque) popLast() any {
 	return e.Value
 }
 
-/* 訪問佇列首元素 */
+/* 访问队首元素 */
 func (s *linkedListDeque) peekFirst() any {
 	if s.isEmpty() {
 		return nil
@@ -60,7 +60,7 @@ func (s *linkedListDeque) peekFirst() any {
 	return e.Value
 }
 
-/* 訪問佇列尾元素 */
+/* 访问队尾元素 */
 func (s *linkedListDeque) peekLast() any {
 	if s.isEmpty() {
 		return nil
@@ -69,17 +69,17 @@ func (s *linkedListDeque) peekLast() any {
 	return e.Value
 }
 
-/* 獲取佇列的長度 */
+/* 获取队列的长度 */
 func (s *linkedListDeque) size() int {
 	return s.data.Len()
 }
 
-/* 判斷佇列是否為空 */
+/* 判断队列是否为空 */
 func (s *linkedListDeque) isEmpty() bool {
 	return s.data.Len() == 0
 }
 
-/* 獲取 List 用於列印 */
+/* 获取 List 用于打印 */
 func (s *linkedListDeque) toList() *list.List {
 	return s.data
 }

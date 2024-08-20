@@ -4,17 +4,17 @@
 
 
 class Vertex:
-    """頂點類別"""
+    """顶点类"""
 
     def __init__(self, val: int):
         self.val = val
 
 
 def vals_to_vets(vals: list[int]) -> list["Vertex"]:
-    """輸入值串列 vals ，返回頂點串列 vets"""
+    """输入值列表 vals ，返回顶点列表 vets"""
     return [Vertex(val) for val in vals]
 
 
 def vets_to_vals(vets: list["Vertex"]) -> list[int]:
-    """輸入頂點串列 vets ，返回值串列 vals"""
+    """输入顶点列表 vets ，返回值列表 vals"""
     return [vet.val for vet in vets]

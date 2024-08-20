@@ -8,34 +8,34 @@ import (
 	. "github.com/krahets/hello-algo/pkg"
 )
 
-/* 廣度優先走訪 */
-// 使用鄰接表來表示圖，以便獲取指定頂點的所有鄰接頂點
+/* 广度优先遍历 */
+// 使用邻接表来表示图，以便获取指定顶点的所有邻接顶点
 func graphBFS(g *graphAdjList, startVet Vertex) []Vertex {
-	// 頂點走訪序列
+	// 顶点遍历序列
 	res := make([]Vertex, 0)
-	// 雜湊集合，用於記錄已被訪問過的頂點
+	// 哈希集合，用于记录已被访问过的顶点
 	visited := make(map[Vertex]struct{})
 	visited[startVet] = struct{}{}
-	// 佇列用於實現 BFS, 使用切片模擬佇列
+	// 队列用于实现 BFS, 使用切片模拟队列
 	queue := make([]Vertex, 0)
 	queue = append(queue, startVet)
-	// 以頂點 vet 為起點，迴圈直至訪問完所有頂點
+	// 以顶点 vet 为起点，循环直至访问完所有顶点
 	for len(queue) > 0 {
-		// 佇列首頂點出隊
+		// 队首顶点出队
 		vet := queue[0]
 		queue = queue[1:]
-		// 記錄訪問頂點
+		// 记录访问顶点
 		res = append(res, vet)
-		// 走訪該頂點的所有鄰接頂點
+		// 遍历该顶点的所有邻接顶点
 		for _, adjVet := range g.adjList[vet] {
 			_, isExist := visited[adjVet]
-			// 只入列未訪問的頂點
+			// 只入队未访问的顶点
 			if !isExist {
 				queue = append(queue, adjVet)
 				visited[adjVet] = struct{}{}
 			}
 		}
 	}
-	// 返回頂點走訪序列
+	// 返回顶点遍历序列
 	return res
 }

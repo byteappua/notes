@@ -10,38 +10,38 @@ use std::collections::HashMap;
 
 /* Driver Code */
 pub fn main() {
-    // 初始化雜湊表
+    // 初始化哈希表
     let mut map = HashMap::new();
 
-    // 新增操作
-    // 在雜湊表中新增鍵值對 (key, value)
+    // 添加操作
+    // 在哈希表中添加键值对 (key, value)
     map.insert(12836, "小哈");
-    map.insert(15937, "小囉");
+    map.insert(15937, "小啰");
     map.insert(16750, "小算");
     map.insert(13276, "小法");
-    map.insert(10583, "小鴨");
-    println!("\n新增完成後，雜湊表為\nKey -> Value");
+    map.insert(10583, "小鸭");
+    println!("\n添加完成后，哈希表为\nKey -> Value");
     print_util::print_hash_map(&map);
 
-    // 查詢操作
-    // 向雜湊表中輸入鍵 key ，得到值 value
+    // 查询操作
+    // 向哈希表中输入键 key ，得到值 value
     let name = map.get(&15937).copied().unwrap();
-    println!("\n輸入學號 15937 ，查詢到姓名 {name}");
+    println!("\n输入学号 15937 ，查询到姓名 {name}");
 
-    // 刪除操作
-    // 在雜湊表中刪除鍵值對 (key, value)
+    // 删除操作
+    // 在哈希表中删除键值对 (key, value)
     _ = map.remove(&10583);
-    println!("\n刪除 10583 後，雜湊表為\nKey -> Value");
+    println!("\n删除 10583 后，哈希表为\nKey -> Value");
     print_util::print_hash_map(&map);
 
-    // 走訪雜湊表
-    println!("\n走訪鍵值對 Key->Value");
+    // 遍历哈希表
+    println!("\n遍历键值对 Key->Value");
     print_util::print_hash_map(&map);
-    println!("\n單獨走訪鍵 Key");
+    println!("\n单独遍历键 Key");
     for key in map.keys() {
         println!("{key}");
     }
-    println!("\n單獨走訪值 value");
+    println!("\n单独遍历值 value");
     for value in map.values() {
         println!("{value}");
     }

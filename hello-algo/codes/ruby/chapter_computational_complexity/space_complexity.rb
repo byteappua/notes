@@ -8,60 +8,60 @@ require_relative '../utils/list_node'
 require_relative '../utils/tree_node'
 require_relative '../utils/print_util'
 
-### 函式 ###
+### 函数 ###
 def function
-  # 執行某些操作
+  # 执行某些操作
   0
 end
 
-### 常數階 ###
+### 常数阶 ###
 def constant(n)
-  # 常數、變數、物件佔用 O(1) 空間
+  # 常量、变量、对象占用 O(1) 空间
   a = 0
   nums = [0] * 10000
   node = ListNode.new
 
-  # 迴圈中的變數佔用 O(1) 空間
+  # 循环中的变量占用 O(1) 空间
   (0...n).each { c = 0 }
-  # 迴圈中的函式佔用 O(1) 空間
+  # 循环中的函数占用 O(1) 空间
   (0...n).each { function }
 end
 
-### 線性階 ###
+### 线性阶 ###
 def linear(n)
-  # 長度為 n 的串列佔用 O(n) 空間
+  # 长度为 n 的列表占用 O(n) 空间
   nums = Array.new(n, 0)
 
-  # 長度為 n 的雜湊表佔用 O(n) 空間
+  # 长度为 n 的哈希表占用 O(n) 空间
   hmap = {}
   for i in 0...n
     hmap[i] = i.to_s
   end
 end
 
-### 線性階（遞迴實現）###
+### 线性阶（递归实现）###
 def linear_recur(n)
-  puts "遞迴 n = #{n}"
+  puts "递归 n = #{n}"
   return if n == 1
   linear_recur(n - 1)
 end
 
-### 平方階 ###
+### 平方阶 ###
 def quadratic(n)
-  # 二維串列佔用 O(n^2) 空間
+  # 二维列表占用 O(n^2) 空间
   Array.new(n) { Array.new(n, 0) }
 end
 
-### 平方階（遞迴實現）###
+### 平方阶（递归实现）###
 def quadratic_recur(n)
   return 0 unless n > 0
 
-  # 陣列 nums 長度為 n, n-1, ..., 2, 1
+  # 数组 nums 长度为 n, n-1, ..., 2, 1
   nums = Array.new(n, 0)
   quadratic_recur(n - 1)
 end
 
-### 指數階（建立滿二元樹）###
+### 指数阶（建立满二叉树）###
 def build_tree(n)
   return if n == 0
 
@@ -75,18 +75,18 @@ end
 if __FILE__ == $0
   n = 5
 
-  # 常數階
+  # 常数阶
   constant(n)
 
-  # 線性階
+  # 线性阶
   linear(n)
   linear_recur(n)
 
-  # 平方階
+  # 平方阶
   quadratic(n)
   quadratic_recur(n)
 
-  # 指數階
+  # 指数阶
   root = build_tree(n)
   print_tree(root)
 end

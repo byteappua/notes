@@ -15,11 +15,11 @@ func TestKnapsack(t *testing.T) {
 	c := 50
 	n := len(wgt)
 
-	// 暴力搜尋
+	// 暴力搜索
 	res := knapsackDFS(wgt, val, n, c)
-	fmt.Printf("不超過背包容量的最大物品價值為 %d\n", res)
+	fmt.Printf("不超过背包容量的最大物品价值为 %d\n", res)
 
-	// 記憶化搜尋
+	// 记忆化搜索
 	mem := make([][]int, n+1)
 	for i := 0; i <= n; i++ {
 		mem[i] = make([]int, c+1)
@@ -28,15 +28,15 @@ func TestKnapsack(t *testing.T) {
 		}
 	}
 	res = knapsackDFSMem(wgt, val, mem, n, c)
-	fmt.Printf("不超過背包容量的最大物品價值為 %d\n", res)
+	fmt.Printf("不超过背包容量的最大物品价值为 %d\n", res)
 
-	// 動態規劃
+	// 动态规划
 	res = knapsackDP(wgt, val, c)
-	fmt.Printf("不超過背包容量的最大物品價值為 %d\n", res)
+	fmt.Printf("不超过背包容量的最大物品价值为 %d\n", res)
 
-	// 空間最佳化後的動態規劃
+	// 空间优化后的动态规划
 	res = knapsackDPComp(wgt, val, c)
-	fmt.Printf("不超過背包容量的最大物品價值為 %d\n", res)
+	fmt.Printf("不超过背包容量的最大物品价值为 %d\n", res)
 }
 
 func TestUnboundedKnapsack(t *testing.T) {
@@ -44,11 +44,11 @@ func TestUnboundedKnapsack(t *testing.T) {
 	val := []int{5, 11, 15}
 	c := 4
 
-	// 動態規劃
+	// 动态规划
 	res := unboundedKnapsackDP(wgt, val, c)
-	fmt.Printf("不超過背包容量的最大物品價值為 %d\n", res)
+	fmt.Printf("不超过背包容量的最大物品价值为 %d\n", res)
 
-	// 空間最佳化後的動態規劃
+	// 空间优化后的动态规划
 	res = unboundedKnapsackDPComp(wgt, val, c)
-	fmt.Printf("不超過背包容量的最大物品價值為 %d\n", res)
+	fmt.Printf("不超过背包容量的最大物品价值为 %d\n", res)
 }

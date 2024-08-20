@@ -8,32 +8,32 @@ from collections import deque
 
 """Driver Code"""
 if __name__ == "__main__":
-    # 初始化佇列
-    # 在 Python 中，我們一般將雙向佇列類別 deque 看作佇列使用
-    # 雖然 queue.Queue() 是純正的佇列類別，但不太好用
+    # 初始化队列
+    # 在 Python 中，我们一般将双向队列类 deque 看作队列使用
+    # 虽然 queue.Queue() 是纯正的队列类，但不太好用
     que: deque[int] = deque()
 
-    # 元素入列
+    # 元素入队
     que.append(1)
     que.append(3)
     que.append(2)
     que.append(5)
     que.append(4)
-    print("佇列 que =", que)
+    print("队列 que =", que)
 
-    # 訪問佇列首元素
+    # 访问队首元素
     front: int = que[0]
-    print("佇列首元素 front =", front)
+    print("队首元素 front =", front)
 
-    # 元素出列
+    # 元素出队
     pop: int = que.popleft()
-    print("出列元素 pop =", pop)
-    print("出列後 que =", que)
+    print("出队元素 pop =", pop)
+    print("出队后 que =", que)
 
-    # 獲取佇列的長度
+    # 获取队列的长度
     size: int = len(que)
-    print("佇列長度 size =", size)
+    print("队列长度 size =", size)
 
-    # 判斷佇列是否為空
+    # 判断队列是否为空
     is_empty: bool = len(que) == 0
-    print("佇列是否為空 =", is_empty)
+    print("队列是否为空 =", is_empty)

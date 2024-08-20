@@ -6,15 +6,15 @@
 
 #include "../utils/common.h"
 
-/* 在鏈結串列的節點 n0 之後插入節點 P */
+/* 在链表的节点 n0 之后插入节点 P */
 void insert(ListNode *n0, ListNode *P) {
     ListNode *n1 = n0->next;
     P->next = n1;
     n0->next = P;
 }
 
-/* 刪除鏈結串列的節點 n0 之後的首個節點 */
-// 注意：stdio.h 佔用了 remove 關鍵詞
+/* 删除链表的节点 n0 之后的首个节点 */
+// 注意：stdio.h 占用了 remove 关键词
 void removeItem(ListNode *n0) {
     if (!n0->next)
         return;
@@ -22,11 +22,11 @@ void removeItem(ListNode *n0) {
     ListNode *P = n0->next;
     ListNode *n1 = P->next;
     n0->next = n1;
-    // 釋放記憶體
+    // 释放内存
     free(P);
 }
 
-/* 訪問鏈結串列中索引為 index 的節點 */
+/* 访问链表中索引为 index 的节点 */
 ListNode *access(ListNode *head, int index) {
     for (int i = 0; i < index; i++) {
         if (head == NULL)
@@ -36,7 +36,7 @@ ListNode *access(ListNode *head, int index) {
     return head;
 }
 
-/* 在鏈結串列中查詢值為 target 的首個節點 */
+/* 在链表中查找值为 target 的首个节点 */
 int find(ListNode *head, int target) {
     int index = 0;
     while (head) {
@@ -50,40 +50,40 @@ int find(ListNode *head, int target) {
 
 /* Driver Code */
 int main() {
-    /* 初始化鏈結串列 */
-    // 初始化各個節點
+    /* 初始化链表 */
+    // 初始化各个节点
     ListNode *n0 = newListNode(1);
     ListNode *n1 = newListNode(3);
     ListNode *n2 = newListNode(2);
     ListNode *n3 = newListNode(5);
     ListNode *n4 = newListNode(4);
-    // 構建節點之間的引用
+    // 构建节点之间的引用
     n0->next = n1;
     n1->next = n2;
     n2->next = n3;
     n3->next = n4;
-    printf("初始化的鏈結串列為\r\n");
+    printf("初始化的链表为\r\n");
     printLinkedList(n0);
 
-    /* 插入節點 */
+    /* 插入节点 */
     insert(n0, newListNode(0));
-    printf("插入節點後的鏈結串列為\r\n");
+    printf("插入节点后的链表为\r\n");
     printLinkedList(n0);
 
-    /* 刪除節點 */
+    /* 删除节点 */
     removeItem(n0);
-    printf("刪除節點後的鏈結串列為\r\n");
+    printf("删除节点后的链表为\r\n");
     printLinkedList(n0);
 
-    /* 訪問節點 */
+    /* 访问节点 */
     ListNode *node = access(n0, 3);
-    printf("鏈結串列中索引 3 處的節點的值 = %d\r\n", node->val);
+    printf("链表中索引 3 处的节点的值 = %d\r\n", node->val);
 
-    /* 查詢節點 */
+    /* 查找节点 */
     int index = find(n0, 2);
-    printf("鏈結串列中值為 2 的節點的索引 = %d\r\n", index);
+    printf("链表中值为 2 的节点的索引 = %d\r\n", index);
 
-    // 釋放記憶體
+    // 释放内存
     freeMemoryLinkedList(n0);
     return 0;
 }

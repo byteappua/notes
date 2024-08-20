@@ -12,43 +12,43 @@ from modules import ListNode
 
 
 class LinkedListStack:
-    """基於鏈結串列實現的堆疊"""
+    """基于链表实现的栈"""
 
     def __init__(self):
-        """建構子"""
+        """构造方法"""
         self._peek: ListNode | None = None
         self._size: int = 0
 
     def size(self) -> int:
-        """獲取堆疊的長度"""
+        """获取栈的长度"""
         return self._size
 
     def is_empty(self) -> bool:
-        """判斷堆疊是否為空"""
+        """判断栈是否为空"""
         return self._size == 0
 
     def push(self, val: int):
-        """入堆疊"""
+        """入栈"""
         node = ListNode(val)
         node.next = self._peek
         self._peek = node
         self._size += 1
 
     def pop(self) -> int:
-        """出堆疊"""
+        """出栈"""
         num = self.peek()
         self._peek = self._peek.next
         self._size -= 1
         return num
 
     def peek(self) -> int:
-        """訪問堆疊頂元素"""
+        """访问栈顶元素"""
         if self.is_empty():
-            raise IndexError("堆疊為空")
+            raise IndexError("栈为空")
         return self._peek.val
 
     def to_list(self) -> list[int]:
-        """轉化為串列用於列印"""
+        """转化为列表用于打印"""
         arr = []
         node = self._peek
         while node:
@@ -60,30 +60,30 @@ class LinkedListStack:
 
 """Driver Code"""
 if __name__ == "__main__":
-    # 初始化堆疊
+    # 初始化栈
     stack = LinkedListStack()
 
-    # 元素入堆疊
+    # 元素入栈
     stack.push(1)
     stack.push(3)
     stack.push(2)
     stack.push(5)
     stack.push(4)
-    print("堆疊 stack =", stack.to_list())
+    print("栈 stack =", stack.to_list())
 
-    # 訪問堆疊頂元素
+    # 访问栈顶元素
     peek: int = stack.peek()
-    print("堆疊頂元素 peek =", peek)
+    print("栈顶元素 peek =", peek)
 
-    # 元素出堆疊
+    # 元素出栈
     pop: int = stack.pop()
-    print("出堆疊元素 pop =", pop)
-    print("出堆疊後 stack =", stack.to_list())
+    print("出栈元素 pop =", pop)
+    print("出栈后 stack =", stack.to_list())
 
-    # 獲取堆疊的長度
+    # 获取栈的长度
     size: int = stack.size()
-    print("堆疊的長度 size =", size)
+    print("栈的长度 size =", size)
 
-    # 判斷是否為空
+    # 判断是否为空
     is_empty: bool = stack.is_empty()
-    print("堆疊是否為空 =", is_empty)
+    print("栈是否为空 =", is_empty)

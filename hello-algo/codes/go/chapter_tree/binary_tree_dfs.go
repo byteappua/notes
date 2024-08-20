@@ -10,34 +10,34 @@ import (
 
 var nums []any
 
-/* 前序走訪 */
+/* 前序遍历 */
 func preOrder(node *TreeNode) {
 	if node == nil {
 		return
 	}
-	// 訪問優先順序：根節點 -> 左子樹 -> 右子樹
+	// 访问优先级：根节点 -> 左子树 -> 右子树
 	nums = append(nums, node.Val)
 	preOrder(node.Left)
 	preOrder(node.Right)
 }
 
-/* 中序走訪 */
+/* 中序遍历 */
 func inOrder(node *TreeNode) {
 	if node == nil {
 		return
 	}
-	// 訪問優先順序：左子樹 -> 根節點 -> 右子樹
+	// 访问优先级：左子树 -> 根节点 -> 右子树
 	inOrder(node.Left)
 	nums = append(nums, node.Val)
 	inOrder(node.Right)
 }
 
-/* 後序走訪 */
+/* 后序遍历 */
 func postOrder(node *TreeNode) {
 	if node == nil {
 		return
 	}
-	// 訪問優先順序：左子樹 -> 右子樹 -> 根節點
+	// 访问优先级：左子树 -> 右子树 -> 根节点
 	postOrder(node.Left)
 	postOrder(node.Right)
 	nums = append(nums, node.Val)

@@ -11,20 +11,20 @@ import (
 	"strings"
 )
 
-// PrintSlice 列印切片
+// PrintSlice 打印切片
 func PrintSlice[T any](nums []T) {
 	fmt.Printf("%v", nums)
 	fmt.Println()
 }
 
-// PrintList 列印串列
+// PrintList 打印列表
 func PrintList(list *list.List) {
 	if list.Len() == 0 {
 		fmt.Print("[]\n")
 		return
 	}
 	e := list.Front()
-	// 強轉為 string, 會影響效率
+	// 强转为 string, 会影响效率
 	fmt.Print("[")
 	for e.Next() != nil {
 		fmt.Print(e.Value, " ")
@@ -33,23 +33,23 @@ func PrintList(list *list.List) {
 	fmt.Print(e.Value, "]\n")
 }
 
-// PrintMap 列印雜湊表
+// PrintMap 打印哈希表
 func PrintMap[K comparable, V any](m map[K]V) {
 	for key, value := range m {
 		fmt.Println(key, "->", value)
 	}
 }
 
-// PrintHeap 列印堆積
+// PrintHeap 打印堆
 func PrintHeap(h []any) {
-	fmt.Printf("堆積的陣列表示：")
+	fmt.Printf("堆的数组表示：")
 	fmt.Printf("%v", h)
-	fmt.Printf("\n堆積的樹狀表示：\n")
+	fmt.Printf("\n堆的树状表示：\n")
 	root := SliceToTree(h)
 	PrintTree(root)
 }
 
-// PrintLinkedList 列印鏈結串列
+// PrintLinkedList 打印链表
 func PrintLinkedList(node *ListNode) {
 	if node == nil {
 		return
@@ -63,12 +63,12 @@ func PrintLinkedList(node *ListNode) {
 	fmt.Println(builder.String())
 }
 
-// PrintTree 列印二元樹
+// PrintTree 打印二叉树
 func PrintTree(root *TreeNode) {
 	printTreeHelper(root, nil, false)
 }
 
-// printTreeHelper 列印二元樹
+// printTreeHelper 打印二叉树
 // This tree printer is borrowed from TECHIE DELIGHT
 // https://www.techiedelight.com/c-program-print-binary-tree/
 func printTreeHelper(root *TreeNode, prev *trunk, isRight bool) {

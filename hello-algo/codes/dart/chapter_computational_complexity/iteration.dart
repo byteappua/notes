@@ -4,48 +4,48 @@
  * Author: liuyuxin (gvenusleo@gmail.com)
  */
 
-/* for 迴圈 */
+/* for 循环 */
 int forLoop(int n) {
   int res = 0;
-  // 迴圈求和 1, 2, ..., n-1, n
+  // 循环求和 1, 2, ..., n-1, n
   for (int i = 1; i <= n; i++) {
     res += i;
   }
   return res;
 }
 
-/* while 迴圈 */
+/* while 循环 */
 int whileLoop(int n) {
   int res = 0;
-  int i = 1; // 初始化條件變數
-  // 迴圈求和 1, 2, ..., n-1, n
+  int i = 1; // 初始化条件变量
+  // 循环求和 1, 2, ..., n-1, n
   while (i <= n) {
     res += i;
-    i++; // 更新條件變數
+    i++; // 更新条件变量
   }
   return res;
 }
 
-/* while 迴圈（兩次更新） */
+/* while 循环（两次更新） */
 int whileLoopII(int n) {
   int res = 0;
-  int i = 1; // 初始化條件變數
-  // 迴圈求和 1, 4, 10, ...
+  int i = 1; // 初始化条件变量
+  // 循环求和 1, 4, 10, ...
   while (i <= n) {
     res += i;
-    // 更新條件變數
+    // 更新条件变量
     i++;
     i *= 2;
   }
   return res;
 }
 
-/* 雙層 for 迴圈 */
+/* 双层 for 循环 */
 String nestedForLoop(int n) {
   String res = "";
-  // 迴圈 i = 1, 2, ..., n-1, n
+  // 循环 i = 1, 2, ..., n-1, n
   for (int i = 1; i <= n; i++) {
-    // 迴圈 j = 1, 2, ..., n-1, n
+    // 循环 j = 1, 2, ..., n-1, n
     for (int j = 1; j <= n; j++) {
       res += "($i, $j), ";
     }
@@ -59,14 +59,14 @@ void main() {
   int res;
 
   res = forLoop(n);
-  print("\nfor 迴圈的求和結果 res = $res");
+  print("\nfor 循环的求和结果 res = $res");
 
   res = whileLoop(n);
-  print("\nwhile 迴圈的求和結果 res = $res");
+  print("\nwhile 循环的求和结果 res = $res");
 
   res = whileLoopII(n);
-  print("\nwhile 迴圈（兩次更新）的求和結果 res = $res");
+  print("\nwhile 循环（两次更新）的求和结果 res = $res");
 
   String resStr = nestedForLoop(n);
-  print("\n雙層 for 迴圈的結果 $resStr");
+  print("\n双层 for 循环的结果 $resStr");
 }

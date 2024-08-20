@@ -7,26 +7,26 @@
 import graph_adjacency_list_target
 import utils
 
-/* 深度優先走訪輔助函式 */
+/* 深度优先遍历辅助函数 */
 func dfs(graph: GraphAdjList, visited: inout Set<Vertex>, res: inout [Vertex], vet: Vertex) {
-    res.append(vet) // 記錄訪問頂點
-    visited.insert(vet) // 標記該頂點已被訪問
-    // 走訪該頂點的所有鄰接頂點
+    res.append(vet) // 记录访问顶点
+    visited.insert(vet) // 标记该顶点已被访问
+    // 遍历该顶点的所有邻接顶点
     for adjVet in graph.adjList[vet] ?? [] {
         if visited.contains(adjVet) {
-            continue // 跳過已被訪問的頂點
+            continue // 跳过已被访问的顶点
         }
-        // 遞迴訪問鄰接頂點
+        // 递归访问邻接顶点
         dfs(graph: graph, visited: &visited, res: &res, vet: adjVet)
     }
 }
 
-/* 深度優先走訪 */
-// 使用鄰接表來表示圖，以便獲取指定頂點的所有鄰接頂點
+/* 深度优先遍历 */
+// 使用邻接表来表示图，以便获取指定顶点的所有邻接顶点
 func graphDFS(graph: GraphAdjList, startVet: Vertex) -> [Vertex] {
-    // 頂點走訪序列
+    // 顶点遍历序列
     var res: [Vertex] = []
-    // 雜湊集合，用於記錄已被訪問過的頂點
+    // 哈希集合，用于记录已被访问过的顶点
     var visited: Set<Vertex> = []
     dfs(graph: graph, visited: &visited, res: &res, vet: startVet)
     return res
@@ -36,19 +36,19 @@ func graphDFS(graph: GraphAdjList, startVet: Vertex) -> [Vertex] {
 enum GraphDFS {
     /* Driver Code */
     static func main() {
-        /* 初始化無向圖 */
+        /* 初始化无向图 */
         let v = Vertex.valsToVets(vals: [0, 1, 2, 3, 4, 5, 6])
         let edges = [
             [v[0], v[1]], [v[0], v[3]], [v[1], v[2]],
             [v[2], v[5]], [v[4], v[5]], [v[5], v[6]],
         ]
         let graph = GraphAdjList(edges: edges)
-        print("\n初始化後，圖為")
+        print("\n初始化后，图为")
         graph.print()
 
-        /* 深度優先走訪 */
+        /* 深度优先遍历 */
         let res = graphDFS(graph: graph, startVet: v[0])
-        print("\n深度優先走訪（DFS）頂點序列為")
+        print("\n深度优先遍历（DFS）顶点序列为")
         print(Vertex.vetsToVals(vets: res))
     }
 }

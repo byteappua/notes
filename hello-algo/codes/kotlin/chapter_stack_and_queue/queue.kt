@@ -10,30 +10,30 @@ import java.util.*
 
 /* Driver Code */
 fun main() {
-    /* 初始化佇列 */
+    /* 初始化队列 */
     val queue = LinkedList<Int>()
 
-    /* 元素入列 */
+    /* 元素入队 */
     queue.offer(1)
     queue.offer(3)
     queue.offer(2)
     queue.offer(5)
     queue.offer(4)
-    println("佇列 queue = $queue")
+    println("队列 queue = $queue")
 
-    /* 訪問佇列首元素 */
+    /* 访问队首元素 */
     val peek = queue.peek()
-    println("佇列首元素 peek = $peek")
+    println("队首元素 peek = $peek")
 
-    /* 元素出列 */
+    /* 元素出队 */
     val pop = queue.poll()
-    println("出列元素 pop = $pop，出列後 queue = $queue")
+    println("出队元素 pop = $pop，出队后 queue = $queue")
 
-    /* 獲取佇列的長度 */
+    /* 获取队列的长度 */
     val size = queue.size
-    println("佇列長度 size = $size")
+    println("队列长度 size = $size")
 
-    /* 判斷佇列是否為空 */
+    /* 判断队列是否为空 */
     val isEmpty = queue.isEmpty()
-    println("佇列是否為空 = $isEmpty")
+    println("队列是否为空 = $isEmpty")
 }

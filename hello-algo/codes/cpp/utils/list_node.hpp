@@ -11,7 +11,7 @@
 
 using namespace std;
 
-/* 鏈結串列節點 */
+/* 链表节点 */
 struct ListNode {
     int val;
     ListNode *next;
@@ -19,7 +19,7 @@ struct ListNode {
     }
 };
 
-/* 將串列反序列化為鏈結串列 */
+/* 将列表反序列化为链表 */
 ListNode *vecToLinkedList(vector<int> list) {
     ListNode *dum = new ListNode(0);
     ListNode *head = dum;
@@ -30,9 +30,9 @@ ListNode *vecToLinkedList(vector<int> list) {
     return dum->next;
 }
 
-/* 釋放分配給鏈結串列的記憶體空間 */
+/* 释放分配给链表的内存空间 */
 void freeMemoryLinkedList(ListNode *cur) {
-    // 釋放記憶體
+    // 释放内存
     ListNode *pre;
     while (cur != nullptr) {
         pre = cur;

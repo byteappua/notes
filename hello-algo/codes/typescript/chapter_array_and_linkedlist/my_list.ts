@@ -4,31 +4,31 @@
  * Author: Justin (xiefahit@gmail.com)
  */
 
-/* 串列類別 */
+/* 列表类 */
 class MyList {
-    private arr: Array<number>; // 陣列（儲存串列元素）
-    private _capacity: number = 10; // 串列容量
-    private _size: number = 0; // 串列長度（當前元素數量）
-    private extendRatio: number = 2; // 每次串列擴容的倍數
+    private arr: Array<number>; // 数组（存储列表元素）
+    private _capacity: number = 10; // 列表容量
+    private _size: number = 0; // 列表长度（当前元素数量）
+    private extendRatio: number = 2; // 每次列表扩容的倍数
 
-    /* 建構子 */
+    /* 构造方法 */
     constructor() {
         this.arr = new Array(this._capacity);
     }
 
-    /* 獲取串列長度（當前元素數量）*/
+    /* 获取列表长度（当前元素数量）*/
     public size(): number {
         return this._size;
     }
 
-    /* 獲取串列容量 */
+    /* 获取列表容量 */
     public capacity(): number {
         return this._capacity;
     }
 
-    /* 訪問元素 */
+    /* 访问元素 */
     public get(index: number): number {
-        // 索引如果越界，則丟擲異常，下同
+        // 索引如果越界，则抛出异常，下同
         if (index < 0 || index >= this._size) throw new Error('索引越界');
         return this.arr[index];
     }
@@ -39,59 +39,59 @@ class MyList {
         this.arr[index] = num;
     }
 
-    /* 在尾部新增元素 */
+    /* 在尾部添加元素 */
     public add(num: number): void {
-        // 如果長度等於容量，則需要擴容
+        // 如果长度等于容量，则需要扩容
         if (this._size === this._capacity) this.extendCapacity();
-        // 將新元素新增到串列尾部
+        // 将新元素添加到列表尾部
         this.arr[this._size] = num;
         this._size++;
     }
 
-    /* 在中間插入元素 */
+    /* 在中间插入元素 */
     public insert(index: number, num: number): void {
         if (index < 0 || index >= this._size) throw new Error('索引越界');
-        // 元素數量超出容量時，觸發擴容機制
+        // 元素数量超出容量时，触发扩容机制
         if (this._size === this._capacity) {
             this.extendCapacity();
         }
-        // 將索引 index 以及之後的元素都向後移動一位
+        // 将索引 index 以及之后的元素都向后移动一位
         for (let j = this._size - 1; j >= index; j--) {
             this.arr[j + 1] = this.arr[j];
         }
-        // 更新元素數量
+        // 更新元素数量
         this.arr[index] = num;
         this._size++;
     }
 
-    /* 刪除元素 */
+    /* 删除元素 */
     public remove(index: number): number {
         if (index < 0 || index >= this._size) throw new Error('索引越界');
         let num = this.arr[index];
-        // 將將索引 index 之後的元素都向前移動一位
+        // 将将索引 index 之后的元素都向前移动一位
         for (let j = index; j < this._size - 1; j++) {
             this.arr[j] = this.arr[j + 1];
         }
-        // 更新元素數量
+        // 更新元素数量
         this._size--;
-        // 返回被刪除的元素
+        // 返回被删除的元素
         return num;
     }
 
-    /* 串列擴容 */
+    /* 列表扩容 */
     public extendCapacity(): void {
-        // 新建一個長度為 size 的陣列，並將原陣列複製到新陣列
+        // 新建一个长度为 size 的数组，并将原数组复制到新数组
         this.arr = this.arr.concat(
             new Array(this.capacity() * (this.extendRatio - 1))
         );
-        // 更新串列容量
+        // 更新列表容量
         this._capacity = this.arr.length;
     }
 
-    /* 將串列轉換為陣列 */
+    /* 将列表转换为数组 */
     public toArray(): number[] {
         let size = this.size();
-        // 僅轉換有效長度範圍內的串列元素
+        // 仅转换有效长度范围内的列表元素
         const arr = new Array(size);
         for (let i = 0; i < size; i++) {
             arr[i] = this.get(i);
@@ -101,41 +101,41 @@ class MyList {
 }
 
 /* Driver Code */
-/* 初始化串列 */
+/* 初始化列表 */
 const nums = new MyList();
-/* 在尾部新增元素 */
+/* 在尾部添加元素 */
 nums.add(1);
 nums.add(3);
 nums.add(2);
 nums.add(5);
 nums.add(4);
 console.log(
-    `串列 nums = ${nums.toArray()} ，容量 = ${nums.capacity()} ，長度 = ${nums.size()}`
+    `列表 nums = ${nums.toArray()} ，容量 = ${nums.capacity()} ，长度 = ${nums.size()}`
 );
 
-/* 在中間插入元素 */
+/* 在中间插入元素 */
 nums.insert(3, 6);
-console.log(`在索引 3 處插入數字 6 ，得到 nums = ${nums.toArray()}`);
+console.log(`在索引 3 处插入数字 6 ，得到 nums = ${nums.toArray()}`);
 
-/* 刪除元素 */
+/* 删除元素 */
 nums.remove(3);
-console.log(`刪除索引 3 處的元素，得到 nums = ${nums.toArray()}`);
+console.log(`删除索引 3 处的元素，得到 nums = ${nums.toArray()}`);
 
-/* 訪問元素 */
+/* 访问元素 */
 const num = nums.get(1);
-console.log(`訪問索引 1 處的元素，得到 num = ${num}`);
+console.log(`访问索引 1 处的元素，得到 num = ${num}`);
 
 /* 更新元素 */
 nums.set(1, 0);
-console.log(`將索引 1 處的元素更新為 0 ，得到 nums = ${nums.toArray()}`);
+console.log(`将索引 1 处的元素更新为 0 ，得到 nums = ${nums.toArray()}`);
 
-/* 測試擴容機制 */
+/* 测试扩容机制 */
 for (let i = 0; i < 10; i++) {
-    // 在 i = 5 時，串列長度將超出串列容量，此時觸發擴容機制
+    // 在 i = 5 时，列表长度将超出列表容量，此时触发扩容机制
     nums.add(i);
 }
 console.log(
-    `擴容後的串列 nums = ${nums.toArray()} ，容量 = ${nums.capacity()} ，長度 = ${nums.size()}`
+    `扩容后的列表 nums = ${nums.toArray()} ，容量 = ${nums.capacity()} ，长度 = ${nums.size()}`
 );
 
 export {};

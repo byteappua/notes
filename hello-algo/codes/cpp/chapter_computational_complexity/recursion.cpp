@@ -6,30 +6,30 @@
 
 #include "../utils/common.hpp"
 
-/* 遞迴 */
+/* 递归 */
 int recur(int n) {
-    // 終止條件
+    // 终止条件
     if (n == 1)
         return 1;
-    // 遞：遞迴呼叫
+    // 递：递归调用
     int res = recur(n - 1);
-    // 迴：返回結果
+    // 归：返回结果
     return n + res;
 }
 
-/* 使用迭代模擬遞迴 */
+/* 使用迭代模拟递归 */
 int forLoopRecur(int n) {
-    // 使用一個顯式的堆疊來模擬系統呼叫堆疊
+    // 使用一个显式的栈来模拟系统调用栈
     stack<int> stack;
     int res = 0;
-    // 遞：遞迴呼叫
+    // 递：递归调用
     for (int i = n; i > 0; i--) {
-        // 透過“入堆疊操作”模擬“遞”
+        // 通过“入栈操作”模拟“递”
         stack.push(i);
     }
-    // 迴：返回結果
+    // 归：返回结果
     while (!stack.empty()) {
-        // 透過“出堆疊操作”模擬“迴”
+        // 通过“出栈操作”模拟“归”
         res += stack.top();
         stack.pop();
     }
@@ -37,23 +37,23 @@ int forLoopRecur(int n) {
     return res;
 }
 
-/* 尾遞迴 */
+/* 尾递归 */
 int tailRecur(int n, int res) {
-    // 終止條件
+    // 终止条件
     if (n == 0)
         return res;
-    // 尾遞迴呼叫
+    // 尾递归调用
     return tailRecur(n - 1, res + n);
 }
 
-/* 費波那契數列：遞迴 */
+/* 斐波那契数列：递归 */
 int fib(int n) {
-    // 終止條件 f(1) = 0, f(2) = 1
+    // 终止条件 f(1) = 0, f(2) = 1
     if (n == 1 || n == 2)
         return n - 1;
-    // 遞迴呼叫 f(n) = f(n-1) + f(n-2)
+    // 递归调用 f(n) = f(n-1) + f(n-2)
     int res = fib(n - 1) + fib(n - 2);
-    // 返回結果 f(n)
+    // 返回结果 f(n)
     return res;
 }
 
@@ -63,16 +63,16 @@ int main() {
     int res;
 
     res = recur(n);
-    cout << "\n遞迴函式的求和結果 res = " << res << endl;
+    cout << "\n递归函数的求和结果 res = " << res << endl;
 
     res = forLoopRecur(n);
-    cout << "\n使用迭代模擬遞迴求和結果 res = " << res << endl;
+    cout << "\n使用迭代模拟递归求和结果 res = " << res << endl;
 
     res = tailRecur(n, 0);
-    cout << "\n尾遞迴函式的求和結果 res = " << res << endl;
+    cout << "\n尾递归函数的求和结果 res = " << res << endl;
 
     res = fib(n);
-    cout << "\n費波那契數列的第 " << n << " 項為 " << res << endl;
+    cout << "\n斐波那契数列的第 " << n << " 项为 " << res << endl;
 
     return 0;
 }

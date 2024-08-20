@@ -7,34 +7,34 @@
 const { Vertex } = require('../modules/Vertex');
 const { GraphAdjList } = require('./graph_adjacency_list');
 
-/* 深度優先走訪 */
-// 使用鄰接表來表示圖，以便獲取指定頂點的所有鄰接頂點
+/* 深度优先遍历 */
+// 使用邻接表来表示图，以便获取指定顶点的所有邻接顶点
 function dfs(graph, visited, res, vet) {
-    res.push(vet); // 記錄訪問頂點
-    visited.add(vet); // 標記該頂點已被訪問
-    // 走訪該頂點的所有鄰接頂點
+    res.push(vet); // 记录访问顶点
+    visited.add(vet); // 标记该顶点已被访问
+    // 遍历该顶点的所有邻接顶点
     for (const adjVet of graph.adjList.get(vet)) {
         if (visited.has(adjVet)) {
-            continue; // 跳過已被訪問的頂點
+            continue; // 跳过已被访问的顶点
         }
-        // 遞迴訪問鄰接頂點
+        // 递归访问邻接顶点
         dfs(graph, visited, res, adjVet);
     }
 }
 
-/* 深度優先走訪 */
-// 使用鄰接表來表示圖，以便獲取指定頂點的所有鄰接頂點
+/* 深度优先遍历 */
+// 使用邻接表来表示图，以便获取指定顶点的所有邻接顶点
 function graphDFS(graph, startVet) {
-    // 頂點走訪序列
+    // 顶点遍历序列
     const res = [];
-    // 雜湊集合，用於記錄已被訪問過的頂點
+    // 哈希集合，用于记录已被访问过的顶点
     const visited = new Set();
     dfs(graph, visited, res, startVet);
     return res;
 }
 
 /* Driver Code */
-/* 初始化無向圖 */
+/* 初始化无向图 */
 const v = Vertex.valsToVets([0, 1, 2, 3, 4, 5, 6]);
 const edges = [
     [v[0], v[1]],
@@ -45,10 +45,10 @@ const edges = [
     [v[5], v[6]],
 ];
 const graph = new GraphAdjList(edges);
-console.log('\n初始化後，圖為');
+console.log('\n初始化后，图为');
 graph.print();
 
-/* 深度優先走訪 */
+/* 深度优先遍历 */
 const res = graphDFS(graph, v[0]);
-console.log('\n深度優先走訪（DFS）頂點序列為');
+console.log('\n深度优先遍历（DFS）顶点序列为');
 console.log(Vertex.vetsToVals(res));

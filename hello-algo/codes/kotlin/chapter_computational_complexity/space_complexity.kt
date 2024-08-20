@@ -10,58 +10,58 @@ import utils.ListNode
 import utils.TreeNode
 import utils.printTree
 
-/* 函式 */
+/* 函数 */
 fun function(): Int {
-    // 執行某些操作
+    // 执行某些操作
     return 0
 }
 
-/* 常數階 */
+/* 常数阶 */
 fun constant(n: Int) {
-    // 常數、變數、物件佔用 O(1) 空間
+    // 常量、变量、对象占用 O(1) 空间
     val a = 0
     var b = 0
     val nums = Array(10000) { 0 }
     val node = ListNode(0)
-    // 迴圈中的變數佔用 O(1) 空間
+    // 循环中的变量占用 O(1) 空间
     for (i in 0..<n) {
         val c = 0
     }
-    // 迴圈中的函式佔用 O(1) 空間
+    // 循环中的函数占用 O(1) 空间
     for (i in 0..<n) {
         function()
     }
 }
 
-/* 線性階 */
+/* 线性阶 */
 fun linear(n: Int) {
-    // 長度為 n 的陣列佔用 O(n) 空間
+    // 长度为 n 的数组占用 O(n) 空间
     val nums = Array(n) { 0 }
-    // 長度為 n 的串列佔用 O(n) 空間
+    // 长度为 n 的列表占用 O(n) 空间
     val nodes = mutableListOf<ListNode>()
     for (i in 0..<n) {
         nodes.add(ListNode(i))
     }
-    // 長度為 n 的雜湊表佔用 O(n) 空間
+    // 长度为 n 的哈希表占用 O(n) 空间
     val map = mutableMapOf<Int, String>()
     for (i in 0..<n) {
         map[i] = i.toString()
     }
 }
 
-/* 線性階（遞迴實現） */
+/* 线性阶（递归实现） */
 fun linearRecur(n: Int) {
-    println("遞迴 n = $n")
+    println("递归 n = $n")
     if (n == 1)
         return
     linearRecur(n - 1)
 }
 
-/* 平方階 */
+/* 平方阶 */
 fun quadratic(n: Int) {
-    // 矩陣佔用 O(n^2) 空間
+    // 矩阵占用 O(n^2) 空间
     val numMatrix = arrayOfNulls<Array<Int>?>(n)
-    // 二維串列佔用 O(n^2) 空間
+    // 二维列表占用 O(n^2) 空间
     val numList = mutableListOf<MutableList<Int>>()
     for (i in 0..<n) {
         val tmp = mutableListOf<Int>()
@@ -72,17 +72,17 @@ fun quadratic(n: Int) {
     }
 }
 
-/* 平方階（遞迴實現） */
+/* 平方阶（递归实现） */
 tailrec fun quadraticRecur(n: Int): Int {
     if (n <= 0)
         return 0
-    // 陣列 nums 長度為 n, n-1, ..., 2, 1
+    // 数组 nums 长度为 n, n-1, ..., 2, 1
     val nums = Array(n) { 0 }
-    println("遞迴 n = $n 中的 nums 長度 = ${nums.size}")
+    println("递归 n = $n 中的 nums 长度 = ${nums.size}")
     return quadraticRecur(n - 1)
 }
 
-/* 指數階（建立滿二元樹） */
+/* 指数阶（建立满二叉树） */
 fun buildTree(n: Int): TreeNode? {
     if (n == 0)
         return null
@@ -95,15 +95,15 @@ fun buildTree(n: Int): TreeNode? {
 /* Driver Code */
 fun main() {
     val n = 5
-    // 常數階
+    // 常数阶
     constant(n)
-    // 線性階
+    // 线性阶
     linear(n)
     linearRecur(n)
-    // 平方階
+    // 平方阶
     quadratic(n)
     quadraticRecur(n)
-    // 指數階
+    // 指数阶
     val root = buildTree(n)
     printTree(root)
 }

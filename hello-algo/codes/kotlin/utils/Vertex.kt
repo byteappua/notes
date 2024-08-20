@@ -6,10 +6,10 @@
 
 package utils
 
-/* 頂點類別 */
+/* 顶点类 */
 class Vertex(val _val: Int) {
     companion object {
-        /* 輸入值串列 vals ，返回頂點串列 vets */
+        /* 输入值列表 vals ，返回顶点列表 vets */
         fun valsToVets(vals: IntArray): Array<Vertex?> {
             val vets = arrayOfNulls<Vertex>(vals.size)
             for (i in vals.indices) {
@@ -18,7 +18,7 @@ class Vertex(val _val: Int) {
             return vets
         }
 
-        /* 輸入頂點串列 vets ，返回值串列 vals */
+        /* 输入顶点列表 vets ，返回值列表 vals */
         fun vetsToVals(vets: MutableList<Vertex?>): MutableList<Int> {
             val vals = mutableListOf<Int>()
             for (vet in vets) {

@@ -6,108 +6,108 @@
 
 import 'array_hash_map.dart';
 
-/* 開放定址雜湊表 */
+/* 开放寻址哈希表 */
 class HashMapOpenAddressing {
-  late int _size; // 鍵值對數量
-  int _capacity = 4; // 雜湊表容量
-  double _loadThres = 2.0 / 3.0; // 觸發擴容的負載因子閾值
-  int _extendRatio = 2; // 擴容倍數
-  late List<Pair?> _buckets; // 桶陣列
-  Pair _TOMBSTONE = Pair(-1, "-1"); // 刪除標記
+  late int _size; // 键值对数量
+  int _capacity = 4; // 哈希表容量
+  double _loadThres = 2.0 / 3.0; // 触发扩容的负载因子阈值
+  int _extendRatio = 2; // 扩容倍数
+  late List<Pair?> _buckets; // 桶数组
+  Pair _TOMBSTONE = Pair(-1, "-1"); // 删除标记
 
-  /* 建構子 */
+  /* 构造方法 */
   HashMapOpenAddressing() {
     _size = 0;
     _buckets = List.generate(_capacity, (index) => null);
   }
 
-  /* 雜湊函式 */
+  /* 哈希函数 */
   int hashFunc(int key) {
     return key % _capacity;
   }
 
-  /* 負載因子 */
+  /* 负载因子 */
   double loadFactor() {
     return _size / _capacity;
   }
 
-  /* 搜尋 key 對應的桶索引 */
+  /* 搜索 key 对应的桶索引 */
   int findBucket(int key) {
     int index = hashFunc(key);
     int firstTombstone = -1;
-    // 線性探查，當遇到空桶時跳出
+    // 线性探测，当遇到空桶时跳出
     while (_buckets[index] != null) {
-      // 若遇到 key ，返回對應的桶索引
+      // 若遇到 key ，返回对应的桶索引
       if (_buckets[index]!.key == key) {
-        // 若之前遇到了刪除標記，則將鍵值對移動至該索引處
+        // 若之前遇到了删除标记，则将键值对移动至该索引处
         if (firstTombstone != -1) {
           _buckets[firstTombstone] = _buckets[index];
           _buckets[index] = _TOMBSTONE;
-          return firstTombstone; // 返回移動後的桶索引
+          return firstTombstone; // 返回移动后的桶索引
         }
         return index; // 返回桶索引
       }
-      // 記錄遇到的首個刪除標記
+      // 记录遇到的首个删除标记
       if (firstTombstone == -1 && _buckets[index] == _TOMBSTONE) {
         firstTombstone = index;
       }
-      // 計算桶索引，越過尾部則返回頭部
+      // 计算桶索引，越过尾部则返回头部
       index = (index + 1) % _capacity;
     }
-    // 若 key 不存在，則返回新增點的索引
+    // 若 key 不存在，则返回添加点的索引
     return firstTombstone == -1 ? index : firstTombstone;
   }
 
-  /* 查詢操作 */
+  /* 查询操作 */
   String? get(int key) {
-    // 搜尋 key 對應的桶索引
+    // 搜索 key 对应的桶索引
     int index = findBucket(key);
-    // 若找到鍵值對，則返回對應 val
+    // 若找到键值对，则返回对应 val
     if (_buckets[index] != null && _buckets[index] != _TOMBSTONE) {
       return _buckets[index]!.val;
     }
-    // 若鍵值對不存在，則返回 null
+    // 若键值对不存在，则返回 null
     return null;
   }
 
-  /* 新增操作 */
+  /* 添加操作 */
   void put(int key, String val) {
-    // 當負載因子超過閾值時，執行擴容
+    // 当负载因子超过阈值时，执行扩容
     if (loadFactor() > _loadThres) {
       extend();
     }
-    // 搜尋 key 對應的桶索引
+    // 搜索 key 对应的桶索引
     int index = findBucket(key);
-    // 若找到鍵值對，則覆蓋 val 並返回
+    // 若找到键值对，则覆盖 val 并返回
     if (_buckets[index] != null && _buckets[index] != _TOMBSTONE) {
       _buckets[index]!.val = val;
       return;
     }
-    // 若鍵值對不存在，則新增該鍵值對
+    // 若键值对不存在，则添加该键值对
     _buckets[index] = new Pair(key, val);
     _size++;
   }
 
-  /* 刪除操作 */
+  /* 删除操作 */
   void remove(int key) {
-    // 搜尋 key 對應的桶索引
+    // 搜索 key 对应的桶索引
     int index = findBucket(key);
-    // 若找到鍵值對，則用刪除標記覆蓋它
+    // 若找到键值对，则用删除标记覆盖它
     if (_buckets[index] != null && _buckets[index] != _TOMBSTONE) {
       _buckets[index] = _TOMBSTONE;
       _size--;
     }
   }
 
-  /* 擴容雜湊表 */
+  /* 扩容哈希表 */
   void extend() {
-    // 暫存原雜湊表
+    // 暂存原哈希表
     List<Pair?> bucketsTmp = _buckets;
-    // 初始化擴容後的新雜湊表
+    // 初始化扩容后的新哈希表
     _capacity *= _extendRatio;
     _buckets = List.generate(_capacity, (index) => null);
     _size = 0;
-    // 將鍵值對從原雜湊表搬運至新雜湊表
+    // 将键值对从原哈希表搬运至新哈希表
     for (Pair? pair in bucketsTmp) {
       if (pair != null && pair != _TOMBSTONE) {
         put(pair.key, pair.val);
@@ -115,7 +115,7 @@ class HashMapOpenAddressing {
     }
   }
 
-  /* 列印雜湊表 */
+  /* 打印哈希表 */
   void printHashMap() {
     for (Pair? pair in _buckets) {
       if (pair == null) {
@@ -131,27 +131,27 @@ class HashMapOpenAddressing {
 
 /* Driver Code */
 void main() {
-  /* 初始化雜湊表 */
+  /* 初始化哈希表 */
   HashMapOpenAddressing map = HashMapOpenAddressing();
 
-  /* 新增操作 */
-  // 在雜湊表中新增鍵值對 (key, value)
+  /* 添加操作 */
+  // 在哈希表中添加键值对 (key, value)
   map.put(12836, "小哈");
-  map.put(15937, "小囉");
+  map.put(15937, "小啰");
   map.put(16750, "小算");
   map.put(13276, "小法");
-  map.put(10583, "小鴨");
-  print("\n新增完成後，雜湊表為\nKey -> Value");
+  map.put(10583, "小鸭");
+  print("\n添加完成后，哈希表为\nKey -> Value");
   map.printHashMap();
 
-  /* 查詢操作 */
-  // 向雜湊表中輸入鍵 key ，得到值 value
+  /* 查询操作 */
+  // 向哈希表中输入键 key ，得到值 value
   String? name = map.get(13276);
-  print("\n輸入學號 13276 ，查詢到姓名 $name");
+  print("\n输入学号 13276 ，查询到姓名 $name");
 
-  /* 刪除操作 */
-  // 在雜湊表中刪除鍵值對 (key, value)
+  /* 删除操作 */
+  // 在哈希表中删除键值对 (key, value)
   map.remove(16750);
-  print("\n刪除 16750 後，雜湊表為\nKey -> Value");
+  print("\n删除 16750 后，哈希表为\nKey -> Value");
   map.printHashMap();
 }

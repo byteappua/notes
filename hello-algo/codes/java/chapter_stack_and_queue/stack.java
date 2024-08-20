@@ -10,31 +10,31 @@ import java.util.*;
 
 public class stack {
     public static void main(String[] args) {
-        /* 初始化堆疊 */
+        /* 初始化栈 */
         Stack<Integer> stack = new Stack<>();
 
-        /* 元素入堆疊 */
+        /* 元素入栈 */
         stack.push(1);
         stack.push(3);
         stack.push(2);
         stack.push(5);
         stack.push(4);
-        System.out.println("堆疊 stack = " + stack);
+        System.out.println("栈 stack = " + stack);
 
-        /* 訪問堆疊頂元素 */
+        /* 访问栈顶元素 */
         int peek = stack.peek();
-        System.out.println("堆疊頂元素 peek = " + peek);
+        System.out.println("栈顶元素 peek = " + peek);
 
-        /* 元素出堆疊 */
+        /* 元素出栈 */
         int pop = stack.pop();
-        System.out.println("出堆疊元素 pop = " + pop + "，出堆疊後 stack = " + stack);
+        System.out.println("出栈元素 pop = " + pop + "，出栈后 stack = " + stack);
 
-        /* 獲取堆疊的長度 */
+        /* 获取栈的长度 */
         int size = stack.size();
-        System.out.println("堆疊的長度 size = " + size);
+        System.out.println("栈的长度 size = " + size);
 
-        /* 判斷是否為空 */
+        /* 判断是否为空 */
         boolean isEmpty = stack.isEmpty();
-        System.out.println("堆疊是否為空 = " + isEmpty);
+        System.out.println("栈是否为空 = " + isEmpty);
     }
 }

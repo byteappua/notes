@@ -13,29 +13,29 @@ from modules import TreeNode, print_tree
 
 """Driver Code"""
 if __name__ == "__main__":
-    # 初始化二元樹
-    # 初始化節點
+    # 初始化二叉树
+    # 初始化节点
     n1 = TreeNode(val=1)
     n2 = TreeNode(val=2)
     n3 = TreeNode(val=3)
     n4 = TreeNode(val=4)
     n5 = TreeNode(val=5)
-    # 構建節點之間的引用（指標）
+    # 构建节点之间的引用（指针）
     n1.left = n2
     n1.right = n3
     n2.left = n4
     n2.right = n5
-    print("\n初始化二元樹\n")
+    print("\n初始化二叉树\n")
     print_tree(n1)
 
-    # 插入與刪除節點
+    # 插入与删除节点
     P = TreeNode(0)
-    # 在 n1 -> n2 中間插入節點 P
+    # 在 n1 -> n2 中间插入节点 P
     n1.left = P
     P.left = n2
-    print("\n插入節點 P 後\n")
+    print("\n插入节点 P 后\n")
     print_tree(n1)
-    # 刪除節點
+    # 删除节点
     n1.left = n2
-    print("\n刪除節點 P 後\n")
+    print("\n删除节点 P 后\n")
     print_tree(n1)

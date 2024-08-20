@@ -4,15 +4,15 @@
 
 package pkg
 
-// TreeNode 二元樹節點
+// TreeNode 二叉树节点
 type TreeNode struct {
-	Val    any       // 節點值
-	Height int       // 節點高度
-	Left   *TreeNode // 左子節點引用
-	Right  *TreeNode // 右子節點引用
+	Val    any       // 节点值
+	Height int       // 节点高度
+	Left   *TreeNode // 左子节点引用
+	Right  *TreeNode // 右子节点引用
 }
 
-// NewTreeNode 二元樹節點建構子
+// NewTreeNode 二叉树节点构造函数
 func NewTreeNode(v any) *TreeNode {
 	return &TreeNode{
 		Val:    v,
@@ -22,11 +22,11 @@ func NewTreeNode(v any) *TreeNode {
 	}
 }
 
-// 序列化編碼規則請參考：
+// 序列化编码规则请参考：
 // https://www.hello-algo.com/chapter_tree/array_representation_of_tree/
-// 二元樹的陣列表示：
+// 二叉树的数组表示：
 // [1, 2, 3, 4, nil, 6, 7, 8, 9, nil, nil, 12, nil, nil, 15]
-// 二元樹的鏈結串列表示：
+// 二叉树的链表表示：
 //
 //	         /——— 15
 //	     /——— 7
@@ -41,7 +41,7 @@ func NewTreeNode(v any) *TreeNode {
 //	    \——— 4
 //	        \——— 8
 
-// SliceToTreeDFS 將串列反序列化為二元樹：遞迴
+// SliceToTreeDFS 将列表反序列化为二叉树：递归
 func SliceToTreeDFS(arr []any, i int) *TreeNode {
 	if i < 0 || i >= len(arr) || arr[i] == nil {
 		return nil
@@ -52,12 +52,12 @@ func SliceToTreeDFS(arr []any, i int) *TreeNode {
 	return root
 }
 
-// SliceToTree 將切片反序列化為二元樹
+// SliceToTree 将切片反序列化为二叉树
 func SliceToTree(arr []any) *TreeNode {
 	return SliceToTreeDFS(arr, 0)
 }
 
-// TreeToSliceDFS 將二元樹序列化為切片：遞迴
+// TreeToSliceDFS 将二叉树序列化为切片：递归
 func TreeToSliceDFS(root *TreeNode, i int, res *[]any) {
 	if root == nil {
 		return
@@ -70,7 +70,7 @@ func TreeToSliceDFS(root *TreeNode, i int, res *[]any) {
 	TreeToSliceDFS(root.Right, 2*i+2, res)
 }
 
-// TreeToSlice 將二元樹序列化為切片
+// TreeToSlice 将二叉树序列化为切片
 func TreeToSlice(root *TreeNode) []any {
 	var res []any
 	TreeToSliceDFS(root, 0, &res)

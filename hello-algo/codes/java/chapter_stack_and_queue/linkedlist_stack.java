@@ -9,26 +9,26 @@ package chapter_stack_and_queue;
 import java.util.*;
 import utils.*;
 
-/* 基於鏈結串列實現的堆疊 */
+/* 基于链表实现的栈 */
 class LinkedListStack {
-    private ListNode stackPeek; // 將頭節點作為堆疊頂
-    private int stkSize = 0; // 堆疊的長度
+    private ListNode stackPeek; // 将头节点作为栈顶
+    private int stkSize = 0; // 栈的长度
 
     public LinkedListStack() {
         stackPeek = null;
     }
 
-    /* 獲取堆疊的長度 */
+    /* 获取栈的长度 */
     public int size() {
         return stkSize;
     }
 
-    /* 判斷堆疊是否為空 */
+    /* 判断栈是否为空 */
     public boolean isEmpty() {
         return size() == 0;
     }
 
-    /* 入堆疊 */
+    /* 入栈 */
     public void push(int num) {
         ListNode node = new ListNode(num);
         node.next = stackPeek;
@@ -36,7 +36,7 @@ class LinkedListStack {
         stkSize++;
     }
 
-    /* 出堆疊 */
+    /* 出栈 */
     public int pop() {
         int num = peek();
         stackPeek = stackPeek.next;
@@ -44,14 +44,14 @@ class LinkedListStack {
         return num;
     }
 
-    /* 訪問堆疊頂元素 */
+    /* 访问栈顶元素 */
     public int peek() {
         if (isEmpty())
             throw new IndexOutOfBoundsException();
         return stackPeek.val;
     }
 
-    /* 將 List 轉化為 Array 並返回 */
+    /* 将 List 转化为 Array 并返回 */
     public int[] toArray() {
         ListNode node = stackPeek;
         int[] res = new int[size()];
@@ -65,31 +65,31 @@ class LinkedListStack {
 
 public class linkedlist_stack {
     public static void main(String[] args) {
-        /* 初始化堆疊 */
+        /* 初始化栈 */
         LinkedListStack stack = new LinkedListStack();
 
-        /* 元素入堆疊 */
+        /* 元素入栈 */
         stack.push(1);
         stack.push(3);
         stack.push(2);
         stack.push(5);
         stack.push(4);
-        System.out.println("堆疊 stack = " + Arrays.toString(stack.toArray()));
+        System.out.println("栈 stack = " + Arrays.toString(stack.toArray()));
 
-        /* 訪問堆疊頂元素 */
+        /* 访问栈顶元素 */
         int peek = stack.peek();
-        System.out.println("堆疊頂元素 peek = " + peek);
+        System.out.println("栈顶元素 peek = " + peek);
 
-        /* 元素出堆疊 */
+        /* 元素出栈 */
         int pop = stack.pop();
-        System.out.println("出堆疊元素 pop = " + pop + "，出堆疊後 stack = " + Arrays.toString(stack.toArray()));
+        System.out.println("出栈元素 pop = " + pop + "，出栈后 stack = " + Arrays.toString(stack.toArray()));
 
-        /* 獲取堆疊的長度 */
+        /* 获取栈的长度 */
         int size = stack.size();
-        System.out.println("堆疊的長度 size = " + size);
+        System.out.println("栈的长度 size = " + size);
 
-        /* 判斷是否為空 */
+        /* 判断是否为空 */
         boolean isEmpty = stack.isEmpty();
-        System.out.println("堆疊是否為空 = " + isEmpty);
+        System.out.println("栈是否为空 = " + isEmpty);
     }
 }

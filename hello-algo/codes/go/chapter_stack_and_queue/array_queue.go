@@ -4,15 +4,15 @@
 
 package chapter_stack_and_queue
 
-/* 基於環形陣列實現的佇列 */
+/* 基于环形数组实现的队列 */
 type arrayQueue struct {
-	nums        []int // 用於儲存佇列元素的陣列
-	front       int   // 佇列首指標，指向佇列首元素
-	queSize     int   // 佇列長度
-	queCapacity int   // 佇列容量（即最大容納元素數量）
+	nums        []int // 用于存储队列元素的数组
+	front       int   // 队首指针，指向队首元素
+	queSize     int   // 队列长度
+	queCapacity int   // 队列容量（即最大容纳元素数量）
 }
 
-/* 初始化佇列 */
+/* 初始化队列 */
 func newArrayQueue(queCapacity int) *arrayQueue {
 	return &arrayQueue{
 		nums:        make([]int, queCapacity),
@@ -22,44 +22,44 @@ func newArrayQueue(queCapacity int) *arrayQueue {
 	}
 }
 
-/* 獲取佇列的長度 */
+/* 获取队列的长度 */
 func (q *arrayQueue) size() int {
 	return q.queSize
 }
 
-/* 判斷佇列是否為空 */
+/* 判断队列是否为空 */
 func (q *arrayQueue) isEmpty() bool {
 	return q.queSize == 0
 }
 
-/* 入列 */
+/* 入队 */
 func (q *arrayQueue) push(num int) {
-	// 當 rear == queCapacity 表示佇列已滿
+	// 当 rear == queCapacity 表示队列已满
 	if q.queSize == q.queCapacity {
 		return
 	}
-	// 計算佇列尾指標，指向佇列尾索引 + 1
-	// 透過取餘操作實現 rear 越過陣列尾部後回到頭部
+	// 计算队尾指针，指向队尾索引 + 1
+	// 通过取余操作实现 rear 越过数组尾部后回到头部
 	rear := (q.front + q.queSize) % q.queCapacity
-	// 將 num 新增至佇列尾
+	// 将 num 添加至队尾
 	q.nums[rear] = num
 	q.queSize++
 }
 
-/* 出列 */
+/* 出队 */
 func (q *arrayQueue) pop() any {
 	num := q.peek()
 	if num == nil {
 		return nil
 	}
 
-	// 佇列首指標向後移動一位，若越過尾部，則返回到陣列頭部
+	// 队首指针向后移动一位，若越过尾部，则返回到数组头部
 	q.front = (q.front + 1) % q.queCapacity
 	q.queSize--
 	return num
 }
 
-/* 訪問佇列首元素 */
+/* 访问队首元素 */
 func (q *arrayQueue) peek() any {
 	if q.isEmpty() {
 		return nil
@@ -67,7 +67,7 @@ func (q *arrayQueue) peek() any {
 	return q.nums[q.front]
 }
 
-/* 獲取 Slice 用於列印 */
+/* 获取 Slice 用于打印 */
 func (q *arrayQueue) toSlice() []int {
 	rear := (q.front + q.queSize)
 	if rear >= q.queCapacity {

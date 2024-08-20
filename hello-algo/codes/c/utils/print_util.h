@@ -18,7 +18,7 @@
 extern "C" {
 #endif
 
-/* 列印陣列 */
+/* 打印数组 */
 void printArray(int arr[], int size) {
     if (arr == NULL || size == 0) {
         printf("[]");
@@ -31,7 +31,7 @@ void printArray(int arr[], int size) {
     printf("%d]\n", arr[size - 1]);
 }
 
-/* 列印陣列 */
+/* 打印数组 */
 void printArrayFloat(float arr[], int size) {
     if (arr == NULL || size == 0) {
         printf("[]");
@@ -44,7 +44,7 @@ void printArrayFloat(float arr[], int size) {
     printf("%.2f]\n", arr[size - 1]);
 }
 
-/* 列印鏈結串列 */
+/* 打印链表 */
 void printLinkedList(ListNode *node) {
     if (node == NULL) {
         return;
@@ -78,7 +78,7 @@ void showTrunks(Trunk *trunk) {
 }
 
 /**
- * 列印二元樹
+ * 打印二叉树
  * This tree printer is borrowed from TECHIE DELIGHT
  * https://www.techiedelight.com/c-program-print-binary-tree/
  */
@@ -109,17 +109,17 @@ void printTreeHelper(TreeNode *node, Trunk *prev, bool isRight) {
     printTreeHelper(node->left, trunk, false);
 }
 
-/* 列印二元樹 */
+/* 打印二叉树 */
 void printTree(TreeNode *root) {
     printTreeHelper(root, NULL, false);
 }
 
-/* 列印堆積 */
+/* 打印堆 */
 void printHeap(int arr[], int size) {
     TreeNode *root;
-    printf("堆積的陣列表示：");
+    printf("堆的数组表示：");
     printArray(arr, size);
-    printf("堆積的樹狀表示：\n");
+    printf("堆的树状表示：\n");
     root = arrayToTree(arr, size);
     printTree(root);
 }

@@ -1,3 +1,3 @@
-# 附錄
+# 附录
 
-![附錄](../assets/covers/chapter_appendix.jpg)
+![附录](../assets/covers/chapter_appendix.jpg)

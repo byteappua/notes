@@ -4,17 +4,17 @@
  * Author: IsChristina (christinaxia77@foxmail.com)
  */
 
-/* 鏈結串列節點 */
+/* 链表节点 */
 class ListNode {
-    val; // 節點值
-    next; // 指向下一節點的引用（指標）
+    val; // 节点值
+    next; // 指向下一节点的引用（指针）
     constructor(val, next) {
         this.val = val === undefined ? 0 : val;
         this.next = next === undefined ? null : next;
     }
 }
 
-/* 將串列反序列化為鏈結串列 */
+/* 将列表反序列化为链表 */
 function arrToLinkedList(arr) {
     const dum = new ListNode(0);
     let head = dum;

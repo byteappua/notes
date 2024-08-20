@@ -11,57 +11,57 @@ import '../utils/list_node.dart';
 import '../utils/print_util.dart';
 import '../utils/tree_node.dart';
 
-/* 函式 */
+/* 函数 */
 int function() {
-  // 執行某些操作
+  // 执行某些操作
   return 0;
 }
 
-/* 常數階 */
+/* 常数阶 */
 void constant(int n) {
-  // 常數、變數、物件佔用 O(1) 空間
+  // 常量、变量、对象占用 O(1) 空间
   final int a = 0;
   int b = 0;
   List<int> nums = List.filled(10000, 0);
   ListNode node = ListNode(0);
-  // 迴圈中的變數佔用 O(1) 空間
+  // 循环中的变量占用 O(1) 空间
   for (var i = 0; i < n; i++) {
     int c = 0;
   }
-  // 迴圈中的函式佔用 O(1) 空間
+  // 循环中的函数占用 O(1) 空间
   for (var i = 0; i < n; i++) {
     function();
   }
 }
 
-/* 線性階 */
+/* 线性阶 */
 void linear(int n) {
-  // 長度為 n 的陣列佔用 O(n) 空間
+  // 长度为 n 的数组占用 O(n) 空间
   List<int> nums = List.filled(n, 0);
-  // 長度為 n 的串列佔用 O(n) 空間
+  // 长度为 n 的列表占用 O(n) 空间
   List<ListNode> nodes = [];
   for (var i = 0; i < n; i++) {
     nodes.add(ListNode(i));
   }
-  // 長度為 n 的雜湊表佔用 O(n) 空間
+  // 长度为 n 的哈希表占用 O(n) 空间
   Map<int, String> map = HashMap();
   for (var i = 0; i < n; i++) {
     map.putIfAbsent(i, () => i.toString());
   }
 }
 
-/* 線性階（遞迴實現） */
+/* 线性阶（递归实现） */
 void linearRecur(int n) {
-  print('遞迴 n = $n');
+  print('递归 n = $n');
   if (n == 1) return;
   linearRecur(n - 1);
 }
 
-/* 平方階 */
+/* 平方阶 */
 void quadratic(int n) {
-  // 矩陣佔用 O(n^2) 空間
+  // 矩阵占用 O(n^2) 空间
   List<List<int>> numMatrix = List.generate(n, (_) => List.filled(n, 0));
-  // 二維串列佔用 O(n^2) 空間
+  // 二维列表占用 O(n^2) 空间
   List<List<int>> numList = [];
   for (var i = 0; i < n; i++) {
     List<int> tmp = [];
@@ -72,15 +72,15 @@ void quadratic(int n) {
   }
 }
 
-/* 平方階（遞迴實現） */
+/* 平方阶（递归实现） */
 int quadraticRecur(int n) {
   if (n <= 0) return 0;
   List<int> nums = List.filled(n, 0);
-  print('遞迴 n = $n 中的 nums 長度 = ${nums.length}');
+  print('递归 n = $n 中的 nums 长度 = ${nums.length}');
   return quadraticRecur(n - 1);
 }
 
-/* 指數階（建立滿二元樹） */
+/* 指数阶（建立满二叉树） */
 TreeNode? buildTree(int n) {
   if (n == 0) return null;
   TreeNode root = TreeNode(0);
@@ -92,15 +92,15 @@ TreeNode? buildTree(int n) {
 /* Driver Code */
 void main() {
   int n = 5;
-  // 常數階
+  // 常数阶
   constant(n);
-  // 線性階
+  // 线性阶
   linear(n);
   linearRecur(n);
-  // 平方階
+  // 平方阶
   quadratic(n);
   quadraticRecur(n);
-  // 指數階
+  // 指数阶
   TreeNode? root = buildTree(n);
   printTree(root);
 }

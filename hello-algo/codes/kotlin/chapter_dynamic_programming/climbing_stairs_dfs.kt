@@ -6,7 +6,7 @@
 
 package chapter_dynamic_programming
 
-/* 搜尋 */
+/* 搜索 */
 fun dfs(i: Int): Int {
     // 已知 dp[1] 和 dp[2] ，返回之
     if (i == 1 || i == 2) return i
@@ -15,7 +15,7 @@ fun dfs(i: Int): Int {
     return count
 }
 
-/* 爬樓梯：搜尋 */
+/* 爬楼梯：搜索 */
 fun climbingStairsDFS(n: Int): Int {
     return dfs(n)
 }
@@ -25,5 +25,5 @@ fun main() {
     val n = 9
 
     val res = climbingStairsDFS(n)
-    println("爬 $n 階樓梯共有 $res 種方案")
+    println("爬 $n 阶楼梯共有 $res 种方案")
 }

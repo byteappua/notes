@@ -6,46 +6,46 @@
 
 import utils
 
-/* 判斷當前狀態是否為解 */
+/* 判断当前状态是否为解 */
 func isSolution(state: [TreeNode]) -> Bool {
     !state.isEmpty && state.last!.val == 7
 }
 
-/* 記錄解 */
+/* 记录解 */
 func recordSolution(state: [TreeNode], res: inout [[TreeNode]]) {
     res.append(state)
 }
 
-/* 判斷在當前狀態下，該選擇是否合法 */
+/* 判断在当前状态下，该选择是否合法 */
 func isValid(state: [TreeNode], choice: TreeNode?) -> Bool {
     choice != nil && choice!.val != 3
 }
 
-/* 更新狀態 */
+/* 更新状态 */
 func makeChoice(state: inout [TreeNode], choice: TreeNode) {
     state.append(choice)
 }
 
-/* 恢復狀態 */
+/* 恢复状态 */
 func undoChoice(state: inout [TreeNode], choice: TreeNode) {
     state.removeLast()
 }
 
-/* 回溯演算法：例題三 */
+/* 回溯算法：例题三 */
 func backtrack(state: inout [TreeNode], choices: [TreeNode], res: inout [[TreeNode]]) {
-    // 檢查是否為解
+    // 检查是否为解
     if isSolution(state: state) {
         recordSolution(state: state, res: &res)
     }
-    // 走訪所有選擇
+    // 遍历所有选择
     for choice in choices {
-        // 剪枝：檢查選擇是否合法
+        // 剪枝：检查选择是否合法
         if isValid(state: state, choice: choice) {
-            // 嘗試：做出選擇，更新狀態
+            // 尝试：做出选择，更新状态
             makeChoice(state: &state, choice: choice)
-            // 進行下一輪選擇
+            // 进行下一轮选择
             backtrack(state: &state, choices: [choice.left, choice.right].compactMap { $0 }, res: &res)
-            // 回退：撤銷選擇，恢復到之前的狀態
+            // 回退：撤销选择，恢复到之前的状态
             undoChoice(state: &state, choice: choice)
         }
     }
@@ -56,15 +56,15 @@ enum PreorderTraversalIIITemplate {
     /* Driver Code */
     static func main() {
         let root = TreeNode.listToTree(arr: [1, 7, 3, 4, 5, 6, 7])
-        print("\n初始化二元樹")
+        print("\n初始化二叉树")
         PrintUtil.printTree(root: root)
 
-        // 回溯演算法
+        // 回溯算法
         var state: [TreeNode] = []
         var res: [[TreeNode]] = []
         backtrack(state: &state, choices: [root].compactMap { $0 }, res: &res)
 
-        print("\n輸出所有根節點到節點 7 的路徑，路徑中不包含值為 3 的節點")
+        print("\n输出所有根节点到节点 7 的路径，路径中不包含值为 3 的节点")
         for path in res {
             var vals: [Int] = []
             for node in path {

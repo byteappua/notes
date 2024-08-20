@@ -12,15 +12,15 @@ import utils.printTree
 var path: MutableList<TreeNode>? = null
 var res: MutableList<MutableList<TreeNode>>? = null
 
-/* 前序走訪：例題二 */
+/* 前序遍历：例题二 */
 fun preOrder(root: TreeNode?) {
     if (root == null) {
         return
     }
-    // 嘗試
+    // 尝试
     path!!.add(root)
     if (root._val == 7) {
-        // 記錄解
+        // 记录解
         res!!.add(path!!.toMutableList())
     }
     preOrder(root.left)
@@ -32,15 +32,15 @@ fun preOrder(root: TreeNode?) {
 /* Driver Code */
 fun main() {
     val root = TreeNode.listToTree(mutableListOf(1, 7, 3, 4, 5, 6, 7))
-    println("\n初始化二元樹")
+    println("\n初始化二叉树")
     printTree(root)
 
-    // 前序走訪
+    // 前序遍历
     path = mutableListOf()
     res = mutableListOf()
     preOrder(root)
 
-    println("\n輸出所有根節點到節點 7 的路徑")
+    println("\n输出所有根节点到节点 7 的路径")
     for (path in res!!) {
         val _vals = mutableListOf<Int>()
         for (node in path) {

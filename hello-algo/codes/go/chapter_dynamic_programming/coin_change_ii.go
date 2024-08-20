@@ -4,7 +4,7 @@
 
 package chapter_dynamic_programming
 
-/* 零錢兌換 II：動態規劃 */
+/* 零钱兑换 II：动态规划 */
 func coinChangeIIDP(coins []int, amt int) int {
 	n := len(coins)
 	// 初始化 dp 表
@@ -16,14 +16,14 @@ func coinChangeIIDP(coins []int, amt int) int {
 	for i := 0; i <= n; i++ {
 		dp[i][0] = 1
 	}
-	// 狀態轉移：其餘行和列
+	// 状态转移：其余行和列
 	for i := 1; i <= n; i++ {
 		for a := 1; a <= amt; a++ {
 			if coins[i-1] > a {
-				// 若超過目標金額，則不選硬幣 i
+				// 若超过目标金额，则不选硬币 i
 				dp[i][a] = dp[i-1][a]
 			} else {
-				// 不選和選硬幣 i 這兩種方案之和
+				// 不选和选硬币 i 这两种方案之和
 				dp[i][a] = dp[i-1][a] + dp[i][a-coins[i-1]]
 			}
 		}
@@ -31,21 +31,21 @@ func coinChangeIIDP(coins []int, amt int) int {
 	return dp[n][amt]
 }
 
-/* 零錢兌換 II：空間最佳化後的動態規劃 */
+/* 零钱兑换 II：空间优化后的动态规划 */
 func coinChangeIIDPComp(coins []int, amt int) int {
 	n := len(coins)
 	// 初始化 dp 表
 	dp := make([]int, amt+1)
 	dp[0] = 1
-	// 狀態轉移
+	// 状态转移
 	for i := 1; i <= n; i++ {
-		// 正序走訪
+		// 正序遍历
 		for a := 1; a <= amt; a++ {
 			if coins[i-1] > a {
-				// 若超過目標金額，則不選硬幣 i
+				// 若超过目标金额，则不选硬币 i
 				dp[a] = dp[a]
 			} else {
-				// 不選和選硬幣 i 這兩種方案之和
+				// 不选和选硬币 i 这两种方案之和
 				dp[a] = dp[a] + dp[a-coins[i-1]]
 			}
 		}

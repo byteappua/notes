@@ -6,9 +6,9 @@
 
 namespace hello_algo.chapter_stack_and_queue;
 
-/* 基於鏈結串列實現的佇列 */
+/* 基于链表实现的队列 */
 class LinkedListQueue {
-    ListNode? front, rear;  // 頭節點 front ，尾節點 rear 
+    ListNode? front, rear;  // 头节点 front ，尾节点 rear 
     int queSize = 0;
 
     public LinkedListQueue() {
@@ -16,25 +16,25 @@ class LinkedListQueue {
         rear = null;
     }
 
-    /* 獲取佇列的長度 */
+    /* 获取队列的长度 */
     public int Size() {
         return queSize;
     }
 
-    /* 判斷佇列是否為空 */
+    /* 判断队列是否为空 */
     public bool IsEmpty() {
         return Size() == 0;
     }
 
-    /* 入列 */
+    /* 入队 */
     public void Push(int num) {
-        // 在尾節點後新增 num
+        // 在尾节点后添加 num
         ListNode node = new(num);
-        // 如果佇列為空，則令頭、尾節點都指向該節點
+        // 如果队列为空，则令头、尾节点都指向该节点
         if (front == null) {
             front = node;
             rear = node;
-            // 如果佇列不為空，則將該節點新增到尾節點後
+            // 如果队列不为空，则将该节点添加到尾节点后
         } else if (rear != null) {
             rear.next = node;
             rear = node;
@@ -42,23 +42,23 @@ class LinkedListQueue {
         queSize++;
     }
 
-    /* 出列 */
+    /* 出队 */
     public int Pop() {
         int num = Peek();
-        // 刪除頭節點
+        // 删除头节点
         front = front?.next;
         queSize--;
         return num;
     }
 
-    /* 訪問佇列首元素 */
+    /* 访问队首元素 */
     public int Peek() {
         if (IsEmpty())
             throw new Exception();
         return front!.val;
     }
 
-    /* 將鏈結串列轉化為 Array 並返回 */
+    /* 将链表转化为 Array 并返回 */
     public int[] ToArray() {
         if (front == null)
             return [];
@@ -76,31 +76,31 @@ class LinkedListQueue {
 public class linkedlist_queue {
     [Test]
     public void Test() {
-        /* 初始化佇列 */
+        /* 初始化队列 */
         LinkedListQueue queue = new();
 
-        /* 元素入列 */
+        /* 元素入队 */
         queue.Push(1);
         queue.Push(3);
         queue.Push(2);
         queue.Push(5);
         queue.Push(4);
-        Console.WriteLine("佇列 queue = " + string.Join(",", queue.ToArray()));
+        Console.WriteLine("队列 queue = " + string.Join(",", queue.ToArray()));
 
-        /* 訪問佇列首元素 */
+        /* 访问队首元素 */
         int peek = queue.Peek();
-        Console.WriteLine("佇列首元素 peek = " + peek);
+        Console.WriteLine("队首元素 peek = " + peek);
 
-        /* 元素出列 */
+        /* 元素出队 */
         int pop = queue.Pop();
-        Console.WriteLine("出列元素 pop = " + pop + "，出列後 queue = " + string.Join(",", queue.ToArray()));
+        Console.WriteLine("出队元素 pop = " + pop + "，出队后 queue = " + string.Join(",", queue.ToArray()));
 
-        /* 獲取佇列的長度 */
+        /* 获取队列的长度 */
         int size = queue.Size();
-        Console.WriteLine("佇列長度 size = " + size);
+        Console.WriteLine("队列长度 size = " + size);
 
-        /* 判斷佇列是否為空 */
+        /* 判断队列是否为空 */
         bool isEmpty = queue.IsEmpty();
-        Console.WriteLine("佇列是否為空 = " + isEmpty);
+        Console.WriteLine("队列是否为空 = " + isEmpty);
     }
 }

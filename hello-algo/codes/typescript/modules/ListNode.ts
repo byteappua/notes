@@ -4,7 +4,7 @@
  * Author: Justin (xiefahit@gmail.com)
  */
 
-/* 鏈結串列節點 */
+/* 链表节点 */
 class ListNode {
     val: number;
     next: ListNode | null;
@@ -14,7 +14,7 @@ class ListNode {
     }
 }
 
-/* 將陣列反序列化為鏈結串列 */
+/* 将数组反序列化为链表 */
 function arrToLinkedList(arr: number[]): ListNode | null {
     const dum: ListNode = new ListNode(0);
     let head = dum;

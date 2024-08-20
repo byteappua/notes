@@ -9,15 +9,15 @@
 vector<TreeNode *> path;
 vector<vector<TreeNode *>> res;
 
-/* 前序走訪：例題二 */
+/* 前序遍历：例题二 */
 void preOrder(TreeNode *root) {
     if (root == nullptr) {
         return;
     }
-    // 嘗試
+    // 尝试
     path.push_back(root);
     if (root->val == 7) {
-        // 記錄解
+        // 记录解
         res.push_back(path);
     }
     preOrder(root->left);
@@ -29,13 +29,13 @@ void preOrder(TreeNode *root) {
 /* Driver Code */
 int main() {
     TreeNode *root = vectorToTree(vector<int>{1, 7, 3, 4, 5, 6, 7});
-    cout << "\n初始化二元樹" << endl;
+    cout << "\n初始化二叉树" << endl;
     printTree(root);
 
-    // 前序走訪
+    // 前序遍历
     preOrder(root);
 
-    cout << "\n輸出所有根節點到節點 7 的路徑" << endl;
+    cout << "\n输出所有根节点到节点 7 的路径" << endl;
     for (vector<TreeNode *> &path : res) {
         vector<int> vals;
         for (TreeNode *node : path) {

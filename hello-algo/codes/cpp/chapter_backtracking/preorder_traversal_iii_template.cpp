@@ -6,48 +6,48 @@
 
 #include "../utils/common.hpp"
 
-/* 判斷當前狀態是否為解 */
+/* 判断当前状态是否为解 */
 bool isSolution(vector<TreeNode *> &state) {
     return !state.empty() && state.back()->val == 7;
 }
 
-/* 記錄解 */
+/* 记录解 */
 void recordSolution(vector<TreeNode *> &state, vector<vector<TreeNode *>> &res) {
     res.push_back(state);
 }
 
-/* 判斷在當前狀態下，該選擇是否合法 */
+/* 判断在当前状态下，该选择是否合法 */
 bool isValid(vector<TreeNode *> &state, TreeNode *choice) {
     return choice != nullptr && choice->val != 3;
 }
 
-/* 更新狀態 */
+/* 更新状态 */
 void makeChoice(vector<TreeNode *> &state, TreeNode *choice) {
     state.push_back(choice);
 }
 
-/* 恢復狀態 */
+/* 恢复状态 */
 void undoChoice(vector<TreeNode *> &state, TreeNode *choice) {
     state.pop_back();
 }
 
-/* 回溯演算法：例題三 */
+/* 回溯算法：例题三 */
 void backtrack(vector<TreeNode *> &state, vector<TreeNode *> &choices, vector<vector<TreeNode *>> &res) {
-    // 檢查是否為解
+    // 检查是否为解
     if (isSolution(state)) {
-        // 記錄解
+        // 记录解
         recordSolution(state, res);
     }
-    // 走訪所有選擇
+    // 遍历所有选择
     for (TreeNode *choice : choices) {
-        // 剪枝：檢查選擇是否合法
+        // 剪枝：检查选择是否合法
         if (isValid(state, choice)) {
-            // 嘗試：做出選擇，更新狀態
+            // 尝试：做出选择，更新状态
             makeChoice(state, choice);
-            // 進行下一輪選擇
+            // 进行下一轮选择
             vector<TreeNode *> nextChoices{choice->left, choice->right};
             backtrack(state, nextChoices, res);
-            // 回退：撤銷選擇，恢復到之前的狀態
+            // 回退：撤销选择，恢复到之前的状态
             undoChoice(state, choice);
         }
     }
@@ -56,16 +56,16 @@ void backtrack(vector<TreeNode *> &state, vector<TreeNode *> &choices, vector<ve
 /* Driver Code */
 int main() {
     TreeNode *root = vectorToTree(vector<int>{1, 7, 3, 4, 5, 6, 7});
-    cout << "\n初始化二元樹" << endl;
+    cout << "\n初始化二叉树" << endl;
     printTree(root);
 
-    // 回溯演算法
+    // 回溯算法
     vector<TreeNode *> state;
     vector<TreeNode *> choices = {root};
     vector<vector<TreeNode *>> res;
     backtrack(state, choices, res);
 
-    cout << "\n輸出所有根節點到節點 7 的路徑，要求路徑中不包含值為 3 的節點" << endl;
+    cout << "\n输出所有根节点到节点 7 的路径，要求路径中不包含值为 3 的节点" << endl;
     for (vector<TreeNode *> &path : res) {
         vector<int> vals;
         for (TreeNode *node : path) {

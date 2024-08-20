@@ -6,110 +6,110 @@ Author: Blue Bean (lonnnnnnner@gmail.com)
 
 require_relative '../utils/print_util'
 
-### 大頂堆積 ###
+### 大顶堆 ###
 class MaxHeap
   attr_reader :max_heap
 
-  ### 建構子，根據輸入串列建堆積 ###
+  ### 构造方法，根据输入列表建堆 ###
   def initialize(nums)
-    # 將串列元素原封不動新增進堆積
+    # 将列表元素原封不动添加进堆
     @max_heap = nums
-    # 堆積化除葉節點以外的其他所有節點
+    # 堆化除叶节点以外的其他所有节点
     parent(size - 1).downto(0) do |i|
       sift_down(i)
     end
   end
 
-  ### 獲取左子節點的索引 ###
+  ### 获取左子节点的索引 ###
   def left(i)
     2 * i + 1
   end
 
-  ### 獲取右子節點的索引 ###
+  ### 获取右子节点的索引 ###
   def right(i)
     2 * i + 2
   end
 
-  ### 獲取父節點的索引 ###
+  ### 获取父节点的索引 ###
   def parent(i)
     (i - 1) / 2     # 向下整除
   end
 
-  ### 交換元素 ###
+  ### 交换元素 ###
   def swap(i, j)
     @max_heap[i], @max_heap[j] = @max_heap[j], @max_heap[i]
   end
 
-  ### 獲取堆積大小 ###
+  ### 获取堆大小 ###
   def size
     @max_heap.length
   end
 
-  ### 判斷堆積是否為空 ###
+  ### 判断堆是否为空 ###
   def is_empty?
     size == 0
   end
 
-  ### 訪問堆積頂元素 ###
+  ### 访问堆顶元素 ###
   def peek
     @max_heap[0]
   end
 
-  ### 元素入堆積 ###
+  ### 元素入堆 ###
   def push(val)
-    # 新增節點
+    # 添加节点
     @max_heap << val
-    # 從底至頂堆積化
+    # 从底至顶堆化
     sift_up(size - 1)
   end
 
-  ### 從節點 i 開始，從底至頂堆積化 ###
+  ### 从节点 i 开始，从底至顶堆化 ###
   def sift_up(i)
     loop do
-      # 獲取節點 i 的父節點
+      # 获取节点 i 的父节点
       p = parent(i)
-      # 當“越過根節點”或“節點無須修復”時，結束堆積化
+      # 当“越过根节点”或“节点无须修复”时，结束堆化
       break if p < 0 || @max_heap[i] <= @max_heap[p]
-      # 交換兩節點
+      # 交换两节点
       swap(i, p)
-      # 迴圈向上堆積化
+      # 循环向上堆化
       i = p
     end
   end
 
-  ### 元素出堆積 ###
+  ### 元素出堆 ###
   def pop
-    # 判空處理
-    raise IndexError, "堆積為空" if is_empty?
-    # 交換根節點與最右葉節點（交換首元素與尾元素）
+    # 判空处理
+    raise IndexError, "堆为空" if is_empty?
+    # 交换根节点与最右叶节点（交换首元素与尾元素）
     swap(0, size - 1)
-    # 刪除節點
+    # 删除节点
     val = @max_heap.pop
-    # 從頂至底堆積化
+    # 从顶至底堆化
     sift_down(0)
-    # 返回堆積頂元素
+    # 返回堆顶元素
     val
   end
 
-  ### 從節點 i 開始，從頂至底堆積化 ###
+  ### 从节点 i 开始，从顶至底堆化 ###
   def sift_down(i)
     loop do
-      # 判斷節點 i, l, r 中值最大的節點，記為 ma
+      # 判断节点 i, l, r 中值最大的节点，记为 ma
       l, r, ma = left(i), right(i), i
       ma = l if l < size && @max_heap[l] > @max_heap[ma]
       ma = r if r < size && @max_heap[r] > @max_heap[ma]
 
-      # 若節點 i 最大或索引 l, r 越界，則無須繼續堆積化，跳出
+      # 若节点 i 最大或索引 l, r 越界，则无须继续堆化，跳出
       break if ma == i
 
-      # 交換兩節點
+      # 交换两节点
       swap(i, ma)
-      # 迴圈向下堆積化
+      # 循环向下堆化
       i = ma
     end
   end
 
-  ### 列印堆積（二元樹）###
+  ### 打印堆（二叉树）###
   def __print__
     print_heap(@max_heap)
   end
@@ -117,31 +117,31 @@ end
 
 ### Driver Code ###
 if __FILE__ == $0
-  # 初始化大頂堆積
+  # 初始化大顶堆
   max_heap = MaxHeap.new([9, 8, 6, 6, 7, 5, 2, 1, 4, 3, 6, 2])
-  puts "\n輸入串列並建堆積後"
+  puts "\n输入列表并建堆后"
   max_heap.__print__
 
-  # 獲取堆積頂元素
+  # 获取堆顶元素
   peek = max_heap.peek
-  puts "\n堆積頂元素為 #{peek}"
+  puts "\n堆顶元素为 #{peek}"
 
-  # 元素入堆積
+  # 元素入堆
   val = 7
   max_heap.push(val)
-  puts "\n元素 #{val} 入堆積後"
+  puts "\n元素 #{val} 入堆后"
   max_heap.__print__
 
-  # 堆積頂元素出堆積
+  # 堆顶元素出堆
   peek = max_heap.pop
-  puts "\n堆積頂元素 #{peek} 出堆積後"
+  puts "\n堆顶元素 #{peek} 出堆后"
   max_heap.__print__
 
-  # 獲取堆積大小
+  # 获取堆大小
   size = max_heap.size
-  puts "\n堆積元素數量為 #{size}"
+  puts "\n堆元素数量为 #{size}"
 
-  # 判斷堆積是否為空
+  # 判断堆是否为空
   is_empty = max_heap.is_empty?
-  puts "\n堆積是否為空 #{is_empty}"
+  puts "\n堆是否为空 #{is_empty}"
 end

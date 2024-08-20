@@ -6,11 +6,11 @@
 
 #include "../utils/common.hpp"
 
-/* 基於鏈結串列實現的堆疊 */
+/* 基于链表实现的栈 */
 class LinkedListStack {
   private:
-    ListNode *stackTop; // 將頭節點作為堆疊頂
-    int stkSize;        // 堆疊的長度
+    ListNode *stackTop; // 将头节点作为栈顶
+    int stkSize;        // 栈的长度
 
   public:
     LinkedListStack() {
@@ -19,21 +19,21 @@ class LinkedListStack {
     }
 
     ~LinkedListStack() {
-        // 走訪鏈結串列刪除節點，釋放記憶體
+        // 遍历链表删除节点，释放内存
         freeMemoryLinkedList(stackTop);
     }
 
-    /* 獲取堆疊的長度 */
+    /* 获取栈的长度 */
     int size() {
         return stkSize;
     }
 
-    /* 判斷堆疊是否為空 */
+    /* 判断栈是否为空 */
     bool isEmpty() {
         return size() == 0;
     }
 
-    /* 入堆疊 */
+    /* 入栈 */
     void push(int num) {
         ListNode *node = new ListNode(num);
         node->next = stackTop;
@@ -41,25 +41,25 @@ class LinkedListStack {
         stkSize++;
     }
 
-    /* 出堆疊 */
+    /* 出栈 */
     int pop() {
         int num = top();
         ListNode *tmp = stackTop;
         stackTop = stackTop->next;
-        // 釋放記憶體
+        // 释放内存
         delete tmp;
         stkSize--;
         return num;
     }
 
-    /* 訪問堆疊頂元素 */
+    /* 访问栈顶元素 */
     int top() {
         if (isEmpty())
-            throw out_of_range("堆疊為空");
+            throw out_of_range("栈为空");
         return stackTop->val;
     }
 
-    /* 將 List 轉化為 Array 並返回 */
+    /* 将 List 转化为 Array 并返回 */
     vector<int> toVector() {
         ListNode *node = stackTop;
         vector<int> res(size());
@@ -73,36 +73,36 @@ class LinkedListStack {
 
 /* Driver Code */
 int main() {
-    /* 初始化堆疊 */
+    /* 初始化栈 */
     LinkedListStack *stack = new LinkedListStack();
 
-    /* 元素入堆疊 */
+    /* 元素入栈 */
     stack->push(1);
     stack->push(3);
     stack->push(2);
     stack->push(5);
     stack->push(4);
-    cout << "堆疊 stack = ";
+    cout << "栈 stack = ";
     printVector(stack->toVector());
 
-    /* 訪問堆疊頂元素 */
+    /* 访问栈顶元素 */
     int top = stack->top();
-    cout << "堆疊頂元素 top = " << top << endl;
+    cout << "栈顶元素 top = " << top << endl;
 
-    /* 元素出堆疊 */
+    /* 元素出栈 */
     top = stack->pop();
-    cout << "出堆疊元素 pop = " << top << "，出堆疊後 stack = ";
+    cout << "出栈元素 pop = " << top << "，出栈后 stack = ";
     printVector(stack->toVector());
 
-    /* 獲取堆疊的長度 */
+    /* 获取栈的长度 */
     int size = stack->size();
-    cout << "堆疊的長度 size = " << size << endl;
+    cout << "栈的长度 size = " << size << endl;
 
-    /* 判斷是否為空 */
+    /* 判断是否为空 */
     bool empty = stack->isEmpty();
-    cout << "堆疊是否為空 = " << empty << endl;
+    cout << "栈是否为空 = " << empty << endl;
 
-    // 釋放記憶體
+    // 释放内存
     delete stack;
 
     return 0;

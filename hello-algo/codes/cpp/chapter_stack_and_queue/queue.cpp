@@ -8,34 +8,34 @@
 
 /* Driver Code */
 int main() {
-    /* 初始化佇列 */
+    /* 初始化队列 */
     queue<int> queue;
 
-    /* 元素入列 */
+    /* 元素入队 */
     queue.push(1);
     queue.push(3);
     queue.push(2);
     queue.push(5);
     queue.push(4);
-    cout << "佇列 queue = ";
+    cout << "队列 queue = ";
     printQueue(queue);
 
-    /* 訪問佇列首元素 */
+    /* 访问队首元素 */
     int front = queue.front();
-    cout << "佇列首元素 front = " << front << endl;
+    cout << "队首元素 front = " << front << endl;
 
-    /* 元素出列 */
+    /* 元素出队 */
     queue.pop();
-    cout << "出列元素 front = " << front << "，出列後 queue = ";
+    cout << "出队元素 front = " << front << "，出队后 queue = ";
     printQueue(queue);
 
-    /* 獲取佇列的長度 */
+    /* 获取队列的长度 */
     int size = queue.size();
-    cout << "佇列長度 size = " << size << endl;
+    cout << "队列长度 size = " << size << endl;
 
-    /* 判斷佇列是否為空 */
+    /* 判断队列是否为空 */
     bool empty = queue.empty();
-    cout << "佇列是否為空 = " << empty << endl;
+    cout << "队列是否为空 = " << empty << endl;
 
     return 0;
 }

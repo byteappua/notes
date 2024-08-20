@@ -4,9 +4,9 @@
  * Author: nuomi1 (nuomi1@qq.com)
  */
 
-/* 方法一：暴力列舉 */
+/* 方法一：暴力枚举 */
 func twoSumBruteForce(nums: [Int], target: Int) -> [Int] {
-    // 兩層迴圈，時間複雜度為 O(n^2)
+    // 两层循环，时间复杂度为 O(n^2)
     for i in nums.indices.dropLast() {
         for j in nums.indices.dropFirst(i + 1) {
             if nums[i] + nums[j] == target {
@@ -17,11 +17,11 @@ func twoSumBruteForce(nums: [Int], target: Int) -> [Int] {
     return [0]
 }
 
-/* 方法二：輔助雜湊表 */
+/* 方法二：辅助哈希表 */
 func twoSumHashTable(nums: [Int], target: Int) -> [Int] {
-    // 輔助雜湊表，空間複雜度為 O(n)
+    // 辅助哈希表，空间复杂度为 O(n)
     var dic: [Int: Int] = [:]
-    // 單層迴圈，時間複雜度為 O(n)
+    // 单层循环，时间复杂度为 O(n)
     for i in nums.indices {
         if let j = dic[target - nums[i]] {
             return [j, i]

@@ -4,7 +4,7 @@
  * Author: liuyuxin (gvenusleo@gmail.com)
  */
 
-/* 加法雜湊 */
+/* 加法哈希 */
 int addHash(String key) {
   int hash = 0;
   final int MODULUS = 1000000007;
@@ -14,7 +14,7 @@ int addHash(String key) {
   return hash;
 }
 
-/* 乘法雜湊 */
+/* 乘法哈希 */
 int mulHash(String key) {
   int hash = 0;
   final int MODULUS = 1000000007;
@@ -24,7 +24,7 @@ int mulHash(String key) {
   return hash;
 }
 
-/* 互斥或雜湊 */
+/* 异或哈希 */
 int xorHash(String key) {
   int hash = 0;
   final int MODULUS = 1000000007;
@@ -34,7 +34,7 @@ int xorHash(String key) {
   return hash & MODULUS;
 }
 
-/* 旋轉雜湊 */
+/* 旋转哈希 */
 int rotHash(String key) {
   int hash = 0;
   final int MODULUS = 1000000007;
@@ -46,17 +46,17 @@ int rotHash(String key) {
 
 /* Dirver Code */
 void main() {
-  String key = "Hello 演算法";
+  String key = "Hello 算法";
 
   int hash = addHash(key);
-  print("加法雜湊值為 $hash");
+  print("加法哈希值为 $hash");
 
   hash = mulHash(key);
-  print("乘法雜湊值為 $hash");
+  print("乘法哈希值为 $hash");
 
   hash = xorHash(key);
-  print("互斥或雜湊值為 $hash");
+  print("异或哈希值为 $hash");
 
   hash = rotHash(key);
-  print("旋轉雜湊值為 $hash");
+  print("旋转哈希值为 $hash");
 }

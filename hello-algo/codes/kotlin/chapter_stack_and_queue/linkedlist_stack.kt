@@ -6,23 +6,23 @@
 
 package chapter_stack_and_queue
 
-/* 基於鏈結串列實現的堆疊 */
+/* 基于链表实现的栈 */
 class LinkedListStack(
-    private var stackPeek: ListNode? = null, // 將頭節點作為堆疊頂
-    private var stkSize: Int = 0 // 堆疊的長度
+    private var stackPeek: ListNode? = null, // 将头节点作为栈顶
+    private var stkSize: Int = 0 // 栈的长度
 ) {
 
-    /* 獲取堆疊的長度 */
+    /* 获取栈的长度 */
     fun size(): Int {
         return stkSize
     }
 
-    /* 判斷堆疊是否為空 */
+    /* 判断栈是否为空 */
     fun isEmpty(): Boolean {
         return size() == 0
     }
 
-    /* 入堆疊 */
+    /* 入栈 */
     fun push(num: Int) {
         val node = ListNode(num)
         node.next = stackPeek
@@ -30,7 +30,7 @@ class LinkedListStack(
         stkSize++
     }
 
-    /* 出堆疊 */
+    /* 出栈 */
     fun pop(): Int? {
         val num = peek()
         stackPeek = stackPeek?.next
@@ -38,13 +38,13 @@ class LinkedListStack(
         return num
     }
 
-    /* 訪問堆疊頂元素 */
+    /* 访问栈顶元素 */
     fun peek(): Int? {
         if (isEmpty()) throw IndexOutOfBoundsException()
         return stackPeek?._val
     }
 
-    /* 將 List 轉化為 Array 並返回 */
+    /* 将 List 转化为 Array 并返回 */
     fun toArray(): IntArray {
         var node = stackPeek
         val res = IntArray(size())
@@ -58,30 +58,30 @@ class LinkedListStack(
 
 /* Driver Code */
 fun main() {
-    /* 初始化堆疊 */
+    /* 初始化栈 */
     val stack = LinkedListStack()
 
-    /* 元素入堆疊 */
+    /* 元素入栈 */
     stack.push(1)
     stack.push(3)
     stack.push(2)
     stack.push(5)
     stack.push(4)
-    println("堆疊 stack = ${stack.toArray().contentToString()}")
+    println("栈 stack = ${stack.toArray().contentToString()}")
 
-    /* 訪問堆疊頂元素 */
+    /* 访问栈顶元素 */
     val peek = stack.peek()!!
-    println("堆疊頂元素 peek = $peek")
+    println("栈顶元素 peek = $peek")
 
-    /* 元素出堆疊 */
+    /* 元素出栈 */
     val pop = stack.pop()!!
-    println("出堆疊元素 pop = $pop，出堆疊後 stack = ${stack.toArray().contentToString()}")
+    println("出栈元素 pop = $pop，出栈后 stack = ${stack.toArray().contentToString()}")
 
-    /* 獲取堆疊的長度 */
+    /* 获取栈的长度 */
     val size = stack.size()
-    println("堆疊的長度 size = $size")
+    println("栈的长度 size = $size")
 
-    /* 判斷是否為空 */
+    /* 判断是否为空 */
     val isEmpty = stack.isEmpty()
-    println("堆疊是否為空 = $isEmpty")
+    println("栈是否为空 = $isEmpty")
 }

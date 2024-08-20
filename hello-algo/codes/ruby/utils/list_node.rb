@@ -4,10 +4,10 @@ Created Time: 2024-03-18
 Author: Xuan Khoa Tu Nguyen (ngxktuzkai2000@gmail.com)
 =end
 
-### 鏈結串列節點類別 ###
+### 链表节点类 ###
 class ListNode
-  attr_accessor :val  # 節點值
-  attr_accessor :next # 指向下一節點的引用
+  attr_accessor :val  # 节点值
+  attr_accessor :next # 指向下一节点的引用
 
   def initialize(val=0, next_node=nil)
     @val = val
@@ -15,7 +15,7 @@ class ListNode
   end
 end
 
-### 將串列反序列化為鏈結串列 ###
+### 将列表反序列化为链表 ###
 def arr_to_linked_list(arr)
   head = current = ListNode.new(arr[0])
 
@@ -27,7 +27,7 @@ def arr_to_linked_list(arr)
   head
 end
 
-### 將鏈結串列序列化為串列 ###
+### 将链表序列化为列表 ###
 def linked_list_to_arr(head)
   arr = []
 

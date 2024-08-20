@@ -7,13 +7,13 @@
 import '../utils/print_util.dart';
 import '../utils/tree_node.dart';
 
-/* 前序走訪：例題一 */
+/* 前序遍历：例题一 */
 void preOrder(TreeNode? root, List<TreeNode> res) {
   if (root == null) {
     return;
   }
   if (root.val == 7) {
-    // 記錄解
+    // 记录解
     res.add(root);
   }
   preOrder(root.left, res);
@@ -23,13 +23,13 @@ void preOrder(TreeNode? root, List<TreeNode> res) {
 /* Driver Code */
 void main() {
   TreeNode? root = listToTree([1, 7, 3, 4, 5, 6, 7]);
-  print("\n初始化二元樹");
+  print("\n初始化二叉树");
   printTree(root);
 
-  // 前序走訪
+  // 前序遍历
   List<TreeNode> res = [];
   preOrder(root, res);
 
-  print("\n輸出所有值為 7 的節點");
+  print("\n输出所有值为 7 的节点");
   print(List.generate(res.length, (i) => res[i].val));
 }

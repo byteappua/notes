@@ -7,26 +7,26 @@
 namespace hello_algo.chapter_graph;
 
 public class graph_dfs {
-    /* 深度優先走訪輔助函式 */
+    /* 深度优先遍历辅助函数 */
     void DFS(GraphAdjList graph, HashSet<Vertex> visited, List<Vertex> res, Vertex vet) {
-        res.Add(vet);     // 記錄訪問頂點
-        visited.Add(vet); // 標記該頂點已被訪問
-        // 走訪該頂點的所有鄰接頂點
+        res.Add(vet);     // 记录访问顶点
+        visited.Add(vet); // 标记该顶点已被访问
+        // 遍历该顶点的所有邻接顶点
         foreach (Vertex adjVet in graph.adjList[vet]) {
             if (visited.Contains(adjVet)) {
-                continue; // 跳過已被訪問的頂點                             
+                continue; // 跳过已被访问的顶点                             
             }
-            // 遞迴訪問鄰接頂點
+            // 递归访问邻接顶点
             DFS(graph, visited, res, adjVet);
         }
     }
 
-    /* 深度優先走訪 */
-    // 使用鄰接表來表示圖，以便獲取指定頂點的所有鄰接頂點
+    /* 深度优先遍历 */
+    // 使用邻接表来表示图，以便获取指定顶点的所有邻接顶点
     List<Vertex> GraphDFS(GraphAdjList graph, Vertex startVet) {
-        // 頂點走訪序列
+        // 顶点遍历序列
         List<Vertex> res = [];
-        // 雜湊集合，用於記錄已被訪問過的頂點
+        // 哈希集合，用于记录已被访问过的顶点
         HashSet<Vertex> visited = [];
         DFS(graph, visited, res, startVet);
         return res;
@@ -34,7 +34,7 @@ public class graph_dfs {
 
     [Test]
     public void Test() {
-        /* 初始化無向圖 */
+        /* 初始化无向图 */
         Vertex[] v = Vertex.ValsToVets([0, 1, 2, 3, 4, 5, 6]);
         Vertex[][] edges =
         [
@@ -43,12 +43,12 @@ public class graph_dfs {
         ];
 
         GraphAdjList graph = new(edges);
-        Console.WriteLine("\n初始化後，圖為");
+        Console.WriteLine("\n初始化后，图为");
         graph.Print();
 
-        /* 深度優先走訪 */
+        /* 深度优先遍历 */
         List<Vertex> res = GraphDFS(graph, v[0]);
-        Console.WriteLine("\n深度優先走訪（DFS）頂點序列為");
+        Console.WriteLine("\n深度优先遍历（DFS）顶点序列为");
         Console.WriteLine(string.Join(" ", Vertex.VetsToVals(res)));
     }
 }

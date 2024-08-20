@@ -6,33 +6,33 @@ Author: Xuan Khoa Tu Nguyen (ngxktuzkai2000@gmail.com)
 
 ### Driver Code ###
 if __FILE__ == $0
-  # 初始化佇列
-  # Ruby 內建的佇列（Thread::Queue) 沒有 peek 和走訪方法，可以把 Array 當作佇列來使用
+  # 初始化队列
+  # Ruby 内置的队列（Thread::Queue) 没有 peek 和遍历方法，可以把 Array 当作队列来使用
   queue = []
 
-  # 元素入列
+  # 元素入队
   queue.push(1)
   queue.push(3)
   queue.push(2)
   queue.push(5)
   queue.push(4)
-  puts "佇列 queue = #{queue}"
+  puts "队列 queue = #{queue}"
 
-  # 訪問佇列元素
+  # 访问队列元素
   peek = queue.first
-  puts "佇列首元素 peek = #{peek}"
+  puts "队首元素 peek = #{peek}"
 
-  # 元素出列
-  # 清注意，由於是陣列，Array#shift 方法時間複雜度為 O(n)
+  # 元素出队
+  # 清注意，由于是数组，Array#shift 方法时间复杂度为 O(n)
   pop = queue.shift
-  puts "出列元素 pop = #{pop}"
-  puts "出列後 queue = #{queue}"
+  puts "出队元素 pop = #{pop}"
+  puts "出队后 queue = #{queue}"
 
-  # 獲取佇列的長度
+  # 获取队列的长度
   size = queue.length
-  puts "佇列長度 size = #{size}"
+  puts "队列长度 size = #{size}"
 
-  # 判斷佇列是否為空
+  # 判断队列是否为空
   is_empty = queue.empty?
-  puts "佇列是否為空 = #{is_empty}"
+  puts "队列是否为空 = #{is_empty}"
 end

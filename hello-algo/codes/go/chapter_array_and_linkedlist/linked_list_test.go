@@ -12,37 +12,37 @@ import (
 )
 
 func TestLinkedList(t *testing.T) {
-	/* 初始化鏈結串列 1 -> 3 -> 2 -> 5 -> 4 */
-	// 初始化各個節點
+	/* 初始化链表 1 -> 3 -> 2 -> 5 -> 4 */
+	// 初始化各个节点
 	n0 := NewListNode(1)
 	n1 := NewListNode(3)
 	n2 := NewListNode(2)
 	n3 := NewListNode(5)
 	n4 := NewListNode(4)
 
-	// 構建節點之間的引用
+	// 构建节点之间的引用
 	n0.Next = n1
 	n1.Next = n2
 	n2.Next = n3
 	n3.Next = n4
-	fmt.Println("初始化的鏈結串列為")
+	fmt.Println("初始化的链表为")
 	PrintLinkedList(n0)
 
-	/* 插入節點 */
+	/* 插入节点 */
 	insertNode(n0, NewListNode(0))
-	fmt.Println("插入節點後的鏈結串列為")
+	fmt.Println("插入节点后的链表为")
 	PrintLinkedList(n0)
 
-	/* 刪除節點 */
+	/* 删除节点 */
 	removeItem(n0)
-	fmt.Println("刪除節點後的鏈結串列為")
+	fmt.Println("删除节点后的链表为")
 	PrintLinkedList(n0)
 
-	/* 訪問節點 */
+	/* 访问节点 */
 	node := access(n0, 3)
-	fmt.Println("鏈結串列中索引 3 處的節點的值 =", node)
+	fmt.Println("链表中索引 3 处的节点的值 =", node)
 
-	/* 查詢節點 */
+	/* 查找节点 */
 	index := findNode(n0, 2)
-	fmt.Println("鏈結串列中值為 2 的節點的索引 =", index)
+	fmt.Println("链表中值为 2 的节点的索引 =", index)
 }

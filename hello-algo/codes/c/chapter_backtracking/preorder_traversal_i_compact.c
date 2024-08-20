@@ -6,19 +6,19 @@
 
 #include "../utils/common.h"
 
-// 假設結果長度不超過 100
+// 假设结果长度不超过 100
 #define MAX_SIZE 100
 
 TreeNode *res[MAX_SIZE];
 int resSize = 0;
 
-/* 前序走訪：例題一 */
+/* 前序遍历：例题一 */
 void preOrder(TreeNode *root) {
     if (root == NULL) {
         return;
     }
     if (root->val == 7) {
-        // 記錄解
+        // 记录解
         res[resSize++] = root;
     }
     preOrder(root->left);
@@ -29,20 +29,20 @@ void preOrder(TreeNode *root) {
 int main() {
     int arr[] = {1, 7, 3, 4, 5, 6, 7};
     TreeNode *root = arrayToTree(arr, sizeof(arr) / sizeof(arr[0]));
-    printf("\n初始化二元樹\n");
+    printf("\n初始化二叉树\n");
     printTree(root);
 
-    // 前序走訪
+    // 前序遍历
     preOrder(root);
 
-    printf("\n輸出所有值為 7 的節點\n");
+    printf("\n输出所有值为 7 的节点\n");
     int *vals = malloc(resSize * sizeof(int));
     for (int i = 0; i < resSize; i++) {
         vals[i] = res[i]->val;
     }
     printArray(vals, resSize);
 
-    // 釋放記憶體
+    // 释放内存
     freeMemoryTree(root);
     free(vals);
     return 0;

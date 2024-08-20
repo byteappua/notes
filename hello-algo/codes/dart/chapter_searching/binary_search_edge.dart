@@ -6,9 +6,9 @@
 
 import 'binary_search_insertion.dart';
 
-/* 二分搜尋最左一個 target */
+/* 二分查找最左一个 target */
 int binarySearchLeftEdge(List<int> nums, int target) {
-  // 等價於查詢 target 的插入點
+  // 等价于查找 target 的插入点
   int i = binarySearchInsertion(nums, target);
   // 未找到 target ，返回 -1
   if (i == nums.length || nums[i] != target) {
@@ -18,11 +18,11 @@ int binarySearchLeftEdge(List<int> nums, int target) {
   return i;
 }
 
-/* 二分搜尋最右一個 target */
+/* 二分查找最右一个 target */
 int binarySearchRightEdge(List<int> nums, int target) {
-  // 轉化為查詢最左一個 target + 1
+  // 转化为查找最左一个 target + 1
   int i = binarySearchInsertion(nums, target + 1);
-  // j 指向最右一個 target ，i 指向首個大於 target 的元素
+  // j 指向最右一个 target ，i 指向首个大于 target 的元素
   int j = i - 1;
   // 未找到 target ，返回 -1
   if (j == -1 || nums[j] != target) {
@@ -34,15 +34,15 @@ int binarySearchRightEdge(List<int> nums, int target) {
 
 /* Driver Code */
 void main() {
-  // 包含重複元素的陣列
+  // 包含重复元素的数组
   List<int> nums = [1, 3, 6, 6, 6, 6, 6, 10, 12, 15];
-  print("\n陣列 nums = $nums");
+  print("\n数组 nums = $nums");
 
-  // 二分搜尋左邊界和右邊界
+  // 二分查找左边界和右边界
   for (int target in [6, 7]) {
     int index = binarySearchLeftEdge(nums, target);
-    print("最左一個元素 $target 的索引為 $index");
+    print("最左一个元素 $target 的索引为 $index");
     index = binarySearchRightEdge(nums, target);
-    print("最右一個元素 $target 的索引為 $index");
+    print("最右一个元素 $target 的索引为 $index");
   }
 }

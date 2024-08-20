@@ -11,36 +11,36 @@ import (
 	. "github.com/krahets/hello-algo/pkg"
 )
 
-/* 結構體 */
+/* 结构体 */
 type node struct {
 	val  int
 	next *node
 }
 
-/* 建立 node 結構體  */
+/* 创建 node 结构体  */
 func newNode(val int) *node {
 	return &node{val: val}
 }
 
-/* 函式 */
+/* 函数 */
 func function() int {
-	// 執行某些操作...
+	// 执行某些操作...
 	return 0
 }
 
-/* 常數階 */
+/* 常数阶 */
 func spaceConstant(n int) {
-	// 常數、變數、物件佔用 O(1) 空間
+	// 常量、变量、对象占用 O(1) 空间
 	const a = 0
 	b := 0
 	nums := make([]int, 10000)
 	node := newNode(0)
-	// 迴圈中的變數佔用 O(1) 空間
+	// 循环中的变量占用 O(1) 空间
 	var c int
 	for i := 0; i < n; i++ {
 		c = 0
 	}
-	// 迴圈中的函式佔用 O(1) 空間
+	// 循环中的函数占用 O(1) 空间
 	for i := 0; i < n; i++ {
 		function()
 	}
@@ -50,51 +50,51 @@ func spaceConstant(n int) {
 	node.val = 0
 }
 
-/* 線性階 */
+/* 线性阶 */
 func spaceLinear(n int) {
-	// 長度為 n 的陣列佔用 O(n) 空間
+	// 长度为 n 的数组占用 O(n) 空间
 	_ = make([]int, n)
-	// 長度為 n 的串列佔用 O(n) 空間
+	// 长度为 n 的列表占用 O(n) 空间
 	var nodes []*node
 	for i := 0; i < n; i++ {
 		nodes = append(nodes, newNode(i))
 	}
-	// 長度為 n 的雜湊表佔用 O(n) 空間
+	// 长度为 n 的哈希表占用 O(n) 空间
 	m := make(map[int]string, n)
 	for i := 0; i < n; i++ {
 		m[i] = strconv.Itoa(i)
 	}
 }
 
-/* 線性階（遞迴實現） */
+/* 线性阶（递归实现） */
 func spaceLinearRecur(n int) {
-	fmt.Println("遞迴 n =", n)
+	fmt.Println("递归 n =", n)
 	if n == 1 {
 		return
 	}
 	spaceLinearRecur(n - 1)
 }
 
-/* 平方階 */
+/* 平方阶 */
 func spaceQuadratic(n int) {
-	// 矩陣佔用 O(n^2) 空間
+	// 矩阵占用 O(n^2) 空间
 	numMatrix := make([][]int, n)
 	for i := 0; i < n; i++ {
 		numMatrix[i] = make([]int, n)
 	}
 }
 
-/* 平方階（遞迴實現） */
+/* 平方阶（递归实现） */
 func spaceQuadraticRecur(n int) int {
 	if n <= 0 {
 		return 0
 	}
 	nums := make([]int, n)
-	fmt.Printf("遞迴 n = %d 中的 nums 長度 = %d \n", n, len(nums))
+	fmt.Printf("递归 n = %d 中的 nums 长度 = %d \n", n, len(nums))
 	return spaceQuadraticRecur(n - 1)
 }
 
-/* 指數階（建立滿二元樹） */
+/* 指数阶（建立满二叉树） */
 func buildTree(n int) *TreeNode {
 	if n == 0 {
 		return nil

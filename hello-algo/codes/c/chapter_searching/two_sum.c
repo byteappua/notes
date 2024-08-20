@@ -6,7 +6,7 @@
 
 #include "../utils/common.h"
 
-/* 方法一：暴力列舉 */
+/* 方法一：暴力枚举 */
 int *twoSumBruteForce(int *nums, int numsSize, int target, int *returnSize) {
     for (int i = 0; i < numsSize; ++i) {
         for (int j = i + 1; j < numsSize; ++j) {
@@ -22,21 +22,21 @@ int *twoSumBruteForce(int *nums, int numsSize, int target, int *returnSize) {
     return NULL;
 }
 
-/* 雜湊表 */
+/* 哈希表 */
 typedef struct {
     int key;
     int val;
-    UT_hash_handle hh; // 基於 uthash.h 實現
+    UT_hash_handle hh; // 基于 uthash.h 实现
 } HashTable;
 
-/* 雜湊表查詢 */
+/* 哈希表查询 */
 HashTable *find(HashTable *h, int key) {
     HashTable *tmp;
     HASH_FIND_INT(h, &key, tmp);
     return tmp;
 }
 
-/* 雜湊表元素插入 */
+/* 哈希表元素插入 */
 void insert(HashTable *h, int key, int val) {
     HashTable *t = find(h, key);
     if (t == NULL) {
@@ -48,7 +48,7 @@ void insert(HashTable *h, int key, int val) {
     }
 }
 
-/* 方法二：輔助雜湊表 */
+/* 方法二：辅助哈希表 */
 int *twoSumHashTable(int *nums, int numsSize, int target, int *returnSize) {
     HashTable *hashtable = NULL;
     for (int i = 0; i < numsSize; i++) {

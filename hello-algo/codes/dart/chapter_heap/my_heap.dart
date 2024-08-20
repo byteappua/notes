@@ -6,114 +6,114 @@
 
 import '../utils/print_util.dart';
 
-/* 大頂堆積 */
+/* 大顶堆 */
 class MaxHeap {
   late List<int> _maxHeap;
 
-  /* 建構子，根據輸入串列建堆積 */
+  /* 构造方法，根据输入列表建堆 */
   MaxHeap(List<int> nums) {
-    // 將串列元素原封不動新增進堆積
+    // 将列表元素原封不动添加进堆
     _maxHeap = nums;
-    // 堆積化除葉節點以外的其他所有節點
+    // 堆化除叶节点以外的其他所有节点
     for (int i = _parent(size() - 1); i >= 0; i--) {
       siftDown(i);
     }
   }
 
-  /* 獲取左子節點的索引 */
+  /* 获取左子节点的索引 */
   int _left(int i) {
     return 2 * i + 1;
   }
 
-  /* 獲取右子節點的索引 */
+  /* 获取右子节点的索引 */
   int _right(int i) {
     return 2 * i + 2;
   }
 
-  /* 獲取父節點的索引 */
+  /* 获取父节点的索引 */
   int _parent(int i) {
     return (i - 1) ~/ 2; // 向下整除
   }
 
-  /* 交換元素 */
+  /* 交换元素 */
   void _swap(int i, int j) {
     int tmp = _maxHeap[i];
     _maxHeap[i] = _maxHeap[j];
     _maxHeap[j] = tmp;
   }
 
-  /* 獲取堆積大小 */
+  /* 获取堆大小 */
   int size() {
     return _maxHeap.length;
   }
 
-  /* 判斷堆積是否為空 */
+  /* 判断堆是否为空 */
   bool isEmpty() {
     return size() == 0;
   }
 
-  /* 訪問堆積頂元素 */
+  /* 访问堆顶元素 */
   int peek() {
     return _maxHeap[0];
   }
 
-  /* 元素入堆積 */
+  /* 元素入堆 */
   void push(int val) {
-    // 新增節點
+    // 添加节点
     _maxHeap.add(val);
-    // 從底至頂堆積化
+    // 从底至顶堆化
     siftUp(size() - 1);
   }
 
-  /* 從節點 i 開始，從底至頂堆積化 */
+  /* 从节点 i 开始，从底至顶堆化 */
   void siftUp(int i) {
     while (true) {
-      // 獲取節點 i 的父節點
+      // 获取节点 i 的父节点
       int p = _parent(i);
-      // 當“越過根節點”或“節點無須修復”時，結束堆積化
+      // 当“越过根节点”或“节点无须修复”时，结束堆化
       if (p < 0 || _maxHeap[i] <= _maxHeap[p]) {
         break;
       }
-      // 交換兩節點
+      // 交换两节点
       _swap(i, p);
-      // 迴圈向上堆積化
+      // 循环向上堆化
       i = p;
     }
   }
 
-  /* 元素出堆積 */
+  /* 元素出堆 */
   int pop() {
-    // 判空處理
-    if (isEmpty()) throw Exception('堆積為空');
-    // 交換根節點與最右葉節點（交換首元素與尾元素）
+    // 判空处理
+    if (isEmpty()) throw Exception('堆为空');
+    // 交换根节点与最右叶节点（交换首元素与尾元素）
     _swap(0, size() - 1);
-    // 刪除節點
+    // 删除节点
     int val = _maxHeap.removeLast();
-    // 從頂至底堆積化
+    // 从顶至底堆化
     siftDown(0);
-    // 返回堆積頂元素
+    // 返回堆顶元素
     return val;
   }
 
-  /* 從節點 i 開始，從頂至底堆積化 */
+  /* 从节点 i 开始，从顶至底堆化 */
   void siftDown(int i) {
     while (true) {
-      // 判斷節點 i, l, r 中值最大的節點，記為 ma
+      // 判断节点 i, l, r 中值最大的节点，记为 ma
       int l = _left(i);
       int r = _right(i);
       int ma = i;
       if (l < size() && _maxHeap[l] > _maxHeap[ma]) ma = l;
       if (r < size() && _maxHeap[r] > _maxHeap[ma]) ma = r;
-      // 若節點 i 最大或索引 l, r 越界，則無須繼續堆積化，跳出
+      // 若节点 i 最大或索引 l, r 越界，则无须继续堆化，跳出
       if (ma == i) break;
-      // 交換兩節點
+      // 交换两节点
       _swap(i, ma);
-      // 迴圈向下堆積化
+      // 循环向下堆化
       i = ma;
     }
   }
 
-  /* 列印堆積（二元樹） */
+  /* 打印堆（二叉树） */
   void print() {
     printHeap(_maxHeap);
   }
@@ -121,31 +121,31 @@ class MaxHeap {
 
 /* Driver Code */
 void main() {
-  /* 初始化大頂堆積 */
+  /* 初始化大顶堆 */
   MaxHeap maxHeap = MaxHeap([9, 8, 6, 6, 7, 5, 2, 1, 4, 3, 6, 2]);
-  print("\n輸入串列並建堆積後");
+  print("\n输入列表并建堆后");
   maxHeap.print();
 
-  /* 獲取堆積頂元素 */
+  /* 获取堆顶元素 */
   int peek = maxHeap.peek();
-  print("\n堆積頂元素為 $peek");
+  print("\n堆顶元素为 $peek");
 
-  /* 元素入堆積 */
+  /* 元素入堆 */
   int val = 7;
   maxHeap.push(val);
-  print("\n元素 $val 入堆積後");
+  print("\n元素 $val 入堆后");
   maxHeap.print();
 
-  /* 堆積頂元素出堆積 */
+  /* 堆顶元素出堆 */
   peek = maxHeap.pop();
-  print("\n堆積頂元素 $peek 出堆積後");
+  print("\n堆顶元素 $peek 出堆后");
   maxHeap.print();
 
-  /* 獲取堆積大小 */
+  /* 获取堆大小 */
   int size = maxHeap.size();
-  print("\n堆積元素數量為 $size");
+  print("\n堆元素数量为 $size");
 
-  /* 判斷堆積是否為空 */
+  /* 判断堆是否为空 */
   bool isEmpty = maxHeap.isEmpty();
-  print("\n堆積是否為空 $isEmpty");
+  print("\n堆是否为空 $isEmpty");
 }

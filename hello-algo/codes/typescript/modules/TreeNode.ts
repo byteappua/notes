@@ -4,12 +4,12 @@
  * Author: Justin (xiefahit@gmail.com)
  */
 
-/* 二元樹節點 */
+/* 二叉树节点 */
 class TreeNode {
-    val: number; // 節點值
-    height: number; // 節點高度
-    left: TreeNode | null; // 左子節點指標
-    right: TreeNode | null; // 右子節點指標
+    val: number; // 节点值
+    height: number; // 节点高度
+    left: TreeNode | null; // 左子节点指针
+    right: TreeNode | null; // 右子节点指针
     constructor(
         val?: number,
         height?: number,
@@ -23,7 +23,7 @@ class TreeNode {
     }
 }
 
-/* 將陣列反序列化為二元樹 */
+/* 将数组反序列化为二叉树 */
 function arrToTree(arr: (number | null)[], i: number = 0): TreeNode | null {
     if (i < 0 || i >= arr.length || arr[i] === null) {
         return null;

@@ -4,19 +4,19 @@ Created Time: 2024-03-30
 Author: Xuan Khoa Tu Nguyen (ngxktuzkai2000@gmail.com)
 =end
 
-### 生成一個陣列，元素為: 1, 2, ..., n ，順序被打亂 ###
+### 生成一个数组，元素为: 1, 2, ..., n ，顺序被打乱 ###
 def random_numbers(n)
-  # 生成陣列 nums =: 1, 2, 3, ..., n
+  # 生成数组 nums =: 1, 2, 3, ..., n
   nums = Array.new(n) { |i| i + 1 }
-  # 隨機打亂陣列元素
+  # 随机打乱数组元素
   nums.shuffle!
 end
 
-### 查詢陣列 nums 中數字 1 所在索引 ###
+### 查找数组 nums 中数字 1 所在索引 ###
 def find_one(nums)
   for i in 0...nums.length
-    # 當元素 1 在陣列頭部時，達到最佳時間複雜度 O(1)
-    # 當元素 1 在陣列尾部時，達到最差時間複雜度 O(n)
+    # 当元素 1 在数组头部时，达到最佳时间复杂度 O(1)
+    # 当元素 1 在数组尾部时，达到最差时间复杂度 O(n)
     return i if nums[i] == 1
   end
 
@@ -29,7 +29,7 @@ if __FILE__ == $0
     n = 100
     nums = random_numbers(n)
     index = find_one(nums)
-    puts "\n陣列 [ 1, 2, ..., n ] 被打亂後 = #{nums}"
-    puts "數字 1 的索引為 #{index}"
+    puts "\n数组 [ 1, 2, ..., n ] 被打乱后 = #{nums}"
+    puts "数字 1 的索引为 #{index}"
   end
 end

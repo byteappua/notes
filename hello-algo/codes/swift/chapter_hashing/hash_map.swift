@@ -10,40 +10,40 @@ import utils
 enum HashMap {
     /* Driver Code */
     static func main() {
-        /* 初始化雜湊表 */
+        /* 初始化哈希表 */
         var map: [Int: String] = [:]
 
-        /* 新增操作 */
-        // 在雜湊表中新增鍵值對 (key, value)
+        /* 添加操作 */
+        // 在哈希表中添加键值对 (key, value)
         map[12836] = "小哈"
-        map[15937] = "小囉"
+        map[15937] = "小啰"
         map[16750] = "小算"
         map[13276] = "小法"
-        map[10583] = "小鴨"
-        print("\n新增完成後，雜湊表為\nKey -> Value")
+        map[10583] = "小鸭"
+        print("\n添加完成后，哈希表为\nKey -> Value")
         PrintUtil.printHashMap(map: map)
 
-        /* 查詢操作 */
-        // 向雜湊表中輸入鍵 key ，得到值 value
+        /* 查询操作 */
+        // 向哈希表中输入键 key ，得到值 value
         let name = map[15937]!
-        print("\n輸入學號 15937 ，查詢到姓名 \(name)")
+        print("\n输入学号 15937 ，查询到姓名 \(name)")
 
-        /* 刪除操作 */
-        // 在雜湊表中刪除鍵值對 (key, value)
+        /* 删除操作 */
+        // 在哈希表中删除键值对 (key, value)
         map.removeValue(forKey: 10583)
-        print("\n刪除 10583 後，雜湊表為\nKey -> Value")
+        print("\n删除 10583 后，哈希表为\nKey -> Value")
         PrintUtil.printHashMap(map: map)
 
-        /* 走訪雜湊表 */
-        print("\n走訪鍵值對 Key->Value")
+        /* 遍历哈希表 */
+        print("\n遍历键值对 Key->Value")
         for (key, value) in map {
             print("\(key) -> \(value)")
         }
-        print("\n單獨走訪鍵 Key")
+        print("\n单独遍历键 Key")
         for key in map.keys {
             print(key)
         }
-        print("\n單獨走訪值 Value")
+        print("\n单独遍历值 Value")
         for value in map.values {
             print(value)
         }

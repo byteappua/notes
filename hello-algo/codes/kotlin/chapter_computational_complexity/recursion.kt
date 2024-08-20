@@ -8,54 +8,54 @@ package chapter_computational_complexity.recursion
 
 import java.util.*
 
-/* 遞迴 */
+/* 递归 */
 fun recur(n: Int): Int {
-    // 終止條件
+    // 终止条件
     if (n == 1)
         return 1
-    // 遞: 遞迴呼叫
+    // 递: 递归调用
     val res = recur(n - 1)
-    // 迴: 返回結果
+    // 归: 返回结果
     return n + res
 }
 
-/* 使用迭代模擬遞迴 */
+/* 使用迭代模拟递归 */
 fun forLoopRecur(n: Int): Int {
-    // 使用一個顯式的堆疊來模擬系統呼叫堆疊
+    // 使用一个显式的栈来模拟系统调用栈
     val stack = Stack<Int>()
     var res = 0
-    // 遞: 遞迴呼叫
+    // 递: 递归调用
     for (i in n downTo 0) {
-        // 透過“入堆疊操作”模擬“遞”
+        // 通过“入栈操作”模拟“递”
         stack.push(i)
     }
-    // 迴: 返回結果
+    // 归: 返回结果
     while (stack.isNotEmpty()) {
-        // 透過“出堆疊操作”模擬“迴”
+        // 通过“出栈操作”模拟“归”
         res += stack.pop()
     }
     // res = 1+2+3+...+n
     return res
 }
 
-/* 尾遞迴 */
+/* 尾递归 */
 tailrec fun tailRecur(n: Int, res: Int): Int {
-    // 新增 tailrec 關鍵詞，以開啟尾遞迴最佳化
-    // 終止條件
+    // 添加 tailrec 关键词，以开启尾递归优化
+    // 终止条件
     if (n == 0)
         return res
-    // 尾遞迴呼叫
+    // 尾递归调用
     return tailRecur(n - 1, res + n)
 }
 
-/* 費波那契數列：遞迴 */
+/* 斐波那契数列：递归 */
 fun fib(n: Int): Int {
-    // 終止條件 f(1) = 0, f(2) = 1
+    // 终止条件 f(1) = 0, f(2) = 1
     if (n == 1 || n == 2)
         return n - 1
-    // 遞迴呼叫 f(n) = f(n-1) + f(n-2)
+    // 递归调用 f(n) = f(n-1) + f(n-2)
     val res = fib(n - 1) + fib(n - 2)
-    // 返回結果 f(n)
+    // 返回结果 f(n)
     return res
 }
 
@@ -65,14 +65,14 @@ fun main() {
     var res: Int
 
     res = recur(n)
-    println("\n遞迴函式的求和結果 res = $res")
+    println("\n递归函数的求和结果 res = $res")
 
     res = forLoopRecur(n)
-    println("\n使用迭代模擬遞迴求和結果 res = $res")
+    println("\n使用迭代模拟递归求和结果 res = $res")
 
     res = tailRecur(n, 0)
-    println("\n尾遞迴函式的求和結果 res = $res")
+    println("\n尾递归函数的求和结果 res = $res")
 
     res = fib(n)
-    println("\n費波那契數列的第 $n 項為 $res")
+    println("\n斐波那契数列的第 $n 项为 $res")
 }

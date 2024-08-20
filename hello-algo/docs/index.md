@@ -1,5 +1,5 @@
-# Hello 演算法
+# Hello 算法
 
-動畫圖解、一鍵執行的資料結構與演算法教程
+动画图解、一键运行的数据结构与算法教程。
 
-[開始閱讀](chapter_hello_algo/)
+[开始阅读](chapter_hello_algo/)

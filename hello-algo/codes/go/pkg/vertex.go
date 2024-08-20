@@ -4,19 +4,19 @@
 
 package pkg
 
-// Vertex 頂點類別
+// Vertex 顶点类
 type Vertex struct {
 	Val int
 }
 
-// NewVertex 頂點建構子
+// NewVertex 顶点构造函数
 func NewVertex(val int) Vertex {
 	return Vertex{
 		Val: val,
 	}
 }
 
-// ValsToVets 將值串列反序列化為頂點串列
+// ValsToVets 将值列表反序列化为顶点列表
 func ValsToVets(vals []int) []Vertex {
 	vets := make([]Vertex, len(vals))
 	for i := 0; i < len(vals); i++ {
@@ -25,7 +25,7 @@ func ValsToVets(vals []int) []Vertex {
 	return vets
 }
 
-// VetsToVals 將頂點串列序列化為值串列
+// VetsToVals 将顶点列表序列化为值列表
 func VetsToVals(vets []Vertex) []int {
 	vals := make([]int, len(vets))
 	for i := range vets {
@@ -34,17 +34,17 @@ func VetsToVals(vets []Vertex) []int {
 	return vals
 }
 
-// DeleteSliceElms 刪除切片指定元素
+// DeleteSliceElms 删除切片指定元素
 func DeleteSliceElms[T any](a []T, elms ...T) []T {
 	if len(a) == 0 || len(elms) == 0 {
 		return a
 	}
-	// 先將元素轉為 set
+	// 先将元素转为 set
 	m := make(map[any]struct{})
 	for _, v := range elms {
 		m[v] = struct{}{}
 	}
-	// 過濾掉指定元素
+	// 过滤掉指定元素
 	res := make([]T, 0, len(a))
 	for _, v := range a {
 		if _, ok := m[v]; !ok {

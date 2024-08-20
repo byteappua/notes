@@ -6,43 +6,43 @@
 
 include!("../include/include.rs");
 
-/* 基於陣列實現的堆疊 */
+/* 基于数组实现的栈 */
 struct ArrayStack<T> {
     stack: Vec<T>,
 }
 
 impl<T> ArrayStack<T> {
-    /* 初始化堆疊 */
+    /* 初始化栈 */
     fn new() -> ArrayStack<T> {
         ArrayStack::<T> {
             stack: Vec::<T>::new(),
         }
     }
 
-    /* 獲取堆疊的長度 */
+    /* 获取栈的长度 */
     fn size(&self) -> usize {
         self.stack.len()
     }
 
-    /* 判斷堆疊是否為空 */
+    /* 判断栈是否为空 */
     fn is_empty(&self) -> bool {
         self.size() == 0
     }
 
-    /* 入堆疊 */
+    /* 入栈 */
     fn push(&mut self, num: T) {
         self.stack.push(num);
     }
 
-    /* 出堆疊 */
+    /* 出栈 */
     fn pop(&mut self) -> Option<T> {
         self.stack.pop()
     }
 
-    /* 訪問堆疊頂元素 */
+    /* 访问栈顶元素 */
     fn peek(&self) -> Option<&T> {
         if self.is_empty() {
-            panic!("堆疊為空")
+            panic!("栈为空")
         };
         self.stack.last()
     }
@@ -55,32 +55,32 @@ impl<T> ArrayStack<T> {
 
 /* Driver Code */
 fn main() {
-    // 初始化堆疊
+    // 初始化栈
     let mut stack = ArrayStack::<i32>::new();
 
-    // 元素入堆疊
+    // 元素入栈
     stack.push(1);
     stack.push(3);
     stack.push(2);
     stack.push(5);
     stack.push(4);
-    print!("堆疊 stack = ");
+    print!("栈 stack = ");
     print_util::print_array(stack.to_array());
 
-    //訪問堆疊頂元素
+    //访问栈顶元素
     let peek = stack.peek().unwrap();
-    print!("\n堆疊頂元素 peek = {}", peek);
+    print!("\n栈顶元素 peek = {}", peek);
 
-    // 元素出堆疊
+    // 元素出栈
     let pop = stack.pop().unwrap();
-    print!("\n出堆疊元素 pop = {pop}，出堆疊後 stack = ");
+    print!("\n出栈元素 pop = {pop}，出栈后 stack = ");
     print_util::print_array(stack.to_array());
 
-    // 獲取堆疊的長度
+    // 获取栈的长度
     let size = stack.size();
-    print!("\n堆疊的長度 size = {size}");
+    print!("\n栈的长度 size = {size}");
 
-    // 判斷是否為空
+    // 判断是否为空
     let is_empty = stack.is_empty();
-    print!("\n堆疊是否為空 = {is_empty}");
+    print!("\n栈是否为空 = {is_empty}");
 }

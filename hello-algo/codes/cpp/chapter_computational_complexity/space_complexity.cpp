@@ -6,56 +6,56 @@
 
 #include "../utils/common.hpp"
 
-/* 函式 */
+/* 函数 */
 int func() {
-    // 執行某些操作
+    // 执行某些操作
     return 0;
 }
 
-/* 常數階 */
+/* 常数阶 */
 void constant(int n) {
-    // 常數、變數、物件佔用 O(1) 空間
+    // 常量、变量、对象占用 O(1) 空间
     const int a = 0;
     int b = 0;
     vector<int> nums(10000);
     ListNode node(0);
-    // 迴圈中的變數佔用 O(1) 空間
+    // 循环中的变量占用 O(1) 空间
     for (int i = 0; i < n; i++) {
         int c = 0;
     }
-    // 迴圈中的函式佔用 O(1) 空間
+    // 循环中的函数占用 O(1) 空间
     for (int i = 0; i < n; i++) {
         func();
     }
 }
 
-/* 線性階 */
+/* 线性阶 */
 void linear(int n) {
-    // 長度為 n 的陣列佔用 O(n) 空間
+    // 长度为 n 的数组占用 O(n) 空间
     vector<int> nums(n);
-    // 長度為 n 的串列佔用 O(n) 空間
+    // 长度为 n 的列表占用 O(n) 空间
     vector<ListNode> nodes;
     for (int i = 0; i < n; i++) {
         nodes.push_back(ListNode(i));
     }
-    // 長度為 n 的雜湊表佔用 O(n) 空間
+    // 长度为 n 的哈希表占用 O(n) 空间
     unordered_map<int, string> map;
     for (int i = 0; i < n; i++) {
         map[i] = to_string(i);
     }
 }
 
-/* 線性階（遞迴實現） */
+/* 线性阶（递归实现） */
 void linearRecur(int n) {
-    cout << "遞迴 n = " << n << endl;
+    cout << "递归 n = " << n << endl;
     if (n == 1)
         return;
     linearRecur(n - 1);
 }
 
-/* 平方階 */
+/* 平方阶 */
 void quadratic(int n) {
-    // 二維串列佔用 O(n^2) 空間
+    // 二维列表占用 O(n^2) 空间
     vector<vector<int>> numMatrix;
     for (int i = 0; i < n; i++) {
         vector<int> tmp;
@@ -66,16 +66,16 @@ void quadratic(int n) {
     }
 }
 
-/* 平方階（遞迴實現） */
+/* 平方阶（递归实现） */
 int quadraticRecur(int n) {
     if (n <= 0)
         return 0;
     vector<int> nums(n);
-    cout << "遞迴 n = " << n << " 中的 nums 長度 = " << nums.size() << endl;
+    cout << "递归 n = " << n << " 中的 nums 长度 = " << nums.size() << endl;
     return quadraticRecur(n - 1);
 }
 
-/* 指數階（建立滿二元樹） */
+/* 指数阶（建立满二叉树） */
 TreeNode *buildTree(int n) {
     if (n == 0)
         return nullptr;
@@ -88,19 +88,19 @@ TreeNode *buildTree(int n) {
 /* Driver Code */
 int main() {
     int n = 5;
-    // 常數階
+    // 常数阶
     constant(n);
-    // 線性階
+    // 线性阶
     linear(n);
     linearRecur(n);
-    // 平方階
+    // 平方阶
     quadratic(n);
     quadraticRecur(n);
-    // 指數階
+    // 指数阶
     TreeNode *root = buildTree(n);
     printTree(root);
 
-    // 釋放記憶體
+    // 释放内存
     freeMemoryTree(root);
 
     return 0;

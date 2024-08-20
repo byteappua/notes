@@ -5,48 +5,48 @@
 const std = @import("std");
 const inc = @import("include");
 
-// 基於陣列實現的堆疊
+// 基于数组实现的栈
 pub fn ArrayStack(comptime T: type) type {
     return struct {
         const Self = @This();
 
         stack: ?std.ArrayList(T) = null,     
 
-        // 建構子（分配記憶體+初始化堆疊）
+        // 构造方法（分配内存+初始化栈）
         pub fn init(self: *Self, allocator: std.mem.Allocator) void {
             if (self.stack == null) {
                 self.stack = std.ArrayList(T).init(allocator);
             }
         }
 
-        // 析構方法（釋放記憶體）
+        // 析构方法（释放内存）
         pub fn deinit(self: *Self) void {
             if (self.stack == null) return;
             self.stack.?.deinit();
         }
 
-        // 獲取堆疊的長度
+        // 获取栈的长度
         pub fn size(self: *Self) usize {
             return self.stack.?.items.len;
         }
 
-        // 判斷堆疊是否為空
+        // 判断栈是否为空
         pub fn isEmpty(self: *Self) bool {
             return self.size() == 0;
         }
 
-        // 訪問堆疊頂元素
+        // 访问栈顶元素
         pub fn peek(self: *Self) T {
-            if (self.isEmpty()) @panic("堆疊為空");
+            if (self.isEmpty()) @panic("栈为空");
             return self.stack.?.items[self.size() - 1];
         }  
 
-        // 入堆疊
+        // 入栈
         pub fn push(self: *Self, num: T) !void {
             try self.stack.?.append(num);
         } 
 
-        // 出堆疊
+        // 出栈
         pub fn pop(self: *Self) T {
             var num = self.stack.?.pop();
             return num;
@@ -61,37 +61,37 @@ pub fn ArrayStack(comptime T: type) type {
 
 // Driver Code
 pub fn main() !void {
-    // 初始化堆疊
+    // 初始化栈
     var stack = ArrayStack(i32){};
     stack.init(std.heap.page_allocator);
-    // 延遲釋放記憶體
+    // 延迟释放内存
     defer stack.deinit();
 
-    // 元素入堆疊
+    // 元素入栈
     try stack.push(1);
     try stack.push(3);
     try stack.push(2);
     try stack.push(5);
     try stack.push(4);
-    std.debug.print("堆疊 stack = ", .{});
+    std.debug.print("栈 stack = ", .{});
     inc.PrintUtil.printList(i32, stack.toList());
 
-    // 訪問堆疊頂元素
+    // 访问栈顶元素
     var peek = stack.peek();
-    std.debug.print("\n堆疊頂元素 peek = {}", .{peek});
+    std.debug.print("\n栈顶元素 peek = {}", .{peek});
 
-    // 元素出堆疊
+    // 元素出栈
     var top = stack.pop();
-    std.debug.print("\n出堆疊元素 pop = {}，出堆疊後 stack = ", .{top});
+    std.debug.print("\n出栈元素 pop = {}，出栈后 stack = ", .{top});
     inc.PrintUtil.printList(i32, stack.toList());
 
-    // 獲取堆疊的長度
+    // 获取栈的长度
     var size = stack.size();
-    std.debug.print("\n堆疊的長度 size = {}", .{size});
+    std.debug.print("\n栈的长度 size = {}", .{size});
 
-    // 判斷堆疊是否為空
+    // 判断栈是否为空
     var is_empty = stack.isEmpty();
-    std.debug.print("\n堆疊是否為空 = {}", .{is_empty});
+    std.debug.print("\n栈是否为空 = {}", .{is_empty});
 
     _ = try std.io.getStdIn().reader().readByte();
 }

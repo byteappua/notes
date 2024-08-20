@@ -6,7 +6,7 @@
 
 const { arrToTree } = require('./TreeNode');
 
-/* 列印鏈結串列 */
+/* 打印链表 */
 function printLinkedList(head) {
     let list = [];
     while (head !== null) {
@@ -22,7 +22,7 @@ function Trunk(prev, str) {
 }
 
 /**
- * 列印二元樹
+ * 打印二叉树
  * This tree printer is borrowed from TECHIE DELIGHT
  * https://www.techiedelight.com/c-program-print-binary-tree/
  */
@@ -30,7 +30,7 @@ function printTree(root) {
     printTree(root, null, false);
 }
 
-/* 列印二元樹 */
+/* 打印二叉树 */
 function printTree(root, prev, isRight) {
     if (root === null) {
         return;
@@ -71,11 +71,11 @@ function showTrunks(p) {
     process.stdout.write(p.str);
 }
 
-/* 列印堆積 */
+/* 打印堆 */
 function printHeap(arr) {
-    console.log('堆積的陣列表示：');
+    console.log('堆的数组表示：');
     console.log(arr);
-    console.log('堆積的樹狀表示：');
+    console.log('堆的树状表示：');
     printTree(arrToTree(arr));
 }
 

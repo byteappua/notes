@@ -4,57 +4,57 @@ Created Time: 2024-04-05
 Author: Xuan Khoa Tu Nguyen (ngxktuzkai2000@gmail.com)
 =end
 
-### 基於環形陣列實現的佇列 ###
+### 基于环形数组实现的队列 ###
 class ArrayQueue
-  ### 獲取佇列的長度 ###
+  ### 获取队列的长度 ###
   attr_reader :size
 
-  ### 建構子 ###
+  ### 构造方法 ###
   def initialize(size)
-    @nums = Array.new(size, 0) # 用於儲存佇列元素的陣列
-    @front = 0 # 佇列首指標，指向佇列首元素
-    @size = 0 # 佇列長度
+    @nums = Array.new(size, 0) # 用于存储队列元素的数组
+    @front = 0 # 队首指针，指向队首元素
+    @size = 0 # 队列长度
   end
 
-  ### 獲取佇列的容量 ###
+  ### 获取队列的容量 ###
   def capacity
     @nums.length
   end
 
-  ### 判斷佇列是否為空 ###
+  ### 判断队列是否为空 ###
   def is_empty?
     size.zero?
   end
 
-  ### 入列 ###
+  ### 入队 ###
   def push(num)
-    raise IndexError, '佇列已滿' if size == capacity
+    raise IndexError, '队列已满' if size == capacity
 
-    # 計算佇列尾指標，指向佇列尾索引 + 1
-    # 透過取餘操作實現 rear 越過陣列尾部後回到頭部
+    # 计算队尾指针，指向队尾索引 + 1
+    # 通过取余操作实现 rear 越过数组尾部后回到头部
     rear = (@front + size) % capacity
-    # 將 num 新增至佇列尾
+    # 将 num 添加至队尾
     @nums[rear] = num
     @size += 1
   end
 
-  ### 出列 ###
+  ### 出队 ###
   def pop
     num = peek
-    # 佇列首指標向後移動一位，若越過尾部，則返回到陣列頭部
+    # 队首指针向后移动一位，若越过尾部，则返回到数组头部
     @front = (@front + 1) % capacity
     @size -= 1
     num
   end
 
-  ### 訪問佇列首元素 ###
+  ### 访问队首元素 ###
   def peek
-    raise IndexError, '佇列為空' if is_empty?
+    raise IndexError, '队列为空' if is_empty?
 
     @nums[@front]
   end
 
-  ### 返回串列用於列印 ###
+  ### 返回列表用于打印 ###
   def to_array
     res = Array.new(size, 0)
     j = @front
@@ -70,38 +70,38 @@ end
 
 ### Driver Code ###
 if __FILE__ == $0
-  # 初始化佇列
+  # 初始化队列
   queue = ArrayQueue.new(10)
 
-  # 元素入列
+  # 元素入队
   queue.push(1)
   queue.push(3)
   queue.push(2)
   queue.push(5)
   queue.push(4)
-  puts "佇列 queue = #{queue.to_array}"
+  puts "队列 queue = #{queue.to_array}"
 
-  # 訪問佇列首元素
+  # 访问队首元素
   peek = queue.peek
-  puts "佇列首元素 peek = #{peek}"
+  puts "队首元素 peek = #{peek}"
 
-  # 元素出列
+  # 元素出队
   pop = queue.pop
-  puts "出列元素 pop = #{pop}"
-  puts "出列後 queue = #{queue.to_array}"
+  puts "出队元素 pop = #{pop}"
+  puts "出队后 queue = #{queue.to_array}"
 
-  # 獲取佇列的長度
+  # 获取队列的长度
   size = queue.size
-  puts "佇列長度 size = #{size}"
+  puts "队列长度 size = #{size}"
 
-  # 判斷佇列是否為空
+  # 判断队列是否为空
   is_empty = queue.is_empty?
-  puts "佇列是否為空 = #{is_empty}"
+  puts "队列是否为空 = #{is_empty}"
 
-  # 測試環形陣列
+  # 测试环形数组
   for i in 0...10
     queue.push(i)
     queue.pop
-    puts "第 #{i} 輪入列 + 出列後 queue = #{queue.to_array}"
+    puts "第 #{i} 轮入队 + 出队后 queue = #{queue.to_array}"
   end
 end

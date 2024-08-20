@@ -8,37 +8,37 @@
 enum Deque {
     /* Driver Code */
     static func main() {
-        /* 初始化雙向佇列 */
-        // Swift 沒有內建的雙向佇列類別，可以把 Array 當作雙向佇列來使用
+        /* 初始化双向队列 */
+        // Swift 没有内置的双向队列类，可以把 Array 当作双向队列来使用
         var deque: [Int] = []
 
-        /* 元素入列 */
+        /* 元素入队 */
         deque.append(2)
         deque.append(5)
         deque.append(4)
         deque.insert(3, at: 0)
         deque.insert(1, at: 0)
-        print("雙向佇列 deque = \(deque)")
+        print("双向队列 deque = \(deque)")
 
-        /* 訪問元素 */
+        /* 访问元素 */
         let peekFirst = deque.first!
-        print("佇列首元素 peekFirst = \(peekFirst)")
+        print("队首元素 peekFirst = \(peekFirst)")
         let peekLast = deque.last!
-        print("佇列尾元素 peekLast = \(peekLast)")
+        print("队尾元素 peekLast = \(peekLast)")
 
-        /* 元素出列 */
-        // 使用 Array 模擬時 popFirst 的複雜度為 O(n)
+        /* 元素出队 */
+        // 使用 Array 模拟时 popFirst 的复杂度为 O(n)
         let popFirst = deque.removeFirst()
-        print("佇列首出列元素 popFirst = \(popFirst)，佇列首出列後 deque = \(deque)")
+        print("队首出队元素 popFirst = \(popFirst)，队首出队后 deque = \(deque)")
         let popLast = deque.removeLast()
-        print("佇列尾出列元素 popLast = \(popLast)，佇列尾出列後 deque = \(deque)")
+        print("队尾出队元素 popLast = \(popLast)，队尾出队后 deque = \(deque)")
 
-        /* 獲取雙向佇列的長度 */
+        /* 获取双向队列的长度 */
         let size = deque.count
-        print("雙向佇列長度 size = \(size)")
+        print("双向队列长度 size = \(size)")
 
-        /* 判斷雙向佇列是否為空 */
+        /* 判断双向队列是否为空 */
         let isEmpty = deque.isEmpty
-        print("雙向佇列是否為空 = \(isEmpty)")
+        print("双向队列是否为空 = \(isEmpty)")
     }
 }
