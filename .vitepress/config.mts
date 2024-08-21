@@ -11,6 +11,7 @@ export default defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
+      { text: "hello-algo", link: "/hello-algo/docs/" },
       { text: "test", link: "/" },
       { text: "Examples", link: "/markdown-examples" },
     ],
