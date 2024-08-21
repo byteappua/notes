@@ -6,7 +6,7 @@ DolphinDB支持流数据的发布、订阅、预处理、实时内存计算、�
 
 一个发布订阅流数据系统包含三个角色: Publisher（生产者），Broker和Subscriber（消费者）。在DolphinDB流数据框架中，Broker由DolphinDB的数据节点担任，Publisher和Subscriber由DolphinDB数据节点或第三方API程序担任。
 
-![image](images/haStream.png?raw=true)
+![image](./images/haStream.png?raw=true)
 
 如上图所示，DolphinDB流数据高可用功能采用了基于Raft协议的高可用多副本架构。相同流数据的副本存储在Raft组内不同的数据节点上，Raft协议用来维护多个副本的一致性。Raft组具有自动恢复的性质，当少数节点失效的时候不影响Raft组的正常工作，当大多数节点失效的时候，Raft组则会停止服务。Raft组能够容忍小于半数的节点宕机，例如包含三个节点的组，可以容忍一个节点出现故障；包含五个节点的组，可以容忍两个节点出现故障。正常情况下Raft组内只有一个Leader（领导节点）负责响应来自所有客户端的请求、为客户端提供服务，其他节点都是Follower（追随节点）。DolphinDB流数据的高可用包括Broker的高可用、生产者和消费者的高可用，并具有以下特性：
 

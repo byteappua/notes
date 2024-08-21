@@ -5,13 +5,13 @@ Indicative Optimized Portfolio Value(IOPV) 全称为基金份额参考净值，�
 目前交易所每隔 15 秒公开发布 IOPV 行情。本教程介绍如何使用 DolphinDB 实时计算 ETF 的 IOPV，亦即任何成分股的交易价格发生变化时，重新计算 EFT 的最新 IOPV。这将给量化策略更多多操作空间。
 生产环境中实时计算主要有3个要求：(1) 能够实现 IOPV 复杂计算；(2) 计算快、交易信号捕捉要灵敏；(3) 具备从行情输入、计算到结果输出完整的实时处理能力。
 
-> 本教程中将会学习到: <p>
-> **面板数据处理**pivot <p>
-> **行情回放**replayDS <p>
-> **增量计算**是什么？怎么做？<p>
-> **流式计算**横截面引擎 CrossSectionalEngine，响应式状态引擎 ReactiveStateEngine <p>
-> **函数**ffill, rowSum <p>
-> **使用消息中间件**zmq <p>
+> 本教程中将会学习到:
+> **面板数据处理**pivot
+> **行情回放**replayDS
+> **增量计算**是什么？怎么做？
+> **流式计算**横截面引擎 CrossSectionalEngine，响应式状态引擎 ReactiveStateEngine
+> **函数**ffill, rowSum
+> **使用消息中间件**zmq
 
 本教程包含内容：
 
@@ -125,9 +125,9 @@ basket = getBasketData(allSyms.SecurityID, 100)
 
 传统计算方法有几点不足：
 >
-> 1. 传统方法采用循环的方式遍历计算，导致性能不高。<p>
-> 2. 会存在不同股票相同时间戳的数据，需要代码判断读到最新时间戳才能触发汇总计算逻辑，导致代码复杂。<p>
-> 3. 需要把前一股票价值手工存储在一个变量里，并随时更新这个变量，导致代码复杂。<p>
+> 1. 传统方法采用循环的方式遍历计算，导致性能不高。
+> 2. 会存在不同股票相同时间戳的数据，需要代码判断读到最新时间戳才能触发汇总计算逻辑，导致代码复杂。
+> 3. 需要把前一股票价值手工存储在一个变量里，并随时更新这个变量，导致代码复杂。
 
 因此，基于逐笔成交的传统 IOPV 计算方法会有耗时长和代码复杂两个缺点。
 
@@ -165,21 +165,21 @@ timeSeriesValue 得到每个时间戳下的所有成分券价值，本次代码�
 
 **Benefits**
 
-> (1) Controlling for individual heterogeneity. <p>
-> (2) Panel data give more informative data, more variablility, less collinearity among the variables, more degrees of freedom and more effciency.<p>
-> (3) Panel data are better able to study the dymanics of adjustment. <p>
-> (4) Panel data are better able to identify and measure effects that are simply not detectable in pure cross-section or pure time-series data.<p>
-> (5) Panel data models allow us to construct and test more complicated behavioral models than purely cross-section or time-series data.<p>
-> (6) Micro panel data gathered on individuals, firms and households may be more accurately measured than similar variables measured at the macro level.<p>
+> (1) Controlling for individual heterogeneity.
+> (2) Panel data give more informative data, more variablility, less collinearity among the variables, more degrees of freedom and more effciency.
+> (3) Panel data are better able to study the dymanics of adjustment.
+> (4) Panel data are better able to identify and measure effects that are simply not detectable in pure cross-section or pure time-series data.
+> (5) Panel data models allow us to construct and test more complicated behavioral models than purely cross-section or time-series data.
+> (6) Micro panel data gathered on individuals, firms and households may be more accurately measured than similar variables measured at the macro level.
 > (7) Macro panel data on the other hand have a longer time series and unlike the problem of nonstandard distributions typical of units roots tests in time-series analysis.
 
 **Limitations**
 
-> (1) Design and data collection problems.<p>
-> (2) Distortions of measurement errors. <p>
-> (3) Selectivity problems. <p>
-> (4) Short time-series dimensions. <p>
-> (5) Cross-section dependence. <p>
+> (1) Design and data collection problems.
+> (2) Distortions of measurement errors.
+> (3) Selectivity problems.
+> (4) Short time-series dimensions.
+> (5) Cross-section dependence.
 
 ## 4. 单只 ETF 实时计算
 
@@ -216,9 +216,9 @@ subscribeTable(tableName="TradeStreamData", actionName="trade_subscribe", offset
 - 最后 subscribeTable 的时候执行 ```IOPV_engine``` 计算引擎，只读取成分券 ```portfolio.key()``` 的行情数据，这种数据过滤处理可以提高执行速度。
 
 **横截面计算逻辑**
-> (1) [横截面计算 createCrossSectionalEngine](https://www.dolphindb.cn/cn/help/200/FunctionsandCommands/FunctionReferences/c/createCrossSectionalEngine.html)，顾名思义就是一个时间戳（时间截面）上的计算，也可以表述为多只股票的数据在同一时间截面 (同一时间戳）上的计算。在这个例子中，就是一个时间截面（时间戳）上需要汇总（sum）所有的股票价值得到净值。<p>
-> (2) 在实时 IOPV 计算时，只要收到了一只成分券的最新价格，就计算一次 IOPV，所以设置了 ```triggeringPattern='perRow'```；代表只要收到一笔新的逐笔成交行情，就会触发一次 IOPV 计算。<p>
-> (3) ```metrics=[<last(tradedate)>, <sum(ffill(price) * portfolio[SecurityID]/1000)>]``` 是 IOPV 计算的业务逻辑。<p>
+> (1) [横截面计算 createCrossSectionalEngine](https://www.dolphindb.cn/cn/help/200/FunctionsandCommands/FunctionReferences/c/createCrossSectionalEngine.html)，顾名思义就是一个时间戳（时间截面）上的计算，也可以表述为多只股票的数据在同一时间截面 (同一时间戳）上的计算。在这个例子中，就是一个时间截面（时间戳）上需要汇总（sum）所有的股票价值得到净值。
+> (2) 在实时 IOPV 计算时，只要收到了一只成分券的最新价格，就计算一次 IOPV，所以设置了 ```triggeringPattern='perRow'```；代表只要收到一笔新的逐笔成交行情，就会触发一次 IOPV 计算。
+> (3) ```metrics=[<last(tradedate)>, <sum(ffill(price) * portfolio[SecurityID]/1000)>]``` 是 IOPV 计算的业务逻辑。
 
 ### 4.3 [下游系统消费]通过 ZMQ 消费计算结果
 
@@ -280,13 +280,13 @@ createReactiveStateEngine(name="IOPVResult", metrics=metricsResult, dummyTable=t
 ```
 
 **[响应式状态引擎](https://www.dolphindb.cn/cn/help/200/FunctionsandCommands/FunctionReferences/c/createReactiveStateEngine.html) 增量计算逻辑（5.1~5.3 增量计算逻辑介绍）**
-> ![](./images/streaming_IOPV/incrumental_computing.png) <p>
-> (1) 我们先简单创建一张估值表，包含 ```"securityID","price","vol","value"``` 四个字段，其中 ```value=price*vol```。<p>
-> (2) 计算 IOPV*1000，只需要把10只票的价值相加即可。<p>
-> (3) ```securityID=1``` 这只票的价格发生了变化，变成了 ```15.41``` <p>
-> (4) 只需要计算变化量 ```deltas= (new price – last price) * vol```<p>
-> (5) 增量计算净值 ```New IOPV∗1000= Last IOPV * 1000 + deltas```，这种算法的时间复杂度最低，不再需要 ```rowSum``` 计算。非增量算法如图所示计算量较大。<p>
-> (6) 在示例中有段 ```<filter=<deltas(Price) != 0>``` 过滤器代码，如果价格没有变化，则净值不会变化，不需要计算。相当于实现了 ```ffill```。 <p>
+> ![](./images/streaming_IOPV/incrumental_computing.png)
+> (1) 我们先简单创建一张估值表，包含 ```"securityID","price","vol","value"``` 四个字段，其中 ```value=price*vol```。
+> (2) 计算 IOPV*1000，只需要把10只票的价值相加即可。
+> (3) ```securityID=1``` 这只票的价格发生了变化，变成了 ```15.41```
+> (4) 只需要计算变化量 ```deltas= (new price – last price) * vol```
+> (5) 增量计算净值 ```New IOPV∗1000= Last IOPV * 1000 + deltas```，这种算法的时间复杂度最低，不再需要 ```rowSum``` 计算。非增量算法如图所示计算量较大。
+> (6) 在示例中有段 ```<filter=<deltas(Price) != 0>``` 过滤器代码，如果价格没有变化，则净值不会变化，不需要计算。相当于实现了 ```ffill```。
 > notes：采用响应式式状态引擎 ReactiveStateEngine 的主要作用是需要记录计算过程中的状态。如图公式 deltas= (new price – last price)* vol, 该公式中的 price 和 vol 只能是 securitID=1 的价格和持仓量，也称为需要记录 “状态”。
 
 ## 6. 回顾

@@ -4,32 +4,31 @@ DolphinDB提供了从基于Java的GUI, VS Code Extension, Web界面，到命令�
 
 **目录**
 
-  - [1. DolphinDB GUI](#1-dolphindb-gui)
-    - [1.1 核心概念](#11-核心概念)
-    - [1.2 安装和启动](#12-安装和启动)
-    - [1.3 程序执行及结果查看](#13-程序执行及结果查看)
-    - [1.4 中文出现乱码](#14-中文出现乱码)
-    - [1.5 精度配置](#15-精度配置)
-    - [1.6 `java.lang.OutOfMemoryError: Java heap space`](#16-javalangoutofmemoryerror-java-heap-space)
-  - [2. VS Code Extension](#2-vs-code-extension)
-    - [2.1 下载安装插件](#21-下载安装插件)
-    - [2.2 连接DolphinDB Server](#22-连接dolphindb-server)
-    - [2.3 编辑和运行DolphinDB脚本](#23-编辑和运行dolphindb脚本)
-    - [2.4 观察变量](#24-观察变量)
-  - [3. DolphinDB Notebook](#3-dolphindb-notebook)
-    - [3.1 启动](#31-启动)
-    - [3.2 登录](#32-登录)
-    - [3.3 集群管理以及系统监控](#33-集群管理以及系统监控)
-    - [3.4 程序执行以及结果查看](#34-程序执行以及结果查看)
-  - [4. DolphinDB Jupyter Notebook 扩展插件 （已停止维护）](#4-dolphindb-jupyter-notebook-扩展插件-已停止维护)
-    - [4.1 下载安装插件](#41-下载安装插件)
-    - [4.2 配置Jupyter Notebook工作路径](#42-配置jupyter-notebook工作路径)
-    - [4.3 连接DolphinDB Server](#43-连接dolphindb-server)
-    - [4.4 编辑和运行DolphinDB脚本](#44-编辑和运行dolphindb脚本)
-  - [5. DolphinDB终端(DolphinDB Terminal)](#5-dolphindb终端dolphindb-terminal)
-  - [6. 命令行远程脚本执行](#6-命令行远程脚本执行)
-  - [7. 命令行本地脚本执行](#7-命令行本地脚本执行)
-
+- [1. DolphinDB GUI](#1-dolphindb-gui)
+  - [1.1 核心概念](#11-核心概念)
+  - [1.2 安装和启动](#12-安装和启动)
+  - [1.3 程序执行及结果查看](#13-程序执行及结果查看)
+  - [1.4 中文出现乱码](#14-中文出现乱码)
+  - [1.5 精度配置](#15-精度配置)
+  - [1.6 `java.lang.OutOfMemoryError: Java heap space`](#16-javalangoutofmemoryerror-java-heap-space)
+- [2. VS Code Extension](#2-vs-code-extension)
+  - [2.1 下载安装插件](#21-下载安装插件)
+  - [2.2 连接DolphinDB Server](#22-连接dolphindb-server)
+  - [2.3 编辑和运行DolphinDB脚本](#23-编辑和运行dolphindb脚本)
+  - [2.4 观察变量](#24-观察变量)
+- [3. DolphinDB Notebook](#3-dolphindb-notebook)
+  - [3.1 启动](#31-启动)
+  - [3.2 登录](#32-登录)
+  - [3.3 集群管理以及系统监控](#33-集群管理以及系统监控)
+  - [3.4 程序执行以及结果查看](#34-程序执行以及结果查看)
+- [4. DolphinDB Jupyter Notebook 扩展插件 （已停止维护）](#4-dolphindb-jupyter-notebook-扩展插件-已停止维护)
+  - [4.1 下载安装插件](#41-下载安装插件)
+  - [4.2 配置Jupyter Notebook工作路径](#42-配置jupyter-notebook工作路径)
+  - [4.3 连接DolphinDB Server](#43-连接dolphindb-server)
+  - [4.4 编辑和运行DolphinDB脚本](#44-编辑和运行dolphindb脚本)
+- [5. DolphinDB终端(DolphinDB Terminal)](#5-dolphindb终端dolphindb-terminal)
+- [6. 命令行远程脚本执行](#6-命令行远程脚本执行)
+- [7. 命令行本地脚本执行](#7-命令行本地脚本执行)
 
 ## 1. DolphinDB GUI
 
@@ -45,9 +44,9 @@ GUI菜单中的server是指DolphinDB数据库服务器。完成添加后，会�
 
 登录数据库服务器主要有三种方法：
 
-* 在添加server的时候指定用户名和密码
-* 通过工具条中的login按钮
-* 通过脚本中使用login函数
+- 在添加server的时候指定用户名和密码
+- 通过工具条中的login按钮
+- 通过脚本中使用login函数
 
 #### Workspace
 
@@ -65,8 +64,8 @@ GUI菜单中的server是指DolphinDB数据库服务器。完成添加后，会�
 
 在远端服务器上执行一个脚本文件或者调用了一个module都会在该服务器上查找对应的脚本文件。当GUI和DolphinDB server不在一个机器上时，有可能需要把本地最新编辑的脚本文件同步到远程服务器上。为此，DolphinDB提供了 `Synchronize to server`, 即文件同步功能。在项目浏览器中右键点击需要同步的目录或者文件，并选择 `Synchronize to server`，将其传送到服务器的对应目录。通过以下方式指定“Remote Directory”后才可使用文件同步功能：
 
-* 添加远程服务器时通过“Remote Directory”指定相应目录；需要注意，远端服务器的用户必须拥有创建“remote Directory”的权限。
-* 若上步中未指定，则可通过 Server->Edit Server菜单来指定。
+- 添加远程服务器时通过“Remote Directory”指定相应目录；需要注意，远端服务器的用户必须拥有创建“remote Directory”的权限。
+- 若上步中未指定，则可通过 Server->Edit Server菜单来指定。
 
 举个例子，如果将“Remote Directory”设置为'/home/usr1'，并且需要同步的本地文件名是"C:/users/usr1/Project/scripts/test.dos"，那么系统会在远端自动创建目录和相应文件'/home/usr1/Project/scripts/test.dos'。
 
@@ -84,9 +83,9 @@ cd /your/gui/folder
 
 如果DolphinDB GUI无法正常启动，可能有以下三个原因：
 
-* 没有安装Java。Java下载地址：https://www.oracle.com/technetwork/java/javase/downloads/index.html。
-* Java不在系统路径中。在Windows环境下，需要查看是否在 `Path`中；在Linux环境中，需要查看是否在 `PATH`中。
-* 安装的Java版本不符合要求。DolphinDB GUI使用环境需要64 位Java 8及以上版本。32位的Java即使版本正确，由于不支持Server模式，只有Client模式，将无法启动GUI。我们可以在命令行中使用 `java -version`命令查看Java的版本信息。
+- 没有安装Java。Java下载地址：<https://www.oracle.com/technetwork/java/javase/downloads/index.html。>
+- Java不在系统路径中。在Windows环境下，需要查看是否在 `Path`中；在Linux环境中，需要查看是否在 `PATH`中。
+- 安装的Java版本不符合要求。DolphinDB GUI使用环境需要64 位Java 8及以上版本。32位的Java即使版本正确，由于不支持Server模式，只有Client模式，将无法启动GUI。我们可以在命令行中使用 `java -version`命令查看Java的版本信息。
 
 符合要求的Java版本如下：
 
@@ -111,7 +110,7 @@ Java HotSpot(TM) Client VM
 GUI编程界面提供代码查询、修改、高亮显示、函数提示等功能。用户可以选择部分代码执行，也可以点击文件执行代码。执行完毕，可以立刻看到执行结果，以及查看所有的局部变量和共享变量的值。
 关于GUI更详细具体的功能介绍请参阅[GUI帮助手册](https://www.dolphindb.cn/cn/gui/index.html)。
 
-![image](images/GUI/code_editing.JPG?raw=true)
+![image](./images/GUI/code_editing.JPG?raw=true)
 
 ### 1.4 中文出现乱码
 
@@ -135,10 +134,10 @@ VS Code 是微软开发的一款轻便又有极强扩展性的代码编辑器。
 
 DolphinDB VS Code 插件提供如下功能：
 
-* 自动识别dos和txt后缀的文件
-* 连接DolphinDB server
-* 编辑和执行DolphinDB脚本
-* 观察变量
+- 自动识别dos和txt后缀的文件
+- 连接DolphinDB server
+- 编辑和执行DolphinDB脚本
+- 观察变量
 
 VS Code 插件与GUI功能非常相似。优点是VS Code使用者无需安装其它软件，直接下载插件即可使用，学习成本低，上手快。缺点是不支持GUI的画图功能以及DFS数据库浏览器功能。
 
@@ -146,13 +145,13 @@ VS Code 插件与GUI功能非常相似。优点是VS Code使用者无需安装�
 
 点击VS Code左侧导航栏的Extensions图标，或者通过ctrl+shift+X快捷键打开插件安装窗口，在搜索框中输入DolphinDB，即可搜索到DolphinDB插件。点击Install进行安装。安装完成后，以txt和dos为后缀的文件都可以被DolphinDB插件识别。
 
-![image](images/vscode/1.png?raw=true)
+![image](./images/vscode/1.png?raw=true)
 
 ### 2.2 连接DolphinDB Server
 
 在编辑并运行脚本之前，需要先新增并选择一个数据节点作为运行脚本的服务器。新建并打开一个txt或dos文件，通过右键菜单可以增加、选择和移除DolphinDB Server。
 
-![image](images/vscode/server.png?raw=true)
+![image](./images/vscode/server.png?raw=true)
 
 #### 新增服务器
 
@@ -170,13 +169,13 @@ VS Code 插件与GUI功能非常相似。优点是VS Code使用者无需安装�
 
 VS Code打开txt或dos文件时，DolphinDB插件会自动加载右键菜单并且识别脚本，支持语法高亮、智能语法提示。通过 ctrl+E 快捷键或者下拉菜单"executeCode"来执行选中代码，若没有选中代码，则会执行当前光标所在的行。
 
-  ![image](images/vscode/4.gif?raw=true)
+  ![image](./images/vscode/4.gif?raw=true)
 
 ### 2.4 观察变量
 
 DolphinDB 插件在左边导航增加了变量面板，面板显示当前服务器上的所有本地和共享变量，每次执行代码时面板上变量会更新。点击变量右边的"show"链接可以在输出面板查看变量的值
 
-  ![image](images/vscode/5.gif?raw=true)
+  ![image](./images/vscode/5.gif?raw=true)
 
 ## 3. DolphinDB Notebook
 
@@ -184,13 +183,13 @@ DolphinDB Notebook是DolphinDB服务器安装包自带的，基于网页的图�
 
 ### 3.1 启动
 
-DolphinDB Notebook通过是通过HTML+Javascript编写的Web前端。在single node模式下，启动DolphinDB服务器，只要在浏览器输入网址(默认为 http://localhost:8848)即可访问。在集群模式下只要在浏览器输入controller节点的网址加端口号即可访问。
+DolphinDB Notebook通过是通过HTML+Javascript编写的Web前端。在single node模式下，启动DolphinDB服务器，只要在浏览器输入网址(默认为 <http://localhost:8848)即可访问。在集群模式下只要在浏览器输入controller节点的网址加端口号即可访问。>
 
 若无法访问Notebook，需要查看以下几个方面：
 
-* 确保DolphinDB server的license没有过期
-* 确保该节点的端口没有被防火墙屏蔽
-* 确保web目录在server目录下面
+- 确保DolphinDB server的license没有过期
+- 确保该节点的端口没有被防火墙屏蔽
+- 确保web目录在server目录下面
 
 在Linux环境下，如果端口没有开放，可以尝试如下命令：
 
@@ -219,20 +218,20 @@ DolphinDB Notebook 最主要的功能是用于集群节点管理、系统监控�
 
 集群模式下，启动节点过程中，如果按刷新键没有看到节点状态更新状态。 可以注意以下几个方面：
 
-* 有的时候由于Cache的原因，所以需要刷新网页 (SHIFT键+刷新)
-* 如果长时间状态没有更新，则需要查看系统log(点击ServerLog列对应节点的View超链接)得出具体未启动原因：
-  * License过期
-  * 节点端口被其它进程占用
-  * 正在恢复元数据
-  * 其它原因
+- 有的时候由于Cache的原因，所以需要刷新网页 (SHIFT键+刷新)
+- 如果长时间状态没有更新，则需要查看系统log(点击ServerLog列对应节点的View超链接)得出具体未启动原因：
+  - License过期
+  - 节点端口被其它进程占用
+  - 正在恢复元数据
+  - 其它原因
 
-![image](images/Notebook/manage_interface.JPG?raw=true)
+![image](./images/Notebook/manage_interface.JPG?raw=true)
 
 ### 3.4 程序执行以及结果查看
 
 在集群模式下，用户需要点击节点名字的链接来打开notebook界面。此外，需要浏览DFS数据库以及分区表时，single node模式按钮在屏幕右上角，cluster模式则在屏幕左上角。
 
-![image](images/Notebook/code_editing.JPG?raw=true)
+![image](./images/Notebook/code_editing.JPG?raw=true)
 
 ## 4. DolphinDB Jupyter Notebook 扩展插件 （已停止维护）
 
@@ -240,10 +239,10 @@ Jupyter Notebook 是基于网页的用于交互计算的应用程序，可被应
 
 **注意**：DolphinDB 已停止对该插件的研发和维护。有关最新版本 DolphinDB server 的使用及其他应用教程，请参考：
 
-* [DolphinDB VSCode 插件说明](https://github.com/dolphindb/vscode-extension/blob/master/README.zh.md "DolphinDB VSCode 插件说明")
-* [DolphinDB GUI使用手册](https://www.dolphindb.cn/cn/gui/index.html "DolphinDB GUI使用手册")
-* [DolphinDB 用户手册](https://www.dolphindb.cn/cn/help/200/index.html "DolphinDB 用户手册")
-* [DolphinDB 教程](https://gitee.com/dolphindb/Tutorials_CN/tree/master "DolphinDB 教程")
+- [DolphinDB VSCode 插件说明](https://github.com/dolphindb/vscode-extension/blob/master/README.zh.md "DolphinDB VSCode 插件说明")
+- [DolphinDB GUI使用手册](https://www.dolphindb.cn/cn/gui/index.html "DolphinDB GUI使用手册")
+- [DolphinDB 用户手册](https://www.dolphindb.cn/cn/help/200/index.html "DolphinDB 用户手册")
+- [DolphinDB 教程](https://gitee.com/dolphindb/Tutorials_CN/tree/master "DolphinDB 教程")
 
 DolphinDB Jupyter Notebook 扩展插件提供以下功能：
 

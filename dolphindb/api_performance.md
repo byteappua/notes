@@ -20,10 +20,10 @@ DolphinDB除了提供自己的脚本语言外，还提供了C++, Java, C#, Pytho
 
 本文将测试API接口(C++, Java, C#, Python, R)与DolphinDB交互的性能，具体包括以下场景：
 
-* 单用户上传数据到内存表
-* 多用户并发上传数据到分布式（DFS）数据库
-* 多用户并发从DolphinDB下载数据到客户端
-* 多用户并发发送计算任务（计算某天某个股票的分钟级k线）到DolphinDB，并返回结果
+- 单用户上传数据到内存表
+- 多用户并发上传数据到分布式（DFS）数据库
+- 多用户并发从DolphinDB下载数据到客户端
+- 多用户并发发送计算任务（计算某天某个股票的分钟级k线）到DolphinDB，并返回结果
 
 ## 2. 测试环境
 
@@ -68,31 +68,31 @@ DolphinDB集群配置如下：
 
 **表1. C++ API单用户上传数据到内存表测试结果**
 
-![image](images/api_performance/single_user_cplusplus.jpg)
+![image](./images/api_performance/single_user_cplusplus.jpg)
 
 **表2. Java API单用户上传数据到内存表测试结果**
 
-![image](images/api_performance/single_user_java.jpg)
+![image](./images/api_performance/single_user_java.jpg)
 
 **表3. C# API单用户上传数据到内存表测试结果**
 
-![image](images/api_performance/single_user_csharp.jpg)
+![image](./images/api_performance/single_user_csharp.jpg)
 
 **表4. Python API单用户上传数据到内存表测试结果**
 
-![image](images/api_performance/single_user_python.jpg)
+![image](./images/api_performance/single_user_python.jpg)
 
 **表5. R API单用户上传数据到内存表测试结果**
 
-![image](images/api_performance/single_user_r.jpg)
+![image](./images/api_performance/single_user_r.jpg)
 
 **表6. 各API单用户上传数据到内存表的写入速度对比（单位：兆/秒）**
 
-![image](images/api_performance/single_user_compare.jpg)
+![image](./images/api_performance/single_user_compare.jpg)
 
 **图1. API上传数据到内存表性能比较**
 
-![image](images/api_performance/single_user_compare_chart.jpg)
+![image](./images/api_performance/single_user_compare_chart.jpg)
 
 从单用户写入内存表的测试结果看，随着批次大小的增加，性能提升明显，这是因为在总的数据量相同的情况下，一次上传的数据行数越多，上传次数越少，网络通信次数越少。
 
@@ -108,31 +108,31 @@ DolphinDB集群配置如下：
 
 **表7. C++ API 多用户并发上传数据到DFS表测试结果**
 
-![image](images/api_performance/multi_user_cplusplus.jpg)
+![image](./images/api_performance/multi_user_cplusplus.jpg)
 
 **表8. Java API 多用户并发上传数据到DFS表测试结果**
 
-![image](images/api_performance/multi_user_java.jpg)
+![image](./images/api_performance/multi_user_java.jpg)
 
 **表9. C# API 多用户并发上传数据到DFS表测试结果**
 
-![image](images/api_performance/multi_user_csharp.jpg)
+![image](./images/api_performance/multi_user_csharp.jpg)
 
 **表10.Python API 多用户并发上传数据到DFS表测试结果**
 
-![image](images/api_performance/multi_user_python.jpg)
+![image](./images/api_performance/multi_user_python.jpg)
 
 **表11. R API 多用户并发上传数据到DFS表测试结果**
 
-![image](images/api_performance/multi_user_r.jpg)
+![image](./images/api_performance/multi_user_r.jpg)
 
 **表12. 各种API 数据上传到DFS表测试结果比较（单位：兆/秒）**
 
-![image](images/api_performance/multi_user_compare.jpg)
+![image](./images/api_performance/multi_user_compare.jpg)
 
 **图2. API上传数据到DFS表性能比较**
 
-![image](images/api_performance/multi_user_compare_chart.jpg)
+![image](./images/api_performance/multi_user_compare_chart.jpg)
 
 测试结果显示，在用户数小于16的情况下，C++、Java性能优势明显，Python 和C#性能稍差，吞吐量都基本上呈线性增长。当用户数超过16时，网络传输达到极限，成为性能瓶颈，吞吐量基本维持在网络的极限。网络为万兆以太网，极限为1G，但是由于传输的数据有压缩，所以系统吞吐量最大可达1.8G/秒。
 
@@ -142,38 +142,38 @@ DolphinDB集群配置如下：
 
 我们测试了以下两种场景下客户端并发下载数据的性能：
 
-* 5年数据量：从5年的数据中随机选择date和symbol进行下载，涉及的数据量约12T。由于数据量大大超过系统内存，所以每次下载都需要从磁盘加载数据；
-* 1周数据量：从最近一周的数据中随机选择symbol进行下载，涉及的数据量约60G。给DolphinDB分配的内存足以容纳60G数据，所有的数据在缓存中，所以每次下载不需要从磁盘加载数据。
+- 5年数据量：从5年的数据中随机选择date和symbol进行下载，涉及的数据量约12T。由于数据量大大超过系统内存，所以每次下载都需要从磁盘加载数据；
+- 1周数据量：从最近一周的数据中随机选择symbol进行下载，涉及的数据量约60G。给DolphinDB分配的内存足以容纳60G数据，所有的数据在缓存中，所以每次下载不需要从磁盘加载数据。
 
 各API性能测试结果如下：
 
 **表13. C++ API 数据下载数据测试结果**
 
-![image](images/api_performance/multi_user_download_cplusplus.jpg)
+![image](./images/api_performance/multi_user_download_cplusplus.jpg)
 
 **表14. Java API 数据下载数据测试结果**
 
-![image](images/api_performance/multi_user_download_java.jpg)
+![image](./images/api_performance/multi_user_download_java.jpg)
 
 **表15. C# API 数据下载数据测试结果**
 
-![image](images/api_performance/multi_user_download_csharp.jpg)
+![image](./images/api_performance/multi_user_download_csharp.jpg)
 
 **表16. Python API 数据下载数据测试结果**
 
-![image](images/api_performance/multi_user_download_python.jpg)
+![image](./images/api_performance/multi_user_download_python.jpg)
 
 **表17. R API 数据下载数据测试结果**
 
-![image](images/api_performance/multi_user_download_r.jpg)
+![image](./images/api_performance/multi_user_download_r.jpg)
 
 **表18. 各API 5年数据下载吞吐量对比（单位：兆/秒）**
 
-![image](images/api_performance/multi_user_download_compare.jpg)
+![image](./images/api_performance/multi_user_download_compare.jpg)
 
 **图3. API 5年数据下载吞吐量比较**
 
-![image](images/api_performance/multi_user_download_compare_chart.jpg)
+![image](./images/api_performance/multi_user_download_compare_chart.jpg)
 
 从测试结果上看，在用户数小于64的情况下，吞吐量随着用户数的增加基本上呈线性增长，各个API性能差异不是很大，最大吞吐量在350M左右，由于数据集为12T，DolphinDB 缓存不了所有的数据，必须每次从磁盘加载，磁盘成为系统瓶颈。
 
@@ -183,11 +183,11 @@ DolphinDB集群配置如下：
 
 **表19. 各种API 1周数据下载吞吐量比较（单位：兆/秒）**
 
-![image](images/api_performance/multi_user_download_compare_week.jpg)
+![image](./images/api_performance/multi_user_download_compare_week.jpg)
 
 **图4. 各种API 1周数据并发下载吞吐量比较**
 
-![image](images/api_performance/multi_user_download_compare_week_chart.jpg)
+![image](./images/api_performance/multi_user_download_compare_week_chart.jpg)
 
 从测试结果上看，各API的吞吐量随着并发用户数的增加基本成线性增加，给DolphinDB分配的内存能够全部容纳一周的数据量，不需要每次从磁盘加载，因此吞吐量最大达到1.4G左右，达到了网络的极限（网络极限1G，由于数据有压缩，实际业务数据量为1.4G）。
 
@@ -197,46 +197,46 @@ DolphinDB集群配置如下：
 
 我们测试在5年数据量和1周数据量两种场景下，不同并发用户数（1~128）的计算性能。
 
-* 5年数据量共12T，内存不能全部缓存，所以几乎每次计算都需要从磁盘加载数据，属于IO密集型应用场景，预期磁盘会成为性能瓶颈。
-* 1周数据量约60G，DolphinDB数据节点能全部缓存，因此是计算密集型应用场景，多用户并发时，预期CPU会成为性能瓶颈。
+- 5年数据量共12T，内存不能全部缓存，所以几乎每次计算都需要从磁盘加载数据，属于IO密集型应用场景，预期磁盘会成为性能瓶颈。
+- 1周数据量约60G，DolphinDB数据节点能全部缓存，因此是计算密集型应用场景，多用户并发时，预期CPU会成为性能瓶颈。
 
 各API的测试结果如下：
 
 **表20. C++ API计算分钟k线性能结果**
 
-![image](images/api_performance/calculation_cplusplus.jpg)
+![image](./images/api_performance/calculation_cplusplus.jpg)
 
 **表21. Java API 计算分钟k线性能结果**
 
-![image](images/api_performance/calculation_java.jpg)
+![image](./images/api_performance/calculation_java.jpg)
 
 **表22. C# API 计算分钟k线性能结果**
 
-![image](images/api_performance/calculation_csharp.jpg)
+![image](./images/api_performance/calculation_csharp.jpg)
 
 **表23. Python API计算分钟k线性能结果**
 
-![image](images/api_performance/calculation_python.jpg)
+![image](./images/api_performance/calculation_python.jpg)
 
 **表24. R API计算分钟k线性能结果**
 
-![image](images/api_performance/calculation_r.jpg)
+![image](./images/api_performance/calculation_r.jpg)
 
 **表25. 各种API 5年数据计算吞吐量比较（单位：兆/秒）**
 
-![image](images/api_performance/calculation_compare.jpg)
+![image](./images/api_performance/calculation_compare.jpg)
 
 **图5. 各种API 5年数据并发计算吞吐量比较**
 
-![image](images/api_performance/calculation_compare_chart.jpg)
+![image](./images/api_performance/calculation_compare_chart.jpg)
 
 **表22. 各种API 1周数据计算吞吐量比较（单位：兆/秒）**
 
-![image](images/api_performance/calculation_compare_week.jpg)
+![image](./images/api_performance/calculation_compare_week.jpg)
 
 **图5. 各种API 1周数据并发计算吞吐量比较**
 
-![image](images/api_performance/calculation_compare_week_chart.jpg)
+![image](./images/api_performance/calculation_compare_week_chart.jpg)
 
 从测试结果中看出，在用户数小于64时，吞吐量稳定增长，各个API性能相差不大，在64个并发用户的时候，性能达到最大，计算数据的吞吐量接近7G/秒；当用户达到128G，由于系统任务太多，大大超过物理机器线程数（集群所在物理机器共48线程），导致线程切换频繁，集群内部大量的任务调度分发时间增加，吞吐量反而降低。
 
