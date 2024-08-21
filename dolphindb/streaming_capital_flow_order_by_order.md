@@ -2,7 +2,7 @@
 
 DolphinDB内置的流数据框架支持流数据的发布，订阅，预处理，实时内存计算，复杂指标的滚动窗口计算、滑动窗口计算、累计窗口计算等，是一个运行高效、使用便捷的流数据处理框架。
 
-![01.流数据处理框架](images/streaming_capital_flow_order_by_order/01.流数据处理框架.png)
+![01.流数据处理框架](./images/streaming_capital_flow_order_by_order/01.流数据处理框架.png)
 
 本教程主要提供一种基于DolphinDB流数据处理框架，实时计算分钟资金流的低延时解决方案。
 
@@ -68,7 +68,7 @@ DolphinDB内置的流数据框架支持流数据的发布，订阅，预处理�
 
 本教程通过自定义聚合函数的方法，实时计算资金流，在DolphinDB中的处理流程如下图所示：
 
-![02.业务处理流程图](images/streaming_capital_flow_order_by_order/02.方案1处理流程图.png)
+![02.业务处理流程图](./images/streaming_capital_flow_order_by_order/02.方案1处理流程图.png)
 
 处理流程图说明：
 
@@ -161,20 +161,20 @@ login("admin", "123456")
 dbName = "dfs://trade"
 tbName = "trade"
 if(existsDatabase(dbName)){
-	dropDatabase(dbName)
+ dropDatabase(dbName)
 }
 db1 = database(, VALUE, 2020.01.01..2022.01.01)
 db2 = database(, HASH, [SYMBOL, 5])
 db = database(dbName, COMPO, [db1, db2])
 schemaTable = table(
-	array(SYMBOL, 0) as SecurityID,
-	array(SYMBOL, 0) as Market,
-	array(TIMESTAMP, 0) as TradeTime,
-	array(DOUBLE, 0) as TradePrice,
-	array(INT, 0) as TradeQty,
-	array(DOUBLE, 0) as TradeAmount,
-	array(INT, 0) as BuyNum,
-	array(INT, 0) as SellNum
+ array(SYMBOL, 0) as SecurityID,
+ array(SYMBOL, 0) as Market,
+ array(TIMESTAMP, 0) as TradeTime,
+ array(DOUBLE, 0) as TradePrice,
+ array(INT, 0) as TradeQty,
+ array(DOUBLE, 0) as TradeAmount,
+ array(INT, 0) as BuyNum,
+ array(INT, 0) as SellNum
 )
 db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`TradeTime`SecurityID, compressMethods={TradeTime:"delta"})
 ```
@@ -220,20 +220,20 @@ login("admin", "123456")
 dbName = "dfs://trade_stream"
 tbName = "trade"
 if(existsDatabase(dbName)){
-	dropDatabase(dbName)
+ dropDatabase(dbName)
 }
 db1 = database(, VALUE, 2020.01.01..2022.01.01)
 db2 = database(, HASH, [SYMBOL, 5])
 db = database(dbName, COMPO, [db1, db2])
 schemaTable = table(
-	array(SYMBOL, 0) as SecurityID,
-	array(SYMBOL, 0) as Market,
-	array(TIMESTAMP, 0) as TradeTime,
-	array(DOUBLE, 0) as TradePrice,
-	array(INT, 0) as TradeQty,
-	array(DOUBLE, 0) as TradeAmount,
-	array(INT, 0) as BuyNum,
-	array(INT, 0) as SellNum
+ array(SYMBOL, 0) as SecurityID,
+ array(SYMBOL, 0) as Market,
+ array(TIMESTAMP, 0) as TradeTime,
+ array(DOUBLE, 0) as TradePrice,
+ array(INT, 0) as TradeQty,
+ array(DOUBLE, 0) as TradeAmount,
+ array(INT, 0) as BuyNum,
+ array(INT, 0) as SellNum
 )
 db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`TradeTime`SecurityID, compressMethods={TradeTime:"delta"})
 ```
@@ -243,17 +243,17 @@ db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=
 ```
 // clean up environment
 def cleanEnvironment(parallel){
-	for(i in 1..parallel){
-		try{ unsubscribeTable(tableName=`tradeOriginalStream, actionName="tradeProcess"+string(i)) } catch(ex){ print(ex) }
-		try{ unsubscribeTable(tableName=`tradeProcessStream, actionName="tradeTSAggr"+string(i)) } catch(ex){ print(ex) }
-		try{ dropStreamEngine("tradeProcess"+string(i)) } catch(ex){ print(ex) }
-		try{ dropStreamEngine("tradeTSAggr"+string(i)) } catch(ex){ print(ex) }
-	}
-	try{ unsubscribeTable(tableName=`tradeOriginalStream, actionName="tradeToDatabase") } catch(ex){ print(ex) }
-	try{ dropStreamTable(`tradeOriginalStream) } catch(ex){ print(ex) }
-	try{ dropStreamTable(`tradeProcessStream) } catch(ex){ print(ex) }
-	try{ dropStreamTable(`capitalFlowStream) } catch(ex){ print(ex) }
-	undef all
+ for(i in 1..parallel){
+  try{ unsubscribeTable(tableName=`tradeOriginalStream, actionName="tradeProcess"+string(i)) } catch(ex){ print(ex) }
+  try{ unsubscribeTable(tableName=`tradeProcessStream, actionName="tradeTSAggr"+string(i)) } catch(ex){ print(ex) }
+  try{ dropStreamEngine("tradeProcess"+string(i)) } catch(ex){ print(ex) }
+  try{ dropStreamEngine("tradeTSAggr"+string(i)) } catch(ex){ print(ex) }
+ }
+ try{ unsubscribeTable(tableName=`tradeOriginalStream, actionName="tradeToDatabase") } catch(ex){ print(ex) }
+ try{ dropStreamTable(`tradeOriginalStream) } catch(ex){ print(ex) }
+ try{ dropStreamTable(`tradeProcessStream) } catch(ex){ print(ex) }
+ try{ dropStreamTable(`capitalFlowStream) } catch(ex){ print(ex) }
+ undef all
 }
 //calculation parallel, developers need to modify according to the development environment
 parallel = 3
@@ -294,27 +294,27 @@ setStreamTableFilterColumn(capitalFlowStream, `SecurityID)
 ```
 //real time calculation of minute index
 defg calCapitalFlow(Num, BSFlag, TradeQty, TradeAmount){
-	// You can define the smallBigBoundary by yourself
-	smallBigBoundary = 50000
-	tempTable1 = table(Num as `Num, BSFlag as `BSFlag, TradeQty as `TradeQty, TradeAmount as `TradeAmount)
-	tempTable2 = select sum(TradeQty) as TradeQty, sum(TradeAmount) as TradeAmount from tempTable1 group by Num, BSFlag
-	BuySmallAmount = exec sum(TradeAmount) from  tempTable2 where TradeQty<=smallBigBoundary && BSFlag==`B
-	BuyBigAmount = exec sum(TradeAmount) from tempTable2 where TradeQty>smallBigBoundary && BSFlag==`B
-	SellSmallAmount = exec sum(TradeAmount) from  tempTable2 where TradeQty<=smallBigBoundary && BSFlag==`S
-	SellBigAmount = exec sum(TradeAmount) from tempTable2 where TradeQty>smallBigBoundary && BSFlag==`S
-	return nullFill([BuySmallAmount, BuyBigAmount, SellSmallAmount, SellBigAmount], 0)
+ // You can define the smallBigBoundary by yourself
+ smallBigBoundary = 50000
+ tempTable1 = table(Num as `Num, BSFlag as `BSFlag, TradeQty as `TradeQty, TradeAmount as `TradeAmount)
+ tempTable2 = select sum(TradeQty) as TradeQty, sum(TradeAmount) as TradeAmount from tempTable1 group by Num, BSFlag
+ BuySmallAmount = exec sum(TradeAmount) from  tempTable2 where TradeQty<=smallBigBoundary && BSFlag==`B
+ BuyBigAmount = exec sum(TradeAmount) from tempTable2 where TradeQty>smallBigBoundary && BSFlag==`B
+ SellSmallAmount = exec sum(TradeAmount) from  tempTable2 where TradeQty<=smallBigBoundary && BSFlag==`S
+ SellBigAmount = exec sum(TradeAmount) from tempTable2 where TradeQty>smallBigBoundary && BSFlag==`S
+ return nullFill([BuySmallAmount, BuyBigAmount, SellSmallAmount, SellBigAmount], 0)
 }
 
 //real time calculation of capitalFlow
 //calculation parallel, developers need to modify according to the development environment
 parallel = 3
 for(i in 1..parallel){
-	//create ReactiveStateEngine: tradeProcess
-	createReactiveStateEngine(name="tradeProcess"+string(i), metrics=[<TradeTime>, <iif(BuyNum>SellNum, BuyNum, SellNum)>, <TradeQty>, <TradeAmount>, <iif(BuyNum>SellNum, "B", "S")>], dummyTable=tradeOriginalStream, outputTable=tradeProcessStream, keyColumn="SecurityID")
-	subscribeTable(tableName="tradeOriginalStream", actionName="tradeProcess"+string(i), offset=-1, handler=getStreamEngine("tradeProcess"+string(i)), msgAsTable=true, hash=i-1, filter = (parallel, i-1), reconnect=true)
-	//create DailyTimeSeriesEngine: tradeTSAggr
-	createDailyTimeSeriesEngine(name="tradeTSAggr"+string(i), windowSize=60000, step=60000, metrics=[<calCapitalFlow(Num, BSFlag, TradeQty, TradeAmount) as `BuySmallAmount`BuyBigAmount`SellSmallAmount`SellBigAmount>], dummyTable=tradeProcessStream, outputTable=capitalFlowStream, timeColumn="TradeTime", useSystemTime=false, keyColumn=`SecurityID, useWindowStartTime=true, forceTriggerTime=60000)
-	subscribeTable(tableName="tradeProcessStream", actionName="tradeTSAggr"+string(i), offset=-1, handler=getStreamEngine("tradeTSAggr"+string(i)), msgAsTable=true, batchSize=2000, throttle=1, hash=parallel+i-1, filter = (parallel, i-1), reconnect=true)
+ //create ReactiveStateEngine: tradeProcess
+ createReactiveStateEngine(name="tradeProcess"+string(i), metrics=[<TradeTime>, <iif(BuyNum>SellNum, BuyNum, SellNum)>, <TradeQty>, <TradeAmount>, <iif(BuyNum>SellNum, "B", "S")>], dummyTable=tradeOriginalStream, outputTable=tradeProcessStream, keyColumn="SecurityID")
+ subscribeTable(tableName="tradeOriginalStream", actionName="tradeProcess"+string(i), offset=-1, handler=getStreamEngine("tradeProcess"+string(i)), msgAsTable=true, hash=i-1, filter = (parallel, i-1), reconnect=true)
+ //create DailyTimeSeriesEngine: tradeTSAggr
+ createDailyTimeSeriesEngine(name="tradeTSAggr"+string(i), windowSize=60000, step=60000, metrics=[<calCapitalFlow(Num, BSFlag, TradeQty, TradeAmount) as `BuySmallAmount`BuyBigAmount`SellSmallAmount`SellBigAmount>], dummyTable=tradeProcessStream, outputTable=capitalFlowStream, timeColumn="TradeTime", useSystemTime=false, keyColumn=`SecurityID, useWindowStartTime=true, forceTriggerTime=60000)
+ subscribeTable(tableName="tradeProcessStream", actionName="tradeTSAggr"+string(i), offset=-1, handler=getStreamEngine("tradeTSAggr"+string(i)), msgAsTable=true, batchSize=2000, throttle=1, hash=parallel+i-1, filter = (parallel, i-1), reconnect=true)
 }
 
 //real time data to database
@@ -395,7 +395,7 @@ getRecentJobs()
 
 执行完后，返回如下信息：
 
-![03.getRecentJobs](images/streaming_capital_flow_order_by_order/03.getRecentJobs.png)
+![03.getRecentJobs](./images/streaming_capital_flow_order_by_order/03.getRecentJobs.png)
 
 如果endTime和errorMsg为空，说明任务正在正常运行中。
 
@@ -409,7 +409,7 @@ getStreamingStat().pubTables
 
 流数据表被订阅成功后，就可以通过上述监控函数查到具体的订阅信息。执行完后，返回如下信息：
 
-![04.流数据表订阅状态查询](images/streaming_capital_flow_order_by_order/04.流数据表订阅状态查询.png)
+![04.流数据表订阅状态查询](./images/streaming_capital_flow_order_by_order/04.流数据表订阅状态查询.png)
 
 > 表中第二列的数据：
 >
@@ -425,7 +425,7 @@ getStreamingStat().pubConns
 
 当生产者产生数据，实时写入流数据表时，可以通过上述监控函数实时监测发布队列的拥堵情况。执行完后，返回如下信息：
 
-![05.流数据表发布队列查询](images/streaming_capital_flow_order_by_order/05.流数据表发布队列查询.png)
+![05.流数据表发布队列查询](./images/streaming_capital_flow_order_by_order/05.流数据表发布队列查询.png)
 
 > 实时监测发布队列的拥堵情况时，需要关注的指标是`queueDepth`，即发布队列深度。如果队列深度呈现不断增加的趋势，说明上游生产者实时产生的数据流量太大，已经超过数据发布的最大负载，导致发布队列拥堵，实时计算延时增加。
 >
@@ -439,7 +439,7 @@ getStreamingStat().subWorkers
 
 当流数据表把实时接收到的生产者数据发布给节点内部的订阅者后，可以通过上述监控函数实时监测消费队列的拥堵情况。执行完后，返回如下信息：
 
-![06.节点内部订阅者消费状态查询](images/streaming_capital_flow_order_by_order/06.节点内部订阅者消费状态查询.png)
+![06.节点内部订阅者消费状态查询](./images/streaming_capital_flow_order_by_order/06.节点内部订阅者消费状态查询.png)
 
 > 实时监测消费队列的拥堵情况时，需要关注的指标是每个订阅的`queueDepth`，即消费队列深度。如果某个订阅的消费队列深度呈现不断增加的趋势，说明该订阅的消费处理线程超过最大负载，导致消费队列拥堵，实时计算延时增加。
 >
@@ -451,15 +451,15 @@ getStreamingStat().subWorkers
 
 计算结果表`capitalFlowStream`，可以通过DolphinDB所有API查询接口实时查询，通过DolphinDB GUI实时查看该表的结果，返回：
 
-![07.节点内的计算结果表](images/streaming_capital_flow_order_by_order/07.节点内的计算结果表.png)
+![07.节点内的计算结果表](./images/streaming_capital_flow_order_by_order/07.节点内的计算结果表.png)
 
 ### 4.2 Python API实时订阅的计算结果
 
-![08.PythonAPI实时订阅的计算结果](images/streaming_capital_flow_order_by_order/08.PythonAPI实时订阅的计算结果.png)
+![08.PythonAPI实时订阅的计算结果](./images/streaming_capital_flow_order_by_order/08.PythonAPI实时订阅的计算结果.png)
 
 ### 4.3 Grafana实时监控结果
 
-![09.Grafana实时监控结果](images/streaming_capital_flow_order_by_order/09.Grafana实时监控结果.png)
+![09.Grafana实时监控结果](./images/streaming_capital_flow_order_by_order/09.Grafana实时监控结果.png)
 
 ## 5. 总结
 

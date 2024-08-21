@@ -371,7 +371,7 @@ for(d in days){
 ```
 
 内存随着加载分区数的增加变化规律如下图所示：  
-![image](./images/memory_managment/partition9.png?raw=true)  
+![image](./images/memory_managment/partition9.png)  
 
 当遍历每个分区数据时，在内存使用量不超过 warningMemSize 的情况下，分区数据会全部缓存到内存中，以便用户下次访问时，直接从内存中读取数据，而不需要再次从磁盘加载。
 
@@ -380,7 +380,7 @@ for(d in days){
 当总的内存使用达到 warningMemSize 时，DolphinDB 会采用 LRU 的内存回收策略，回收一部分内存。
 
 示例10. 上面用例只加载了9天的数据，此时我们继续共遍历15天数据，查看缓存达到 warningMemSize 时，内存的占用情况。如下图所示：  
-![image](./images/memory_managment/partition15.png?raw=true)
+![image](./images/memory_managment/partition15.png)
 
 如上图所示，当缓存的数据超过 warningMemSize 时，系统自动回收内存，总的内存使用量仍然小于用户设置的 warningMemSize。
 
@@ -457,7 +457,7 @@ Cache Engine 需根据系统配置和实际场景合理设置。若设置过小�
 ### 6.1 OLAP引擎的写入缓存
 
 默认情况下，OLAP 存储引擎是不开启 Redo Log 的，即写入事务不会进行缓存，直接进行刷盘。若需要缓存事务进行批量刷盘，则需要通过 chunkCacheEngineMemSize 为 OLAP 指定 Cache Engine 的容量，且指定 dataSync=1 启用 Redo Log。下图示意了开启 Cache Engine 和 Redo Log 后事务的写入流程：事务先写入 Redo Log 和 Cache Engine。达到 cache engine 的刷盘条件后，三个事务的数据将被一次性写入到DFS的数据库上。
-![image](./images/memory_managment/cacheEngine.png?raw=true)
+![image](./images/memory_managment/cacheEngine.png)
 
 Cache Engine 空间一般推荐设置为 maxMemSize 的1/8~1/4。chunkCacheEngineMemSize 不是一个刚性的限制，其实际内存占用可能会高于设置的值 ;  根据经验，cacheEngine 不建议设置超过 32G 以上的值， 否则会造成 Redo Log 回收慢和内存占用过高的问题; 更多设置请参阅 [Cache Engine与数据库日志](./redoLog_cacheEngine.md)。
 
@@ -477,9 +477,10 @@ DolphinDB 为流数据发送节点提供持久化队列缓存和发送队列缓�
 
 当数据进入流数据系统时，首先写入流表，然后写入持久化队列和发送队列。假设用户设置为异步持久化，则持久化队列异步写入磁盘，发送队列发送到订阅端。
 当订阅端收到数据后，先放入接受队列，然后用户定义的 handler 从接收队列中取数据并处理。如果 handler 处理缓慢，会导致接收队列有数据堆积，占用内存。如下图所示：  
-![image](./images/memory_managment/streaming.png?raw=true)
+![image](./images/memory_managment/streaming.png)
 
 流数据内存相关的主要配置选项：
+
 - __maxPersistenceQueueDepth__: 发布节点流表持久化队列的最大队列深度（消息数上限）。该选项默认设置为 10000000 。在磁盘写入成为瓶颈时，队列会堆积数据。
 
 - __maxPubQueueDepthPerSite__: 发布节点发送队列的最大队列深度（消息数上限）。默认值为1000万，当网络出现拥塞时，该发送队列会堆积数据。

@@ -6,38 +6,38 @@
 
 多因子量化投资的整体逻辑是将 alpha 模型和 risk 模型结合在一起。我们下面以均值 - 方差组合优化框架（Mean-Varaince Optimization，MVO）为例进行解释。MVO 是由 Markowitz 于 1952 年提出，假设
 
-![images/mvo_images/image-20240220-100938.png](images/mvo_images/image-20240220-100938.png)为 n 支股票的目标主动权重，其中
+![images/mvo_images/image-20240220-100938.png](./images/mvo_images/image-20240220-100938.png)为 n 支股票的目标主动权重，其中
 
 <img src="./images/mvo_images/image-20240220-101049.png" width="100" height="50">
 
-![images/mvo_images/image-20240220-101314.png](images/mvo_images/image-20240220-101314.png)为 alpha 模型得到的期望收益率，![images/mvo_images/image-20240220-101456.png](images/mvo_images/image-20240220-101456.png) 为收益率的协方差矩阵。MVO 的一般框架为：
+![images/mvo_images/image-20240220-101314.png](./images/mvo_images/image-20240220-101314.png)为 alpha 模型得到的期望收益率，![images/mvo_images/image-20240220-101456.png](./images/mvo_images/image-20240220-101456.png) 为收益率的协方差矩阵。MVO 的一般框架为：
 
 目标函数：
 
-![images/mvo_images/image-20240311-093436.png](images/mvo_images/image-20240311-093436.png)
+![images/mvo_images/image-20240311-093436.png](./images/mvo_images/image-20240311-093436.png)
 
 约束：
 
 权重关系
 
-![images/mvo_images/0b1af30f-b19f-42fa-94d8-c476f8dfde54.png](images/mvo_images/0b1af30f-b19f-42fa-94d8-c476f8dfde54.png)
+![images/mvo_images/0b1af30f-b19f-42fa-94d8-c476f8dfde54.png](./images/mvo_images/0b1af30f-b19f-42fa-94d8-c476f8dfde54.png)
 
 跟踪误差
 
-![images/mvo_images/6776d73e-a10f-4194-9f02-b930570966b8.png](images/mvo_images/6776d73e-a10f-4194-9f02-b930570966b8.png)
+![images/mvo_images/6776d73e-a10f-4194-9f02-b930570966b8.png](./images/mvo_images/6776d73e-a10f-4194-9f02-b930570966b8.png)
 换手率约束
 
-![images/mvo_images/6776d73e-a10f-4194-9f02-b930570966b8.png](images/mvo_images/6776d73e-a10f-4194-9f02-b930570966b8.png)
+![images/mvo_images/6776d73e-a10f-4194-9f02-b930570966b8.png](./images/mvo_images/6776d73e-a10f-4194-9f02-b930570966b8.png)
 
 权重上下限
-![images/mvo_images/c00cf790-b324-4f99-ac0a-dc702b50422c.png](images/mvo_images/c00cf790-b324-4f99-ac0a-dc702b50422c.png)
+![images/mvo_images/c00cf790-b324-4f99-ac0a-dc702b50422c.png](./images/mvo_images/c00cf790-b324-4f99-ac0a-dc702b50422c.png)
 
 风险因子暴露
-![images/mvo_images/01ba1550-99ac-4164-aa92-34b1008593ae.png](images/mvo_images/01ba1550-99ac-4164-aa92-34b1008593ae.png)
+![images/mvo_images/01ba1550-99ac-4164-aa92-34b1008593ae.png](./images/mvo_images/01ba1550-99ac-4164-aa92-34b1008593ae.png)
 
 股票数量约束
-![images/mvo_images/image-20240311-094124.png](images/mvo_images/image-20240311-094124.png)
-其中![images/mvo_images/image-20240220-101608.png](images/mvo_images/image-20240220-101608.png)为 n 支股票的目标绝对权重向量，![images/mvo_images/image-20240220-101641.png](images/mvo_images/image-20240220-101641.png)为股票的初始权重向量，![images/mvo_images/image-20240226-081840.png](images/mvo_images/image-20240226-081840.png)为基准组合的权重向量，![images/mvo_images/image-20240220-101740.png](images/mvo_images/image-20240220-101740.png)为交易成本的厌恶系数。
+![images/mvo_images/image-20240311-094124.png](./images/mvo_images/image-20240311-094124.png)
+其中![images/mvo_images/image-20240220-101608.png](./images/mvo_images/image-20240220-101608.png)为 n 支股票的目标绝对权重向量，![images/mvo_images/image-20240220-101641.png](./images/mvo_images/image-20240220-101641.png)为股票的初始权重向量，![images/mvo_images/image-20240226-081840.png](./images/mvo_images/image-20240226-081840.png)为基准组合的权重向量，![images/mvo_images/image-20240220-101740.png](./images/mvo_images/image-20240220-101740.png)为交易成本的厌恶系数。
 
 为了满足不同场景的需要，针对实际应用中不同的目标函数和约束条件建立的最优化模型，DolphinDB 提供了多个最优化函数。对于现实中的各种业务决策问题，我们都需要首先把业务问题建成数学规划模型，进而选择合适的求解器寻求最优解或者可行解，从而协助我们做出更理想的决策。通常的求解思路是：
 
@@ -84,7 +84,7 @@ DolphinDB 最优化求解函数主要有 linprog，quadprog，qclp，socp，用�
 
 #### 数学模型
 
-![images/mvo_images/image-20240220-101825.png](images/mvo_images/image-20240220-101825.png)
+![images/mvo_images/image-20240220-101825.png](./images/mvo_images/image-20240220-101825.png)
 
 在上面的公式中，x 是未知变量，在优化问题中我们一般也称之为决策变量，
 
@@ -98,7 +98,7 @@ min 表示求表达式 fTx 关于 x 的极小化，such that 后面的内容表�
 
 #### 数学模型
 
-![images/mvo_images/image-20240220-102309.png](images/mvo_images/image-20240220-102309.png)
+![images/mvo_images/image-20240220-102309.png](./images/mvo_images/image-20240220-102309.png)
 其中 H 必须是对称正定矩阵。
 
 可以观察到与线性规划问题相比，该模型中的目标函数中多了关于 x 的二次项。
@@ -109,7 +109,7 @@ min 表示求表达式 fTx 关于 x 的极小化，such that 后面的内容表�
 
 #### 数学模型
 
-![images/mvo_images/image-20240220-102419.png](images/mvo_images/image-20240220-102419.png)
+![images/mvo_images/image-20240220-102419.png](./images/mvo_images/image-20240220-102419.png)
 
 可以观察到与线性规划问题相比，该模型中增加了非线性不等式约束和向量绝对值不等式约束。
 
@@ -121,25 +121,25 @@ min 表示求表达式 fTx 关于 x 的极小化，such that 后面的内容表�
 
 首先给出 k 维标准锥形式的定义：
 
-![images/mvo_images/image-20240220-102458.png](images/mvo_images/image-20240220-102458.png)
+![images/mvo_images/image-20240220-102458.png](./images/mvo_images/image-20240220-102458.png)
 
 二阶锥里面用到的是二范数
 
-![images/mvo_images/image-20240220-102515.png](images/mvo_images/image-20240220-102515.png)
+![images/mvo_images/image-20240220-102515.png](./images/mvo_images/image-20240220-102515.png)
 
 SOCP 问题的锥表述形式如下：
-![images/mvo_images/image-20240220-102833.png](images/mvo_images/image-20240220-102833.png)
+![images/mvo_images/image-20240220-102833.png](./images/mvo_images/image-20240220-102833.png)
 
-其中![images/mvo_images/image-20240220-102853.png](images/mvo_images/image-20240220-102853.png)为锥，s 为松弛变量，在实际 socp 函数参数中无对应项，其值在优化过程中会被确定。
+其中![images/mvo_images/image-20240220-102853.png](./images/mvo_images/image-20240220-102853.png)为锥，s 为松弛变量，在实际 socp 函数参数中无对应项，其值在优化过程中会被确定。
 
 SOCP 问题的标准形式：
-![images/mvo_images/image-20240220-102541.png](images/mvo_images/image-20240220-102541.png)
+![images/mvo_images/image-20240220-102541.png](./images/mvo_images/image-20240220-102541.png)
 
-其中![images/mvo_images/image-20240220-102956.png](images/mvo_images/image-20240220-102956.png) 为锥约束。
+其中![images/mvo_images/image-20240220-102956.png](./images/mvo_images/image-20240220-102956.png) 为锥约束。
 
 与锥表述形式相比，二阶锥的标准形式与 Gx + s = h 的对应关系为：
 
-矩阵 G 的形式为 ![images/mvo_images/image-20240220-103055.png](images/mvo_images/image-20240220-103055.png) ，向量 h 的形式为![images/mvo_images/image-20240220-103140.png](images/mvo_images/image-20240220-103140.png) 。
+矩阵 G 的形式为 ![images/mvo_images/image-20240220-103055.png](./images/mvo_images/image-20240220-103055.png) ，向量 h 的形式为![images/mvo_images/image-20240220-103140.png](./images/mvo_images/image-20240220-103140.png) 。
 
 ### 1.5 插件介绍
 
@@ -165,33 +165,33 @@ gurobi 插件（预计 4 月初发布）用于调用 [gurobi](https://www.gurobi
 
 ### 2.1 线性规划的二阶锥形式
 
-对于线性不等式约束![images/mvo_images/image-20240223-091128.png](images/mvo_images/image-20240223-091128.png)，移项后得到
+对于线性不等式约束![images/mvo_images/image-20240223-091128.png](./images/mvo_images/image-20240223-091128.png)，移项后得到
 
-![images/mvo_images/7ead9be4-58e7-43ed-9b25-f3bff9bfd2e7%20(1).png](images/mvo_images/7ead9be4-58e7-43ed-9b25-f3bff9bfd2e7%20(1).png)
+![images/mvo_images/7ead9be4-58e7-43ed-9b25-f3bff9bfd2e7%20(1).png](./images/mvo_images/7ead9be4-58e7-43ed-9b25-f3bff9bfd2e7%20(1).png)
 
-同理对 x 设定上界与下界的约束![images/mvo_images/image-20240223-091830.png](images/mvo_images/image-20240223-091830.png) 可以转化为
+同理对 x 设定上界与下界的约束![images/mvo_images/image-20240223-091830.png](./images/mvo_images/image-20240223-091830.png) 可以转化为
 
-![images/mvo_images/image-20240223-092138.png](images/mvo_images/image-20240223-092138.png)
+![images/mvo_images/image-20240223-092138.png](./images/mvo_images/image-20240223-092138.png)
 
 对应二阶锥的标准形式为
-![images/mvo_images/image-20240223-093556.png](images/mvo_images/image-20240223-093556.png)
+![images/mvo_images/image-20240223-093556.png](./images/mvo_images/image-20240223-093556.png)
 
 其中 E 为长度与 x 相同的单位矩阵。
 
 因此得到二阶锥参数
 
-![images/mvo_images/image-20240223-094715.png](images/mvo_images/image-20240223-094715.png)
+![images/mvo_images/image-20240223-094715.png](./images/mvo_images/image-20240223-094715.png)
 
 ### 2.2 二次不等式约束的二阶锥形式
 
-对于二次不等式约束 ![images/mvo_images/image-20240226-010938.png](images/mvo_images/image-20240226-010938.png)，其中 V 为正定矩阵，k 为正标量。V 可以通过 cholesky 分解得到 ![images/mvo_images/image-20240226-064535.png](images/mvo_images/image-20240226-064535.png)，则原约束可以转化为
-![images/mvo_images/image-20240226-074959.png](images/mvo_images/image-20240226-074959.png)
+对于二次不等式约束 ![images/mvo_images/image-20240226-010938.png](./images/mvo_images/image-20240226-010938.png)，其中 V 为正定矩阵，k 为正标量。V 可以通过 cholesky 分解得到 ![images/mvo_images/image-20240226-064535.png](./images/mvo_images/image-20240226-064535.png)，则原约束可以转化为
+![images/mvo_images/image-20240226-074959.png](./images/mvo_images/image-20240226-074959.png)
 即可得到二阶锥的标准形式
 
-![images/mvo_images/image-20240226-075017.png](images/mvo_images/image-20240226-075017.png)
+![images/mvo_images/image-20240226-075017.png](./images/mvo_images/image-20240226-075017.png)
 锥形式参数
 
-![images/mvo_images/image-20240226-080445.png](images/mvo_images/image-20240226-080445.png)
+![images/mvo_images/image-20240226-080445.png](./images/mvo_images/image-20240226-080445.png)
 
 n 为变量 x 的长度。
 
@@ -199,38 +199,38 @@ n 为变量 x 的长度。
 
 对于包含绝对值约束的线性规划
 
-![images/mvo_images/image-20240220-103709.png](images/mvo_images/image-20240220-103709.png)
+![images/mvo_images/image-20240220-103709.png](./images/mvo_images/image-20240220-103709.png)
 
 其中 1 范数约束即为绝对值约束
-![images/mvo_images/image-20240222-021127.png](images/mvo_images/image-20240222-021127.png)
+![images/mvo_images/image-20240222-021127.png](./images/mvo_images/image-20240222-021127.png)
 
 引入辅助变量
-![images/mvo_images/image-20240220-103842.png](images/mvo_images/image-20240220-103842.png)
+![images/mvo_images/image-20240220-103842.png](./images/mvo_images/image-20240220-103842.png)
 
 将原问题改写为关于 \[xT, u1, ··· , un]T 的优化问题即可转换为二阶锥规划的形式：
-![images/mvo_images/image-20240220-103927.png](images/mvo_images/image-20240220-103927.png)
+![images/mvo_images/image-20240220-103927.png](./images/mvo_images/image-20240220-103927.png)
 
 ### 2.4  二次规划的二阶锥形式
 
-对于目标函数中含有二次项的规划问题，引入辅助变量 ![images/mvo_images/image-20240220-103340.png](images/mvo_images/image-20240220-103340.png) ，由于 H 为正定矩阵，可以通过 cholesky 分解得到![images/mvo_images/image-20240226-014650.png](images/mvo_images/image-20240226-014650.png)，原问题改写为
+对于目标函数中含有二次项的规划问题，引入辅助变量 ![images/mvo_images/image-20240220-103340.png](./images/mvo_images/image-20240220-103340.png) ，由于 H 为正定矩阵，可以通过 cholesky 分解得到![images/mvo_images/image-20240226-014650.png](./images/mvo_images/image-20240226-014650.png)，原问题改写为
 
-![images/mvo_images/image-20240227-015445.png](images/mvo_images/image-20240227-015445.png)
+![images/mvo_images/image-20240227-015445.png](./images/mvo_images/image-20240227-015445.png)
 
-又由四边形恒等式![images/mvo_images/image-20240227-013316.png](images/mvo_images/image-20240227-013316.png)可以推出
+又由四边形恒等式![images/mvo_images/image-20240227-013316.png](./images/mvo_images/image-20240227-013316.png)可以推出
 
-![images/mvo_images/image-20240227-021244.png](images/mvo_images/image-20240227-021244.png)
+![images/mvo_images/image-20240227-021244.png](./images/mvo_images/image-20240227-021244.png)
 
 移项得到
-![images/mvo_images/image-20240227-021445.png](images/mvo_images/image-20240227-021445.png)
+![images/mvo_images/image-20240227-021445.png](./images/mvo_images/image-20240227-021445.png)
 
 代入到问题二次约束中即可得到
-![images/mvo_images/image-20240227-013333.png](images/mvo_images/image-20240227-013333.png)
+![images/mvo_images/image-20240227-013333.png](./images/mvo_images/image-20240227-013333.png)
 
 最终得到与原问题等价的规划问题
-![images/mvo_images/image-20240220-103356.png](images/mvo_images/image-20240220-103356.png)
+![images/mvo_images/image-20240220-103356.png](./images/mvo_images/image-20240220-103356.png)
 
 其中
-![images/mvo_images/image-20240226-015235.png](images/mvo_images/image-20240226-015235.png)
+![images/mvo_images/image-20240226-015235.png](./images/mvo_images/image-20240226-015235.png)
 
 ## 3. 应用场景示例
 
@@ -245,11 +245,11 @@ n 为变量 x 的长度。
 根据问题描述可以带入线性规划模型得到
 
 预期收益率：
-![images/mvo_images/image-20240220-103953.png](images/mvo_images/image-20240220-103953.png)
+![images/mvo_images/image-20240220-103953.png](./images/mvo_images/image-20240220-103953.png)
 
 不等式约束：
-![images/mvo_images/image-20240220-104012.png](images/mvo_images/image-20240220-104012.png)
-![images/mvo_images/image-20240220-104031.png](images/mvo_images/image-20240220-104031.png)
+![images/mvo_images/image-20240220-104012.png](./images/mvo_images/image-20240220-104012.png)
+![images/mvo_images/image-20240220-104031.png](./images/mvo_images/image-20240220-104031.png)
 等式约束：所有股票分配权重之和为 1。
 
 ```

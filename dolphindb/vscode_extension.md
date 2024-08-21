@@ -113,7 +113,7 @@ DolphinDB 的 VSCode 插件提供针对用户脚本的调试功能，该功能�
 
 ### 原理
 
-![components](images/vscodeext/debug/zh/components.png)
+![components](./images/vscodeext/debug/zh/components.png)
 
 其中，
 
@@ -122,7 +122,7 @@ DolphinDB 的 VSCode 插件提供针对用户脚本的调试功能，该功能�
 - DAP：Debug Adapter Protocol，由 Microsoft 提出的一种通用的 Debug 信息交互协议
 - Debug Client：VSCode 调试界面，主要负责与用户交互。下图是该界面的主要部件及功能概览：
 
-    ![1687752887534](images/vscodeext/debug/zh/all-header.png)
+    ![1687752887534](./images/vscodeext/debug/zh/all-header.png)
 
 ### 基本用法
 
@@ -265,11 +265,11 @@ DolphinDB 的 VSCode 插件提供针对用户脚本的调试功能，该功能�
 
 - 各个会话现在在“调用堆栈”视图中显示为顶级元素
 
-    ![1687151041845](images/vscodeext/debug/zh/callstack-view.png)
+    ![1687151041845](./images/vscodeext/debug/zh/callstack-view.png)
 
 - 调试工具栏显示当前活动的会话（所有其他会话在下拉菜单中可用）
 
-    ![1687151341351](images/vscodeext/debug/zh/multi-server.png)
+    ![1687151341351](./images/vscodeext/debug/zh/multi-server.png)
 
 - 调试操作（例如, 调试工具栏中的所有操作）在活动会话上执行可以使用调试工具栏中的下拉菜单或在“调用堆栈”视图中选择其他元素来更改活动会话
 
@@ -291,7 +291,7 @@ DolphinDB 的 VSCode 插件提供针对用户脚本的调试功能，该功能�
 - 内联断点、条件断点、记录点、监视
 - 查看长度较大的变量
 
-    ![](images/vscodeext/debug/zh/long-var.png)
+    ![](./images/vscodeext/debug/zh/long-var.png)
 
 - 调试控制台查询表达式的值
 

@@ -143,7 +143,7 @@ Redshift 配置 ODBC 连接可参考[配置 ODBC 连接](https://docs.aws.amazon
 
 Ubuntu 选择 Linux 操作系统 64 位 (.deb)，CentOS 选择 Linux 操作系统 64 位 (.deb)
 
-![](images/Migrate_data_from_Redshift_to_DolphinDB/3-1.png)
+![](./images/Migrate_data_from_Redshift_to_DolphinDB/3-1.png)
 
 2. 安装 ODBC 驱动
 
@@ -183,11 +183,11 @@ Database=Your database
 
 * 将安全组的 inbound 规则设置如下，开放5439端口给外部
 
-![](images/Migrate_data_from_Redshift_to_DolphinDB/3-2.png)
+![](./images/Migrate_data_from_Redshift_to_DolphinDB/3-2.png)
 
 * 编辑集群的属性,修改网络和安全设置，设置 VPC 安全组为刚才创建的安全组，并启用可公开访问。
 
-![](images/Migrate_data_from_Redshift_to_DolphinDB/3-3.png)
+![](./images/Migrate_data_from_Redshift_to_DolphinDB/3-3.png)
 
 5. 验证 ODBC 连接成功
 
@@ -260,7 +260,7 @@ startTime                        endTime
 select top 10 * from pt
 ```
 
-![](images/Migrate_data_from_Redshift_to_DolphinDB/3-4.png)
+![](./images/Migrate_data_from_Redshift_to_DolphinDB/3-4.png)
 
 ## 4. 总结
 

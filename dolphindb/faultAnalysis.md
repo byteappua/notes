@@ -29,7 +29,7 @@
 
 DolphinDB 历史数据回放框架由分布式存储引擎、数据回放工具、流计算框架三大组件构成，通过历史数据回放框架，可以搭建一个轻量式数据回放平台，助力设备故障诊断与分析。
 
-![图1 DolphinDB 历史数据回放框架](images/faultAnalysis/1-1.png)
+![图1 DolphinDB 历史数据回放框架](./images/faultAnalysis/1-1.png)
 
 ## 2. DolphinDB数据回放功能介绍
 
@@ -57,7 +57,7 @@ replayDS(sqlObj, [dateColumn], [timeColumn],[timeRepartitionSchema])
 - sqlObj：SQL 查询元代码，表示回放的数据，如\<select * from loadTable("dfs://source", "source")\>。SQL查询的表对象是DFS表，且至少有一个分区列为DATE类型。
 - dateColumn：日期列。若不指定，默认第一列为日期列。`replayDS`函数默认日期列是数据源的一个分区列，并根据分区信息将原始SQL查询拆分为多个查询。
 
-关于 `replay`、`replayDS `函数的详细介绍可参考 [replay用户手册](https://docs.dolphindb.cn/zh/funcs/r/replay.html)、[replayDS用户手册](https://docs.dolphindb.cn/zh/funcs/r/replayDS.html)。
+关于 `replay`、`replayDS`函数的详细介绍可参考 [replay用户手册](https://docs.dolphindb.cn/zh/funcs/r/replay.html)、[replayDS用户手册](https://docs.dolphindb.cn/zh/funcs/r/replayDS.html)。
 
 ### 2.2 1 对 1 单表回放
 
@@ -135,7 +135,7 @@ N 对 N 多表回放是一种将多个输入表同步回放到多个对应目标
 
 针对机床故障异常诊断分析，DolphinDB 解决方案如下：
 
-![图2](images/faultAnalysis/3-3.png)
+![图2](./images/faultAnalysis/3-3.png)
 
 故障发生后，将故障信息表和操作日志表中的数据异构回放到流数据表中，通过 createAsofJoinEngine 流计算引擎，将故障信息和操作日志进行实时关联，了解故障是由哪些操作引起的；并实时地回放传感器采集的机床状态数据，以便分析机床各项指标与操作类型的关系。
 
@@ -227,7 +227,7 @@ replayIoT(args1)
 
 回放结果如下表所示：
 
-![图3](images/faultAnalysis/3-4-2-1.png)
+![图3](./images/faultAnalysis/3-4-2-1.png)
 
 从上述结果可知，F1、F2、F3 三种操作可能会导致机床发生故障，因此在实际生产中，操纵员需要谨慎进行 F1、F2、F3 这三种类型的操作。
 
@@ -253,11 +253,11 @@ replayIoT(args2)
 
 回放结果如下表所示：
 
-![图4](images/faultAnalysis/3-4-2-2.png)
+![图4](./images/faultAnalysis/3-4-2-2.png)
 
 借助 DolphinDB Dashboard 功能，可将上述回放的机床各项指标进行实时的可视化展示，可视化结果如下图所示：
 
-![图5](images/faultAnalysis/3-4-2-3.png)
+![图5](./images/faultAnalysis/3-4-2-3.png)
 
 从上图可知，机床正常运行时，温度、液压和振幅曲线是规律的三角函数曲线。当故障发生后，温度、液压和振幅会明显偏低或偏高。从结果上来看，进行F1操作时，机床温度、振幅低于平均水平，液压高于平均水平，导致机床发生故障；进行F2操作时，机床温度、振幅高于平均水平，导致机床发生故障；进行 F3 操作时，机床振幅、液压低于平均水平，导致机床发生故障。
 

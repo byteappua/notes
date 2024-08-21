@@ -110,7 +110,7 @@ Java HotSpot(TM) Client VM
 GUI编程界面提供代码查询、修改、高亮显示、函数提示等功能。用户可以选择部分代码执行，也可以点击文件执行代码。执行完毕，可以立刻看到执行结果，以及查看所有的局部变量和共享变量的值。
 关于GUI更详细具体的功能介绍请参阅[GUI帮助手册](https://www.dolphindb.cn/cn/gui/index.html)。
 
-![image](./images/GUI/code_editing.JPG?raw=true)
+![image](./images/GUI/code_editing.JPG)
 
 ### 1.4 中文出现乱码
 
@@ -145,13 +145,13 @@ VS Code 插件与GUI功能非常相似。优点是VS Code使用者无需安装�
 
 点击VS Code左侧导航栏的Extensions图标，或者通过ctrl+shift+X快捷键打开插件安装窗口，在搜索框中输入DolphinDB，即可搜索到DolphinDB插件。点击Install进行安装。安装完成后，以txt和dos为后缀的文件都可以被DolphinDB插件识别。
 
-![image](./images/vscode/1.png?raw=true)
+![image](./images/vscode/1.png)
 
 ### 2.2 连接DolphinDB Server
 
 在编辑并运行脚本之前，需要先新增并选择一个数据节点作为运行脚本的服务器。新建并打开一个txt或dos文件，通过右键菜单可以增加、选择和移除DolphinDB Server。
 
-![image](./images/vscode/server.png?raw=true)
+![image](./images/vscode/server.png)
 
 #### 新增服务器
 
@@ -169,13 +169,13 @@ VS Code 插件与GUI功能非常相似。优点是VS Code使用者无需安装�
 
 VS Code打开txt或dos文件时，DolphinDB插件会自动加载右键菜单并且识别脚本，支持语法高亮、智能语法提示。通过 ctrl+E 快捷键或者下拉菜单"executeCode"来执行选中代码，若没有选中代码，则会执行当前光标所在的行。
 
-  ![image](./images/vscode/4.gif?raw=true)
+  ![image](./images/vscode/4.gif)
 
 ### 2.4 观察变量
 
 DolphinDB 插件在左边导航增加了变量面板，面板显示当前服务器上的所有本地和共享变量，每次执行代码时面板上变量会更新。点击变量右边的"show"链接可以在输出面板查看变量的值
 
-  ![image](./images/vscode/5.gif?raw=true)
+  ![image](./images/vscode/5.gif)
 
 ## 3. DolphinDB Notebook
 
@@ -183,7 +183,7 @@ DolphinDB Notebook是DolphinDB服务器安装包自带的，基于网页的图�
 
 ### 3.1 启动
 
-DolphinDB Notebook通过是通过HTML+Javascript编写的Web前端。在single node模式下，启动DolphinDB服务器，只要在浏览器输入网址(默认为 <http://localhost:8848)即可访问。在集群模式下只要在浏览器输入controller节点的网址加端口号即可访问。>
+DolphinDB Notebook通过是通过HTML+Javascript编写的Web前端。在single node模式下，启动DolphinDB服务器，只要在浏览器输入网址(默认为`<http://localhost:8848)即可访问。在集群模式下只要在浏览器输入controller节点的网址加端口号即可访问。>`
 
 若无法访问Notebook，需要查看以下几个方面：
 
@@ -225,13 +225,13 @@ DolphinDB Notebook 最主要的功能是用于集群节点管理、系统监控�
   - 正在恢复元数据
   - 其它原因
 
-![image](./images/Notebook/manage_interface.JPG?raw=true)
+![image](./images/Notebook/manage_interface.JPG)
 
 ### 3.4 程序执行以及结果查看
 
 在集群模式下，用户需要点击节点名字的链接来打开notebook界面。此外，需要浏览DFS数据库以及分区表时，single node模式按钮在屏幕右上角，cluster模式则在屏幕左上角。
 
-![image](./images/Notebook/code_editing.JPG?raw=true)
+![image](./images/Notebook/code_editing.JPG)
 
 ## 4. DolphinDB Jupyter Notebook 扩展插件 （已停止维护）
 

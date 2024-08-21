@@ -70,7 +70,7 @@ replay(inputTables=inputDict, outputTables=messageStream, dateColumn=`Date, time
 
 异构回放时 outputTables 参数指定的表至少需要包含以上三列，此外，还可以指定各输入表的公共列（列名和类型一致的列）。回放完成后，表 messageStream 的数据预览如下：
 
-![](images/stock_market_replay/messageStream.png)
+![](./images/stock_market_replay/messageStream.png)
 
 表中每行记录对应输入表中的一行记录，msgTime 字段是输入表中的时间列，msgType 字段用来区分来自哪张输入表，msgBody 字段以二进制格式存储了输入表中的记录内容。在回放的过程中，通过异构流数据表这样的数据结构可以对多个数据源进行全局排序，因而保证了多个数据源之间的严格时间顺序。同时，异构流数据表和普通流数据表一样可以被订阅，即多种类型的数据存储在同一张表中被发布并被同一个线程实时处理，因而也保证了消费的严格时序性。
 
@@ -84,7 +84,7 @@ replay(inputTables=inputDict, outputTables=messageStream, dateColumn=`Date, time
 
 行情多表回放方案的数据处理流程图如下：
 
-![](images/stock_market_replay/flowChart.png)
+![](./images/stock_market_replay/flowChart.png)
 
 处理流程图说明：
 
@@ -195,8 +195,8 @@ prevailingQuotes 被定义为共享流数据表，之后可以对其进行订阅
 
 ```python
 def createSchemaTable(dbName, tableName){
-	schema = loadTable(dbName, tableName).schema().colDefs
-	return table(1:0, schema.name, schema.typeString)
+ schema = loadTable(dbName, tableName).schema().colDefs
+ return table(1:0, schema.name, schema.typeString)
 }
 tradeSchema = createSchemaTable("dfs://trade", "trade")
 snapshotSchema = createSchemaTable("dfs://snapshot", "snapshot")
@@ -214,8 +214,8 @@ joinEngine=createAsofJoinEngine(name="tradeJoinSnapshot", leftTable=tradeSchema,
 
 ```python
 def appendLeftStream(msg){
-	tempMsg = select * from msg where Price > 0 and Time>=09:30:00.000
-	getLeftStream(getStreamEngine(`tradeJoinSnapshot)).tableInsert(tempMsg)
+ tempMsg = select * from msg where Price > 0 and Time>=09:30:00.000
+ getLeftStream(getStreamEngine(`tradeJoinSnapshot)).tableInsert(tempMsg)
 }
 filter1 = dict(STRING,ANY)
 filter1["condition"] = "trade"
@@ -241,7 +241,7 @@ subscribeTable(tableName="messageStream", actionName="tradeJoinSnapshot", offset
 
 - 查看计算结果
 
-![](images/stock_market_replay/prevailingQuotes.png)
+![](./images/stock_market_replay/prevailingQuotes.png)
 
 asof join 引擎在 matchingColumn 的分组内输出表数据与输入时的顺序一致。
 
@@ -265,13 +265,13 @@ loadPlugin 的路径和 producer 配置请按需修改。本教程涉及的 Kafk
 
 ```python
 def sendMsgToKafkaFunc(dataType, producer, msg){
-	startTime = now()
-	try {
-		kafka::produce(producer, "topic-message", 1, msg, true)
-		cost = now() - startTime
-		writeLog("[Kafka Plugin] Successed to send" + dataType + ":" + msg.size() + "rows," + cost + "ms.")
-	}
-	catch(ex) {writeLog("[Kafka Plugin] Failed to send msg to kafka with error:" +ex)}
+ startTime = now()
+ try {
+  kafka::produce(producer, "topic-message", 1, msg, true)
+  cost = now() - startTime
+  writeLog("[Kafka Plugin] Successed to send" + dataType + ":" + msg.size() + "rows," + cost + "ms.")
+ }
+ catch(ex) {writeLog("[Kafka Plugin] Failed to send msg to kafka with error:" +ex)}
 }
 ```
 
@@ -311,14 +311,13 @@ subscribeTable(tableName="messageStream", actionName="sendMsgToKafka", offset=-1
 
 在命令行开启消费者进程，从第一条开始消费名为 topic-message 的 topic
 
-
 ```
 ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --from-beginning --topic topic-message
 ```
 
 返回：
 
-![](images/stock_market_replay/KafkaToipic.png)
+![](./images/stock_market_replay/KafkaToipic.png)
 
 #### 3.3.4 消费场景 3：在外部程序中通过 C++API 实时订阅与处理
 
@@ -367,7 +366,7 @@ listenport 参数为单线程客户端的订阅端口号，设置 C++ 程序所�
 
 - 在终端查看程序实时打印的内容：
 
-![](images/stock_market_replay/C++API.png)
+![](./images/stock_market_replay/C++API.png)
 
 #### 3.3.4 清理环境
 

@@ -483,7 +483,7 @@
   select top 10 * from loadTable("dfs://fund_OLAP", "fund_OLAP")
   ```
 
-  ![数据概览1](images/fund_factor_contrasted_by_py/fund_10.png)
+  ![数据概览1](./images/fund_factor_contrasted_by_py/fund_10.png)
 
   同样，执行如下代码查看前十条 fund_hs_OLAP 数据：
 
@@ -491,7 +491,7 @@
   select top 10 * from loadTable("dfs://fund_OLAP", "fund_hs_OLAP")
   ```
 
-  ![数据概览2](images/fund_factor_contrasted_by_py/fund_hs_10.png)
+  ![数据概览2](./images/fund_factor_contrasted_by_py/fund_hs_10.png)
 
 ### 3.2 数据处理
 
@@ -553,7 +553,7 @@ mlog =  m_log[1:,]
   
   其中，部分运算结果如下图所示:
 
-  ![计算结果1](images/fund_factor_contrasted_by_py/calculating_outcome.png)
+  ![计算结果1](./images/fund_factor_contrasted_by_py/calculating_outcome.png)
 
   > 注：该计算流程执行前需要预先运行之前预定义过的 DolphinDB 实现的因子函数。
   

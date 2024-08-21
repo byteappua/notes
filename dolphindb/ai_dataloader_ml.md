@@ -95,7 +95,7 @@ pip install dolphindb-tools
 
 期待输出：
 
-![img](images/DolphinDB_AI_DataLoader_for_Deep_Learning/DolphinDB_AI_DataLoader_for_Deep_Learning_2.png)
+![img](./images/DolphinDB_AI_DataLoader_for_Deep_Learning/DolphinDB_AI_DataLoader_for_Deep_Learning_2.png)
 
 ### 3.2. DolphinDB类型与Tensor类型对照表
 
@@ -303,7 +303,7 @@ tensor([[[4, 5, 6],
 
 **对比测试功能模块代码目录结构**
 
-![img](images/DolphinDB_AI_DataLoader_for_Deep_Learning/DolphinDB_AI_DataLoader_for_Deep_Learning_3.png)
+![img](./images/DolphinDB_AI_DataLoader_for_Deep_Learning/DolphinDB_AI_DataLoader_for_Deep_Learning_3.png)
 
 - datas：数据存储
 - dist：[dolphindb_tools-0.1a1.whl](script/DolphinDB_AI_DataLoader_for_Deep_Learning/dist/dolphindb_tools-0.1a1.whl) 分发包
@@ -383,7 +383,7 @@ tensor([[[4, 5, 6],
 
     示例数据如下：
 
-    ![img](images/DolphinDB_AI_DataLoader_for_Deep_Learning/DolphinDB_AI_DataLoader_for_Deep_Learning_4.png)
+    ![img](./images/DolphinDB_AI_DataLoader_for_Deep_Learning/DolphinDB_AI_DataLoader_for_Deep_Learning_4.png)
 
 ### 5.2. PyTorch DataLoader 性能测试
 

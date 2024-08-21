@@ -114,7 +114,7 @@ ps aux|grep dolphindb
 
 返回如下信息说明后台启动成功：
 
-![SingleNodeValidation](images/deploy_standalone/start_singlenode_linux_backend_success.png)
+![SingleNodeValidation](./images/deploy_standalone/start_singlenode_linux_backend_success.png)
 
 ### 第四步：Web 管理界面检查节点运行状态
 
@@ -122,7 +122,7 @@ ps aux|grep dolphindb
 教程中的部署服务器 IP 地址为 10.0.0.82，部署端口为 8848，所以访问地址为 10.0.0.82:8848，
 打开后的 Web 管理界面如下。以管理员身份（默认账号：admin，默认密码：123456）登录 Web 管理界面后，用户可以检查节点运行状态。
 
-![SingleNodeStatusWeb](images/deploy_standalone/checknode_status_singlenode_web.png)
+![SingleNodeStatusWeb](./images/deploy_standalone/checknode_status_singlenode_web.png)
 
 > ❗️ 如果浏览器与 DolphinDB 不是部署在同一台服务器，应事先关闭防火墙或者打开对应的部署端口，Web 管理界面才能正常打开。
 
@@ -154,13 +154,13 @@ C:\DolphinDB\server\dolphindb.lic
 
 进入 *C:\DolphinDB\server* 目录，可以看到如下内容：
 
-![start_singlenode_win_folder](images/deploy_standalone/start_singlenode_win_folder.png)
+![start_singlenode_win_folder](./images/deploy_standalone/start_singlenode_win_folder.png)
 
 - 前台运行
 
 双击运行 *dolphindb.exe*，出现如下界面：
 
-![singlenode_win_dbclickddbexe](images/deploy_standalone/singlenode_win_dbclickddbexe.png)
+![singlenode_win_dbclickddbexe](./images/deploy_standalone/singlenode_win_dbclickddbexe.png)
 
 系统默认端口号是 8848，可以通过修改配置文件 *dolphindb.cfg* 中的 **localSite** 参数指定其它端口。
 
@@ -168,7 +168,7 @@ C:\DolphinDB\server\dolphindb.lic
 
 双击运行 *backgroundSingle.vbs*，然后打开 Windows 任务管理就可以查看到 DolphinDB 后台进程：
 
-![singlenode_win_backend_vbs](images/deploy_standalone/singlenode_win_backend_vbs.png)
+![singlenode_win_backend_vbs](./images/deploy_standalone/singlenode_win_backend_vbs.png)
 
 也可以打开命令提示符，执行以下指令查看 DolphinDB 后台进程，确认是否启动成功：
 
@@ -176,7 +176,7 @@ C:\DolphinDB\server\dolphindb.lic
 tasklist|findstr "dolphindb"
 ```
 
-![singlenode_win_findstr](images/deploy_standalone/singlenode_win_findstr.png)
+![singlenode_win_findstr](./images/deploy_standalone/singlenode_win_findstr.png)
 
 ### 第四步：Web 管理界面检查节点运行状态
 
@@ -184,7 +184,7 @@ tasklist|findstr "dolphindb"
 教程中的部署服务器 IP 地址为 10.0.0.82，部署端口为 8848，所以访问地址为 10.0.0.82:8848，
 打开后的 Web 管理界面如下：
 
-![singlenode_win_web_checknode](images/deploy_standalone/singlenode_win_web_checknode.png)
+![singlenode_win_web_checknode](./images/deploy_standalone/singlenode_win_web_checknode.png)
 
 > ❗️ 如果浏览器与 DolphinDB 不是部署在同一台服务器，需要关闭防火墙或者打开对应的部署端口，web 管理界面才能正常打开。
 
@@ -237,19 +237,19 @@ cp -r local8848/storage/CHUNK_METADATA/ backup/CHUNK_METADATA
 
 运行后将会出现如下提示：
 
-![singlenode_linux_upgrade_online_tip1](images/deploy_standalone/singlenode_linux_upgrade_online_tip1.png)
+![singlenode_linux_upgrade_online_tip1](./images/deploy_standalone/singlenode_linux_upgrade_online_tip1.png)
 
 输入 y 并点击回车后会出现如下提示：
 
-![singlenode_linux_upgrade_online_tip2](images/deploy_standalone/singlenode_linux_upgrade_online_tip2.png)
+![singlenode_linux_upgrade_online_tip2](./images/deploy_standalone/singlenode_linux_upgrade_online_tip2.png)
 
 输入 1 选择在线更新，并点击回车后会出现如下提示：
 
-![singlenode_linux_upgrade_online_tip3](images/deploy_standalone/singlenode_linux_upgrade_online_tip3.png)
+![singlenode_linux_upgrade_online_tip3](./images/deploy_standalone/singlenode_linux_upgrade_online_tip3.png)
 
 输入所需更新的版本号再点击回车即可，以更新至 2.00.9.1 版本为例，输入 2.00.9.1 后点击回车，出现如下界面则表示升级成功：
 
-![singlenode_linux_upgrade_online_success](images/deploy_standalone/singlenode_linux_upgrade_online_success.png)
+![singlenode_linux_upgrade_online_success](./images/deploy_standalone/singlenode_linux_upgrade_online_success.png)
 
 - 离线升级
 
@@ -257,7 +257,7 @@ cp -r local8848/storage/CHUNK_METADATA/ backup/CHUNK_METADATA
 
 将下载好的安装包上传至 */DolphinDB/server/clusterDemo* 目录下，以更新至 2.00.9.1 版本为例：
 
-![singlenode_linux_upgrade_offline_1](images/deploy_standalone/singlenode_linux_upgrade_offline_1.png)
+![singlenode_linux_upgrade_offline_1](./images/deploy_standalone/singlenode_linux_upgrade_offline_1.png)
 
 进入 */DolphinDB/server/clusterDemo* 目录执行以下 Shell 指令：
 
@@ -267,19 +267,19 @@ cp -r local8848/storage/CHUNK_METADATA/ backup/CHUNK_METADATA
 
 运行后将会出现如下提示：
 
-![singlenode_linux_upgrade_offline_2](images/deploy_standalone/singlenode_linux_upgrade_offline_2.png)
+![singlenode_linux_upgrade_offline_2](./images/deploy_standalone/singlenode_linux_upgrade_offline_2.png)
 
 输入 y 并点击回车后会出现如下提示：
 
-![singlenode_linux_upgrade_offline_3](images/deploy_standalone/singlenode_linux_upgrade_offline_3.png)
+![singlenode_linux_upgrade_offline_3](./images/deploy_standalone/singlenode_linux_upgrade_offline_3.png)
 
 输入 2 选择离线更新，并点击回车后会出现如下提示：
 
-![singlenode_linux_upgrade_offline_4](images/deploy_standalone/singlenode_linux_upgrade_offline_4.png)
+![singlenode_linux_upgrade_offline_4](./images/deploy_standalone/singlenode_linux_upgrade_offline_4.png)
 
 输入所需更新的版本号再点击回车即可，以更新至 2.00.9.1 版本为例，输入 2.00.9.1 后点击回车，出现如下界面则表示升级成功：
 
-![singlenode_linux_upgrade_offline_5](images/deploy_standalone/singlenode_linux_upgrade_offline_5.png)
+![singlenode_linux_upgrade_offline_5](./images/deploy_standalone/singlenode_linux_upgrade_offline_5.png)
 
 **第四步：重新启动单节点**
 
@@ -318,7 +318,7 @@ C:\DolphinDB\DolphinDB\server\local8848\storage\CHUNK_METADATA\
 然后把 *C:\DolphinDB\server\local8848* 文件夹下的 *dfsMeta* 文件及 *C:\DolphinDB\server\local8848\storage* 文件夹下的 *CHUNK_METADATA* 文件复制到上面创建的 *backup* 文件夹下，
 如下图所示：
 
-![singlenode_win_upgade_1](images/deploy_standalone/singlenode_win_upgade_1.png)
+![singlenode_win_upgade_1](./images/deploy_standalone/singlenode_win_upgade_1.png)
 
 > ❗️ 元数据文件可能通过配置文件指定存储在其它目录，如果在默认路径没有找到上述文件，可以通过查询配置文件中的 *dfsMetaDir* 参数和 *chunkMetaDir* 参数确认元数据文件的存储目录。若配置中未指定 *dfsMetaDir* 参数和 *chunkMetaDir* 参数，但是配置了 *volumes* 参数，*CHUNK_METADATA* 目录在相应的 *volumes* 参数指定的目录下。
 
@@ -393,7 +393,7 @@ DolphinDB 单节点默认启动端口是 8848，如果遇到无法启动 Dolphin
 
 DolphinDB 正常启动后，在浏览器输入正确的访问地址，但 Web 管理界面无法正常打开，如下图所示：
 
-![singlenode_faq_1](images/deploy_standalone/singlenode_faq_1.png)
+![singlenode_faq_1](./images/deploy_standalone/singlenode_faq_1.png)
 
 出现上述问题的原因通常是由于浏览器与 DolphinDB 不是部署在同一台服务器，
 且部署 DolphinDB 的服务器开启了防火墙。可以通过关闭部署了 DolphinDB 的服务器的防火墙或者打开对应的部署端口，解决这个问题。
@@ -438,7 +438,7 @@ cp -r backup/CHUNK_METADATA/ local8848/storage/CHUNK_METADATA
 
 如果遇到性能问题，请添加微信号 13306510479（仅用于添加微信）或扫描下面二维码，客服会邀您进群，由 DolphinDB 的技术支持工程师会解答您的问题。
 
-![singlenode_techsupport_qr](images/deploy_standalone/singlenode_techsupport_qr.png)
+![singlenode_techsupport_qr](./images/deploy_standalone/singlenode_techsupport_qr.png)
 
 ## 6. 参考
 

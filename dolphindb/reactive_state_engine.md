@@ -16,7 +16,7 @@ def sum_diff(x, y){
 ema(1000 * sum_diff(ema(price, 20), ema(price, 40)),10) -  ema(1000 * sum_diff(ema(price, 20), ema(price, 40)), 20)
 ```
 
-![image](./images/hf_factor_demo.png?raw=true)
+![image](./images/hf_factor_demo.png)
 
 面对此类场景，我们需要解决以下几个问题：
 

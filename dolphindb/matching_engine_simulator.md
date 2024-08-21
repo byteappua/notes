@@ -6,7 +6,7 @@
 
 模拟撮合引擎的主要功能是模拟用户在某个时间点发出订单或取消之前已发出订单的操作，并获取相应的交易结果。不同于DolphinDB Server内置的流数据引擎，模拟撮合引擎是以插件的形式提供服务，逻辑架构如下图所示。
 
-![images/MatchEngineSimulator/DM_20230922142321_001.png](images/MatchEngineSimulator/DM_20230922142321_001.png)
+![images/MatchEngineSimulator/DM_20230922142321_001.png](./images/MatchEngineSimulator/DM_20230922142321_001.png)
 
 模拟撮合引擎以行情（快照数据或逐笔数据）和用户委托订单（买方或卖方）作为输入，根据订单撮合规则模拟撮合，订单的成交结果（包含部分成交结果、拒绝订单和已撤订单）输出至交易明细输出表，未成交部分等待与后续行情撮合成交或者等待撤单。
 

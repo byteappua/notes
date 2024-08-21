@@ -3,6 +3,7 @@
 DolphinDB database 提供了强大、灵活、安全的权限控制系统。
 
 权限控制系统的主要功能：
+
 * 提供用户和组角色，方便权限控制
 * 提供多种权限控制类别，适应各种场景
 * 丰富的权限控制函数
@@ -11,21 +12,18 @@ DolphinDB database 提供了强大、灵活、安全的权限控制系统。
 * 使用 RSA 对用户关键信息加密
 * 支持 SSO，简化登录，方便系统扩展
 
-
-
-- [1. 权限概述](#1-权限概述)
-  - [1.1 角色](#11-角色)
-  - [1.2 用户权限确定规则](#12-用户权限确定规则)
-  - [1.3 权限类别](#13-权限类别)
-- [2. 权限操作](#2-权限操作)
-  - [2.1 分布式数据库](#21-分布式数据库)
-  - [2.2 共享内存表](#22-共享内存表)
-  - [2.4 其它应用](#24-其它应用)
-- [3. 使用HTTPS实现安全通信](#3-使用https实现安全通信)
-  - [3.1 使用 HTTPS 配置](#31-使用-https-配置)
-  - [3.2 HTTPS证书设置](#32-https证书设置)
-- [4. 支持 SSO (Single Sign On)](#4-支持-sso-single-sign-on)
-
+* [1. 权限概述](#1-权限概述)
+  * [1.1 角色](#11-角色)
+  * [1.2 用户权限确定规则](#12-用户权限确定规则)
+  * [1.3 权限类别](#13-权限类别)
+* [2. 权限操作](#2-权限操作)
+  * [2.1 分布式数据库](#21-分布式数据库)
+  * [2.2 共享内存表](#22-共享内存表)
+  * [2.4 其它应用](#24-其它应用)
+* [3. 使用HTTPS实现安全通信](#3-使用https实现安全通信)
+  * [3.1 使用 HTTPS 配置](#31-使用-https-配置)
+  * [3.2 HTTPS证书设置](#32-https证书设置)
+* [4. 支持 SSO (Single Sign On)](#4-支持-sso-single-sign-on)
 
 ## 1. 权限概述
 
@@ -50,18 +48,19 @@ DolphinDB 集群第一次启动时，会自动创建用户名为 "admin"，密�
 超级管理员可以创建其他用户，对用户进行分组，并选择是否设定为管理员。新创建的管理员、用户和组没有任何权限。管理员可以赋予或禁止其他管理员，用户和组的权限，撤销权限设置。管理员可以通过 [resetPwd](https://www.dolphindb.cn/cn/help/FunctionsandCommands/CommandsReferences/r/resetPwd.html) 修改用户的密码。
 
 管理员可使用的函数或命令有：
-  * `addGroupMember`： 添加组成员
-  * `createGroup`：创建组
-  * `createUser`：创建用户
-  * `deleteGroup` ：删除组
-  * `deleteGroupMember`：删除组成员
-  * `deleteUser`：删除用户
-  * `getGroupsByUserId`：根据用户编号得到组
-  * `getGroupList`：获取组列表
-  * `getUserAccess`：获取用户所单独被赋予的权限，不包括用户所属组的权限
-  * `getUsersByGroupId`：获取组的用户列表
-  * `getUserList`：获取除管理员之外的所有用户名
-  * `resetPwd`：重置用户的密码
+
+* `addGroupMember`： 添加组成员
+* `createGroup`：创建组
+* `createUser`：创建用户
+* `deleteGroup` ：删除组
+* `deleteGroupMember`：删除组成员
+* `deleteUser`：删除用户
+* `getGroupsByUserId`：根据用户编号得到组
+* `getGroupList`：获取组列表
+* `getUserAccess`：获取用户所单独被赋予的权限，不包括用户所属组的权限
+* `getUsersByGroupId`：获取组的用户列表
+* `getUserList`：获取除管理员之外的所有用户名
+* `resetPwd`：重置用户的密码
   具体用法请参考 [DolphinDB 用户手册](https://www.dolphindb.cn/cn/help/Introduction/index.html)。
 
 以下为超级管理员、管理员和普通用户的总结表：
@@ -106,14 +105,17 @@ grant("user1",TABLE_READ,"*")
 deny("group1",TABLE_READ,"dfs://db1/t1")  
 deny("group2",TABLE_READ,"dfs://db1/t2") 
 ```
+
 结果为，用户 user1 可以读取除"dfs://db1/t1" 和"dfs://db1/t2" 以外的所有数据表。
 
 在上例基础上继续进行权限的赋予与禁止，下例为用户不同所属组的权限发生冲突时：
+
 ```
 grant("user2",TABLE_WRITE,"*")  
 deny("group1",TABLE_WRITE,"*")  
 grant("group2",TABLE_WRITE,"dfs://db1/t2")
 ```
+
 以上三行的结果为，用户 user1 和 user2 不能写数据到任何数据表。
 
 ### 1.3 权限类别
@@ -126,20 +128,19 @@ DolphinDB 提供以下权限类别:
 4. TABLE_UPDATE：更新表中数据
 5. TABLE_DELETE：删除表中数据
 6. DBOBJ_CREATE：在数据库中创建数据表
-7. DBOBJ_DELETE：删除数据库中的数据表 
+7. DBOBJ_DELETE：删除数据库中的数据表
 8. DB_READ：读取数据库中所有表
 9. DB_WRITE：对数据库中所有表的写入权限（包含增删改操作）
 10. DB_INSERT：向数据库中所有表追加数据
 11. DB_UPDATE：更新数据库中所有表
 12. DB_DELETE：删除数据库中所有表
-13. VIEW_EXEC：执行视图 
+13. VIEW_EXEC：执行视图
 14. DB_MANAGE：赋予任意或指定数据库的管理权限，包括删除数据库、创建/删除/重命名数据表、增加/删除分区、增加/删除/重命名/替换列
-1.  DB_OWNER：创建数据库并管理其创建的数据库，包括删除其创建的数据库；在其创建的数据库下创建或删除数据表、增加或删除分区、增加/删除表的列、更改表名；赋予、禁止或取消其他用户对自己创建的数据库的以下权限：TABLE_READ, TABLE_WRITE, DBOBJ_CREATE, DBOBJ_DELETE
-2.  SCRIPT_EXEC：运行脚本文件 
-3.  TEST_EXEC：执行测试脚本
-4.  QUERY_RESULT_MEM_LIMIT：限制用户的查询内存大小
-5.  TASK_GROUP_MEM_LIMIT：限制用户发送的批量子查询占用的内存大小
-
+1. DB_OWNER：创建数据库并管理其创建的数据库，包括删除其创建的数据库；在其创建的数据库下创建或删除数据表、增加或删除分区、增加/删除表的列、更改表名；赋予、禁止或取消其他用户对自己创建的数据库的以下权限：TABLE_READ, TABLE_WRITE, DBOBJ_CREATE, DBOBJ_DELETE
+2. SCRIPT_EXEC：运行脚本文件
+3. TEST_EXEC：执行测试脚本
+4. QUERY_RESULT_MEM_LIMIT：限制用户的查询内存大小
+5. TASK_GROUP_MEM_LIMIT：限制用户发送的批量子查询占用的内存大小
 
 请注意，以上权限类别均适用于分布式（DFS）数据库和表；TABLE_READ 和 TABLE_WRITE 权限亦适用于共享内存表、流数据表与流数据引擎。
 
@@ -158,26 +159,37 @@ DolphinDB 提供以下权限类别:
 **例子1**
 
 管理员登录：
+
 ```
 login(`admin, `123456)
 ```
+
 创建用户 NickFoles：
+
 ```
 createUser("NickFoles","AB123!@")  
 ```
+
 赋予用户 NickFoles 可读任何 DFS 数据表的权限：
+
 ```
 grant("NickFoles",TABLE_READ,"*") 
 ```
+
 禁止用户 NickFoles 删除数据库：
+
 ```
 deny("NickFoles",DB_MANAGE)   
 ```
-创建 SBMVP 组，并且把用户 NickFoles 加入到该组： 
+
+创建 SBMVP 组，并且把用户 NickFoles 加入到该组：
+
 ```
 createGroup("SBMVP", "NickFoles")  
 ```
+
 赋予 SBMVP 组可在数据库"dfs://db1"和"dfs://db2"中创建数据表的权限：
+
 ```
 grant("SBMVP",DBOBJ_CREATE,["dfs://db1","dfs://db2"])    
 ```
@@ -187,6 +199,7 @@ grant("SBMVP",DBOBJ_CREATE,["dfs://db1","dfs://db2"])
 **例子2**
 
 通过组可以方便的设置用户权限:
+
 ```
 createUser("EliManning", "AB123!@")  
 createUser("JoeFlacco","CD234@#")  
@@ -201,18 +214,23 @@ grant("DeionSanders", DB_MANAGE)
 **例子3**
 
 可以使用 `grant` 或 `deny` 对所有对象(以\*代表)赋予或禁止权限。例如，赋予用户 JoeFlacco 可读任何 DFS 数据表的权限：
+
 ```
 grant("JoeFlacco",TABLE_READ,"*")  
 ```
+
 当 `grant` 或 `deny` 所有对象后，若要撤销操作，只能使用 `revoke` 撤销所有对象的权限，若只撤销某个指定对象的权限，则操作无效：  
+
 ```
 revoke("JoeFlacco",TABLE_READ,"dfs://db1/t1")
 ```
+
 以上命令无效。
 
 ```
 revoke("JoeFlacco",TABLE_READ,"*")
 ```
+
 以上命令取消了用户 JoeFlacco 可读任何 DFS 数据表的权限。
 
 与之类似，使用 `grant` 或 `deny` 对组赋予或禁止权限后，只能对该组使用 `revoke` 来取消该权限设置。若对某个组员使用 `revoke` 来取消该权限，则无法生效。
@@ -228,6 +246,7 @@ createUser(`CliffLee, "GH456$%")
 createUser(`MitchTrubisky, "JI3564^")
 grant(`MitchTrubisky,DB_OWNER);
 ```
+
 MitchTrubisky 创建数据表"dfs://dbMT/dt", 并赋予用户 CliffLee 读取该数据表的权限：
 
 ```
@@ -237,13 +256,14 @@ t=table(1..1000 as id, rand(100, 1000) as x)
 dt = db.createTable(t, "dt").append!(t)
 grant(`CliffLee, TABLE_READ, "dfs://dbMT/dt"); 
 ```
+
 尽管用户 CliffLee 之前没有被系统管理员赋予任何权限，但是 CliffLee 最后的权限为：可以访问 MitchTrubisky 创建的数据表"dfs://dbMT/dt"。
 
 ### 2.2 共享内存表
 
 共享内存表会被共享到所有会话中，因此也会有权限管理的需求。系统支持对共享内存表进行表写入和表读取的权限管理，语法与数据库表权限管理一致。
 
-创建管理员 MitchTrubisky 
+创建管理员 MitchTrubisky
 
 ```  
 createUser("MitchTrubisky","JI3564^",,true)
@@ -256,11 +276,13 @@ login(`MitchTrubisky, "JI3564^")
 share table(1:0, `time`sym`volume, [TIMESTAMP, SYMBOL, INT]) as st1
 grant("CliffLee", TABLE_READ, "st1")
 ```
+
 通过 `getUserAccess` 函数返回的 TABLE_READ_allowed 列可以看到，用户 CliffLee 至此已经拥有了表 st1 的读权限。
 
 ```
 getUserAccess("CliffLee")
 ```
+
 需要注意的是，在 MitchTrubisky 使用 `grant`（或 `deny`）函数进行权限管理之前，任何用户对该表都有读写权限。
 
 如上对该表进行过第一次权限操作之后，该表自动添加权限限制。此时只有管理员和表创建者 MitchTrubisky 对该表有读写权限。
@@ -279,6 +301,7 @@ addAccessControl(st2)
 ```
 
 ### 2.4 其它应用
+
 #### 2.4.1 函数视图(function view) <!-- omit in toc -->
 
 [函数视图](https://www.dolphindb.cn/cn/help/DatabaseandDistributedComputing/DatabaseOperations/FunctionView.html)提供了一种灵活的方式来控制用户访问数据库和表。在视图的基础上，函数视图提供了函数功能，可以同时访问数据库并进行相关计算。
@@ -291,28 +314,35 @@ addAccessControl(st2)
 在下例中，管理员定义一个函数视图 "countTradeAll"，并且赋予用户 NickFoles 执行视图 "countTradeAll" 的权限。
 
 管理员定义一个函数视图：  
+
 ```
 def countTradeAll(){  
-	return exec count(*) from loadTable("dfs://TAQ","Trades")  
+ return exec count(*) from loadTable("dfs://TAQ","Trades")  
 }
 addFunctionView(countTradeAll)  
 grant("NickFoles",VIEW_EXEC,"countTradeAll")  
 ```
+
 以用户名 NickFoles 登录，执行视图 "countTradeAll"
+
 ```
 countTradeAll()
 ```
+
 在此例中，虽然用户 NickFoles 没有访问表"dfs://TAQ/Trades"的权限，但是可以运行函数视图 "countTradeAll" 获取表的行数。
 
 函数视图也可以带参数。用户在使用的时候可以输入参数获取相应的结果。下面的例子，我们创建一个函数视图，获取某一个股票在某一天的所有交易记录。
+
 ```
 def getTrades(s, d){
-	return select * from loadTable("dfs://TAQ","Trades") where sym=s, date=d
+ return select * from loadTable("dfs://TAQ","Trades") where sym=s, date=d
 }
 addFunctionView(getTrades)
 grant("NickFoles",VIEW_EXEC,"getTrades")  
 ```
+
 同样在此例中，用户 NickFoles 没有访问表"dfs://TAQ/Trades"的权限，但是可以执行视图 “getTrades”，指定股票代码 IBM 和日期 2018.07.09，获得 IBM 在 2018.07.09 这一天的所有交易记录：
+
 ```
 getTrades("IBM", 2018.07.09)
 ```
@@ -324,8 +354,8 @@ getTrades("IBM", 2018.07.09)
 ```
 login("NickFoles","AB123!@")  
 def readTable(){  
-	read_t1=loadTable("dfs://db1","t1")  
-	return exec count(*) from read_t1  
+ read_t1=loadTable("dfs://db1","t1")  
+ return exec count(*) from read_t1  
 }  
 scheduleJob("readTableJob","read DFS table",readTable,minute(now()),date(now()),date(now())+1,'D');  
 ```
@@ -344,9 +374,9 @@ DolphinDB 支持使用 HTTPS 安全协议与 web 进行通信。
 
 两种配置 HTTPS 的方法：
 
-- 在控制节点的配置文件中添加 `enableHTTPS=true`
+* 在控制节点的配置文件中添加 `enableHTTPS=true`
 
-- 在启动控制节点的命令行添加 `-enableHTTPS true`
+* 在启动控制节点的命令行添加 `-enableHTTPS true`
 
 ### 3.2 HTTPS证书设置
 
@@ -361,28 +391,30 @@ DolphinDB 使用服务端证书验证的安全策略。默认情况下，会生�
 在小型封闭集群内部通信时，用户也可以使用自制证书进行 OPENSSL 安全通信，具体过程如下:
 
 > 1. 设置 publicName
-由于证书的生成需要知道计算机的域名，对需要生成证书的物理 server 设置该选项为计算机的域名，可以在命令行或配置文件中设置。下面是在 Linux 中启动控制节点的命令行例子。这里 www.ABCD.com 是控制节点所在计算机的域名。  
+由于证书的生成需要知道计算机的域名，对需要生成证书的物理 server 设置该选项为计算机的域名，可以在命令行或配置文件中设置。下面是在 Linux 中启动控制节点的命令行例子。这里 <www.ABCD.com> 是控制节点所在计算机的域名。  
+
 ```
 ./dolphindb -enableHTTPS true -home master -publicName www.ABCD.com -mode controller -localSite 192.168.1.30:8500:rh8500 -logFile  ./log/master.log
 ```
+>
 > 2. 查看证书是否正确生成  
 启动控制节点，在 home 目录下的 keys 文件夹中，查看是否有自制证书文件 *server.crt* 和私钥文件 *serverPrivate.key*。
 
 > 3. 安装自制证书到浏览器的授信证书中心  
 不同的浏览器安装选项稍有不同，以 Google Chrome 为例，选择 Settings->Advanced->Manage certificates->AUTHORITIES->Import，导入上面生成的 *server.crt* 文件。
 
-![](images/Selection_047.png)  
+![](./images/Selection_047.png)  
 
-在浏览器中输入 https://www.ABCD.com:8500/ 以访问集群管理器。若浏览器地址栏显示绿色的小锁，说明证书安装成功，可以进行 HTTPS 访问。
+在浏览器中输入 <https://www.ABCD.com:8500/> 以访问集群管理器。若浏览器地址栏显示绿色的小锁，说明证书安装成功，可以进行 HTTPS 访问。
 
-![](images/Selection_046.png)
+![](./images/Selection_046.png)
 
 ## 4. 支持 SSO (Single Sign On)
 
 在集群管理界面中，可以点击任意数据节点，链接到该节点的 notebook 上。从控制节点跳转到数据节点，有可能是访问了不同的物理服务器（跨域访问）。DolphinDB 提供了 SSO，使得用户无需重新登录。
 
 DolphinDB 提供两个用于 SSO 的 API 函数：
-+ `getAuthenticatedUserTicket()` 获取当前登录用户的加密 ticket
-+ `authenticateByTicket(ticket)` 使用上面获取的 ticket 登录系统
+* `getAuthenticatedUserTicket()` 获取当前登录用户的加密 ticket
+* `authenticateByTicket(ticket)` 使用上面获取的 ticket 登录系统
 
 DolphinDB 的开发者可以方便安全的使用这些接口来对系统进行扩展。

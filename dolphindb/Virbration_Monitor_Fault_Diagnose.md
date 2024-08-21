@@ -16,15 +16,15 @@ DolphinDB 是由浙江智臾科技有限公司研发的一款高性能分布式�
 
 ## 1. 边缘计算的挑战
 
-* **有限的计算资源：** 边缘设备通常具有有限的计算能力和存储容量，可能无法处理大规模或复杂的数据集。
-* **实时处理需求：** 一些应用场景需要在边缘设备上进行实时数据处理，如异常告警、实时指标计算等，这需要确保处理速度和响应时间都能够满足要求。
-* **数据同步与一致性：** 各边缘设备独立处理完本地数据后，需要将处理后的结果同步到一个汇总的云端设备中进行分析，因此数据的同步需要保障实时性及准确性。
+- **有限的计算资源：** 边缘设备通常具有有限的计算能力和存储容量，可能无法处理大规模或复杂的数据集。
+- **实时处理需求：** 一些应用场景需要在边缘设备上进行实时数据处理，如异常告警、实时指标计算等，这需要确保处理速度和响应时间都能够满足要求。
+- **数据同步与一致性：** 各边缘设备独立处理完本地数据后，需要将处理后的结果同步到一个汇总的云端设备中进行分析，因此数据的同步需要保障实时性及准确性。
 
 ## 2. DolphinDB 边缘计算架构
 
 本文将以一个案例介绍 DolphinDB 是如何解决上述边缘计算的难点。以下案例涉及边缘设备振动信号处理，DolphinDB 提供了一个完整的解决方案。接下来我们详细介绍基于 DolphinDB 实现边缘计算的整体架构。
 
-![img](images/Virbration_Monitor_Fault_Diagnose/2_1_Arch.png)
+![img](./images/Virbration_Monitor_Fault_Diagnose/2_1_Arch.png)
 
 上述架构中，将 DolphinDB 安装在边缘设备中。其通过 DolphinDB 流表接入传感器数据，并进行实时数据处理。处理内容包括：原始数据的降采样、异常数据录波、指标的计算等方面。通过流表的实时处理，避免了边缘端处理全量数据时的资源不足问题，同时也保证了计算结果的实时性。实时处理后的结果可通过DolphinDB 节点间的数据同步上传至 DolphinDB 云端进行后续的分析处理。
 
@@ -38,10 +38,10 @@ DolphinDB 是由浙江智臾科技有限公司研发的一款高性能分布式�
 
 将 DolphinDB 安装在主变震动监测和故障预警设备内（边端设备），使用 DolphinDB 在边端设备进行实时流数据处理，并将处理后的结果上传云端 DolphinDB，实现云边一体。在该场景中，DolphinDB 解决了以下实现难点：
 
-* 流计算引擎支持实时计算，解决了全量数据计算需要大量资源的问题。
-* 流数据引擎实现减量落盘和波形录制。
-* Signal 插件支持波形计算和傅里叶变换。
-* 通过向量化编程、Array vector 计算提高数据处理效率。
+- 流计算引擎支持实时计算，解决了全量数据计算需要大量资源的问题。
+- 流数据引擎实现减量落盘和波形录制。
+- Signal 插件支持波形计算和傅里叶变换。
+- 通过向量化编程、Array vector 计算提高数据处理效率。
 
 ### 3.3 方案实现
 
@@ -90,7 +90,7 @@ share streamTable(100:0, `datetime`source`wave_datatime <- (`d+string(0..255)),[
 
 数据处理部分包括了数据降采样、峰值趋势计算、异常检测和异常检测录波四部分内容。
 
-* 使用时间序列引擎，对原数据进行降采样
+- 使用时间序列引擎，对原数据进行降采样
 
 首先是对数据进行降采样，通过时间序列引擎，进行五分钟频率的降采样，降低边缘端的数据存储压力。
 
@@ -107,14 +107,14 @@ subscribeTable(tableName='wave5M',actionName='save5mToDFS',offset=0,handler=appe
 1. down_sampling 订阅 wave 流表，并将其注入时间序列引擎中进行降采样
 2. save5mToDFS 订阅 wave5M 流表，将降采样后数据存入分布式库表中
 
-* 使用时间序列引擎，计算每秒波形峰值
+- 使用时间序列引擎，计算每秒波形峰值
 
 此处我们仍然使用时间序列引擎，计算每秒的波形峰值，通过保留波形的峰值来记录数据的整体特征及趋势。
 
 ```
 //定义处理函数
 def metricCal(engineName,msg){
-	t = select datetime,source,rowMin(msg[,2:258]) as min,rowMax(msg[,2:258]) as max  from msg
+ t = select datetime,source,rowMin(msg[,2:258]) as min,rowMax(msg[,2:258]) as max  from msg
     getStreamEngine(engineName).append!(t)
 }
 //定义聚合规则
@@ -134,7 +134,7 @@ subscribeTable(tableName='stwave',actionName='savePeakToDFS',offset=0,handler=ap
 2. tsAgg1 引擎按秒聚合输出每秒波形数据的峰值，存储到 stwave 流表中。
 3. 最后订阅 stwave 表，将峰值趋势数据存入分布式数据库表。
 
-* 创建异常检测引擎，进行异常检测
+- 创建异常检测引擎，进行异常检测
   
 ```
 //创建异常检测引擎，检测规则 max>90, min<-90
@@ -147,7 +147,7 @@ subscribeTable(tableName='warn',actionName='saveWarnToDFS',offset=0,handler=appe
 
 创建异常检测引擎，并订阅峰值流表 stwave，将异常结果(max_wave > 90, min_wave <-90)输入异常记录表 warn 中，同时订阅 warn 表将异常数据存入分布式数据库表中。
 
-* 创建 windowjoin 引擎，订阅 warn 和 wave，录制异常波形
+- 创建 windowjoin 引擎，订阅 warn 和 wave，录制异常波形
 
 ```
 //创建 windowjoin 引擎，订阅 warn 和 wave，输出待存数据
@@ -177,7 +177,7 @@ wave5M= loadTable('dfs://waveDB5M','wave5M')
 select * from wave5M
 ```
 
-![img](images/Virbration_Monitor_Fault_Diagnose/3_1_Resample.png)
+![img](./images/Virbration_Monitor_Fault_Diagnose/3_1_Resample.png)
 
 查看峰值趋势表，每秒保留该通道的最大及最小值：
 
@@ -186,7 +186,7 @@ wave= loadTable('dfs://waveDB','wave')
 select * from wave
 ```
 
-![img](images/Virbration_Monitor_Fault_Diagnose/3_2_MaxMin.png)
+![img](./images/Virbration_Monitor_Fault_Diagnose/3_2_MaxMin.png)
 
 查看异常告警表输出：
 
@@ -195,7 +195,7 @@ warn= loadTable('dfs://warnDB','warn')
 select * from warn
 ```
 
-![img](images/Virbration_Monitor_Fault_Diagnose/3_3_Alarm.png)
+![img](./images/Virbration_Monitor_Fault_Diagnose/3_3_Alarm.png)
 
 波形录制表为根据异常告警表与原始数据表连接的结果，因此异常波形表的结果应与告警表一致：
 
@@ -204,14 +204,13 @@ alterWave= loadTable('dfs://alterWaveDB','alterWave')
 select max(wave_datatime),min(wave_datatime) from alterWave group by datetime,source
 ```
 
-![img](images/Virbration_Monitor_Fault_Diagnose/3_4_Result.png)
+![img](./images/Virbration_Monitor_Fault_Diagnose/3_4_Result.png)
 
 可以看到异常发生后的前后一秒的数据都被记录了下来。
 
 ## 4. 总结
 
 本教程从一个简单的边缘计算案例出发，基于 DolphinDB 的流计算框架，展示了如何在资源有限的边缘设备上实现实时、高效的边缘计算。通过这个案例，可以了解到 DolphinDB 在边缘计算领域的应用优势，并为大量边缘设备的数据管理、分析难题提供了一个有效的解决方案。同时，本教程所介绍的边缘计算案例也可作为一种参考，应用于其他类似场景，进一步拓展边缘计算的应用范围。
-
 
 ## 5. 附录
 

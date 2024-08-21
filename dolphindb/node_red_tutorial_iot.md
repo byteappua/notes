@@ -4,7 +4,7 @@ DolphinDB 是由浙江智臾科技有限公司研发的一款高性能分布式�
 
 为了进一步简化 DolphinDB 的使用方式，我们在 Node-RED 上构建了一个 DolphinDB 低代码平台。通过可视化编程工具，我们将 DolphinDB 的功能抽象成易于理解的节点，使操作流程更加清晰明了。这种可视化方式不仅提高了用户使用平台的便捷性，还大大降低了用户的学习门槛。即使用户不了解 DolphinDB 的编程语言，也能轻松完成各种操作。
 
-![images/node_red_iot/node_red_1.png](images/node_red_iot/node_red_1.png)
+![images/node_red_iot/node_red_1.png](./images/node_red_iot/node_red_1.png)
 
 在我们的低代码平台上，用户只需使用简单的拖拉拽操作，便能实现无模式写入、数据清洗、降采样、设备监控、异常监测等功能，从而让数据处理变得更加便捷高效。
 
@@ -22,15 +22,15 @@ DolphinDB 是由浙江智臾科技有限公司研发的一款高性能分布式�
 - [5. 总结](#5-总结)
 - [6. 附件](#6-附件)
 
-## 1. 关于 Node-RED 
+## 1. 关于 Node-RED
 
 Node-RED 是一个开源的可视化编程工具，它让连接、编排和自动化物联网设备、API 和在线服务变得非常简单。它使用户能够通过简单地拖拽和连接节点来创建应用程序，其中每个节点代表一个特定的功能或服务。你可以把它想象成一个拼图游戏，通过拖拽和连接不同的拼图，就可以创建出各种应用程序。
 
 举个例子，人们会希望在回家的路上就能开启空调，到家即享清凉。借助 Node-RED 可以轻松实现这个需求。通过简单地拖拽微信节点、消息处理节点和空调控制节点，然后连接设置它们，就能实现这个流程。这样，只需在微信上发送一条消息，就能控制家中空调的开关。
 
-![images/node_red_iot/node_red_2.png](images/node_red_iot/node_red_2.png "Node-RED平台")
+![images/node_red_iot/node_red_2.png](./images/node_red_iot/node_red_2.png "Node-RED平台")
 
-![images/node_red_iot/node_red_3.png](images/node_red_iot/node_red_3.png "在微信上发消息控制空调开关流程")
+![images/node_red_iot/node_red_3.png](./images/node_red_iot/node_red_3.png "在微信上发消息控制空调开关流程")
 
 Node-RED 是基于 Node.js 构建的，因此具有轻量化和高效的特点。它充分利用了 Node.js 的事件驱动和非阻塞模型，在网络边缘的低成本硬件（如 Raspberry Pi）和云中表现出色。这使得 Node-RED 成为一个非常适用于各种场景的工具。
 
@@ -46,45 +46,47 @@ Node-RED 的节点扩展库中包含了许多内置节点和功能，例如数�
 
 DolphinDB 低代码平台是一个基于 Node-RED 的 DolphinDB 功能可视化平台。具有强大的可扩展性，为用户提供了开发自定义功能节点的可能性。用户可以根据自身需求开发适合自己业务场景的功能节点，从而进一步增强平台的功能和适应性。
 
-![images/node_red_iot/node_red_4.png](images/node_red_iot/node_red_4.png "DolphinDB 低代码平台应用案例")
+![images/node_red_iot/node_red_4.png](./images/node_red_iot/node_red_4.png "DolphinDB 低代码平台应用案例")
 
 在案例介绍章节中，我们将介绍 DolphinDB 节点的开发方法，帮助用户更好地利用该低代码平台，实现更多个性化需求。
 
 本文所提供的 DolphinDB 低代码平台案例提供了十余个节点，划分为文件操作、数据清洗和 DolphinDB 功能节点三个类别。文件操作类别提供了数据加载节点，方便用户将本地文件加载到 DolphinDB 的内存表中。数据清洗类别则提供了格式转换、NULL 填充、数据去重和数据归一化等功能节点，帮助用户实现各种数据清洗操作。而在 DolphinDB 功能节点类别中，提供了数据入库、降采样、无模式写入、流表创建和流数据引擎等功能节点，使用户能够轻松使用 DolphinDB 的功能，而无需掌握其编程语言。
 
-![images/node_red_iot/node_red_5.png](images/node_red_iot/node_red_5.png "DolphinDB 低代码平台")
+![images/node_red_iot/node_red_5.png](./images/node_red_iot/node_red_5.png "DolphinDB 低代码平台")
 
 ### 2.2. 使用说明
 
 DolphinDB 低代码平台是基于 Node-RED 构建的，所以需先安装 Node-RED，Node-RED 的官方安装教程可参考：[Getting Started : Node-RED](https://nodered.org/docs/getting-started) 。在完成 Node-RED 的安装之后，可按以下步骤安装 DolphinDB 节点。
 
 1. 下载 DolphinDB 节点。下载附件中的 DolphinDB 节点 `node-red-contrib-dolphindb-main` 安装包。例如在下例中，下载并解压至 *D:\Node_Red_Project* 文件夹下，文件里的内容如下：
-    
-    ![images/node_red_iot/node_red_6.png](images/node_red_iot/node_red_6.png)
-    
+
+    ![images/node_red_iot/node_red_6.png](./images/node_red_iot/node_red_6.png)
+
 1. 将 DolphinDB 节点安装到 Node-RED 中。进入到 *.node-red* 目录（此目录应该在 *C:\Users\<用户名>* 目录下面），然后用 npm 安装 `node-red-contrib-dolphindb-main`。具体指令如下，  
-    
+
     其中 *D:\Node_Red_Project\node-red-contrib-dolphindb-main* 是 DolphinDB 节点安装包的下载路径。
 
     ```bash
     cd C:\Users\<用户名>\.node-red
     npm install D:\Node_Red_Project\node-red-contrib-dolphindb-main
     ```
+
     安装成功后会出现以下内容。
-    
-    ![images/node_red_iot/node_red_7.png](images/node_red_iot/node_red_7.png)
+
+    ![images/node_red_iot/node_red_7.png](./images/node_red_iot/node_red_7.png)
 
 1. 使用 DolphinDB 节点。在 cmd 中输入指令 `node-red` 以开启 Node-RED 服务。出现以下内容表示 Node-RED 服务启动成功。
 
-    ![images/node_red_iot/node_red_8.png](images/node_red_iot/node_red_8.png)
-    
+    ![images/node_red_iot/node_red_8.png](./images/node_red_iot/node_red_8.png)
+
 1. 打开网页 [http://localhost:1880](http://localhost:1880) 在左侧选项板中会出现 DolphinDB 节点，拖出来使用即可。
 
-    ![images/node_red_iot/node_red_9.png](images/node_red_iot/node_red_9.png)
-    
+    ![images/node_red_iot/node_red_9.png](./images/node_red_iot/node_red_9.png)
+
 ## 3. DolphinDB 低代码平台
 
 ### 3.1. 案例介绍
+
 #### 3.1.1. 数据处理流程
 
 在本文的 DolphinDB 低代码平台案例中，用户可以轻松地以拖拽的方式实现数据清洗流程。下文将介绍如何加载 CSV 文件中的数据，对其进行数据清洗，最后将清洗后的数据存入 DolphinDB 数据库。
@@ -118,18 +120,18 @@ DolphinDB 低代码平台是基于 Node-RED 构建的，所以需先安装 Node-
 1. 将 inject，加载文件，格式转换，null 填充，去重，数据归一化和数据入库节点拖拽到工作区中
 1. 按照数据清洗的逻辑顺序将节点连接起来。
 
-    ![images/node_red_iot/node_red_10.png](images/node_red_iot/node_red_10.png "数据清洗流程")
+    ![images/node_red_iot/node_red_10.png](./images/node_red_iot/node_red_10.png "数据清洗流程")
 
 1. 点击节点，对节点进行相应的参数配置。
 
-    ![images/node_red_iot/node_red_11.png](images/node_red_iot/node_red_11.png "数据加载节点的编辑页面")
+    ![images/node_red_iot/node_red_11.png](./images/node_red_iot/node_red_11.png "数据加载节点的编辑页面")
 
-    ![images/node_red_iot/node_red_12.png](images/node_red_iot/node_red_12.png "数据归一化节点的编辑页面")
+    ![images/node_red_iot/node_red_12.png](./images/node_red_iot/node_red_12.png "数据归一化节点的编辑页面")
 
 1. 点击工作区右上角的 **部署** 按钮。
 1. 点击时间戳节点，触发流程启动。随后可在 DolphinDB 数据库中查看经过清洗之后的数据。
 
-    ![images/node_red_iot/node_red_13.png](images/node_red_iot/node_red_13.png "DolphinDB 数据库中经过清洗之后的数据")
+    ![images/node_red_iot/node_red_13.png](./images/node_red_iot/node_red_13.png "DolphinDB 数据库中经过清洗之后的数据")
 
 #### 3.1.2. 无模式写入
 
@@ -143,13 +145,13 @@ DolphinDB 低代码平台是基于 Node-RED 构建的，所以需先安装 Node-
 1. 将两个节点连接起来
 1. 点击节点，进行参数设置。在 Mqtt In 节点中设置服务端和消息主题，在无模式写入节点中设置数据库名称。
 
-    ![images/node_red_iot/node_red_14.png](images/node_red_iot/node_red_14.png)
-    ![images/node_red_iot/node_red_15.png](images/node_red_iot/node_red_15.png)
+    ![images/node_red_iot/node_red_14.png](./images/node_red_iot/node_red_14.png)
+    ![images/node_red_iot/node_red_15.png](./images/node_red_iot/node_red_15.png)
 
 1. 点击部署按钮。
 
-    ![images/node_red_iot/node_red_16.png](images/node_red_iot/node_red_16.png)
-    
+    ![images/node_red_iot/node_red_16.png](./images/node_red_iot/node_red_16.png)
+
 之后就可以向 mqtt 发消息，实现无模式写入。无模式写入中，在向 mqtt 发消息时，需要按照一定的格式要求，发送消息。这里发送多条类似以下内容的消息给 mqtt。
 
 ```
@@ -165,9 +167,10 @@ DolphinDB 低代码平台是基于 Node-RED 构建的，所以需先安装 Node-
   "time": "2023-07-22 15:53:08"
 }
 ```
+
 如果运行成功，DolphinDB 中将出现名为 "Mqtt_DDB" 的数据库，并且数据库会不断接收来自 "Mqtt" 的消息。
 
-![images/node_red_iot/node_red_17.png](images/node_red_iot/node_red_17.png)
+![images/node_red_iot/node_red_17.png](./images/node_red_iot/node_red_17.png)
 
 ## 4. DolphinDB 节点开发方法
 
@@ -228,10 +231,11 @@ DolphinDB 的安装包中包含核心文件 *dolphindb.html* 和 *dolphindb.js*�
             }
         });
     ```
+
 1. DolphinDB 节点构造：
-    
+
     a. 节点构造函数。节点由构造函数定义，该函数可用于创建节点的新实例。该函数传递一个包含流编辑器中设置的属性的对象。它必须做的第一件事是调用该 `RED.nodes.createNode` 函数来初始化所有节点共享的特征，然后就可以执行特定于节点的代码。
-        
+
       ```python
         //构造函数
         function DolphinDBNode(config) {
@@ -246,6 +250,7 @@ DolphinDB 的安装包中包含核心文件 *dolphindb.html* 和 *dolphindb.js*�
         //注册节点
         RED.nodes.registerType("DolphinDB",DolphinDBNode);
       ```
+
       b. 接收消息。节点注册该事件的侦听器 input，以接收来自流中上游节点的消息。一旦收到消息，就执行相应的功能。
 
     ```python
@@ -253,7 +258,7 @@ DolphinDB 的安装包中包含核心文件 *dolphindb.html* 和 *dolphindb.js*�
         //执行功能
     });
     ```
-    
+
 1. 函数语句。在 JavaScript 中，我们使用 `eval()` 函数来执行 DolphinDB 脚本。一般来说，我们将 DolphinDB 脚本分为函数 `func` 和函数调用 `funcall` 两个部分，然后将它们拼接在一起，并调用 `eval()` 函数来执行 DolphinDB 脚本。
 
     ```python
@@ -264,7 +269,7 @@ DolphinDB 的安装包中包含核心文件 *dolphindb.html* 和 *dolphindb.js*�
     var secipt=func+funcall
     const result = await ddb.eval(script)
     ```
-    
+
 ### 4.2. 案例
 
 最后，我们以数据归一化节点为例，来介绍 DolphinDB 节点的功能实现代码。

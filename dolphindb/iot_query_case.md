@@ -46,6 +46,7 @@
 使用 DolphinDB TSDB 引擎，创建一个名为 NoiseDB 的数据库，存储噪声数据。TSDB 引擎是 DolphinDB 自 2.00 版本起，专门为物联网场景设计研发的数据存储引擎，具备优秀的写入和序列查询性能。
 
 在噪声监控的 SaaS 服务中，较为频繁的查询场景是以租户为维度，查询某一天某个设备的状态信息。因此设计 noise 表按日期、租户 ID 进行分区，可以有效利用[分区剪枝](https://www.dolphindb.cn/cn/help/130/DatabaseandDistributedComputing/DatabaseOperations/Queries.html)。同时使用区分度较高的设备 ID 和数据采集时间戳作为排序键（查询索引），使查询时能够快速定位对应设备的数据，提升查询性能。具体实现脚本如下。
+
 ```python
 db1 = database(,VALUE,1000..2000) 
 db2  = database(, VALUE, 2022.01.01..2022.12.30) 
@@ -68,6 +69,7 @@ sortColumns=[`deviceId,`ts]
 库表创建完成后，模拟 2022-01-01 至 2022-01-12 的数据，具体代码详见附录 [DolphinDB 脚本](script/iot_query_case/Noise_V3.dos)。
 
 可以通过 SQL 查询验证下数据集大小：
+
 ```
 select count(*) from  loadTable(database("dfs://NoiseDB"),"noise") where date between 2022.01.01:2022.01.102> 1260010000
 ```
@@ -88,6 +90,7 @@ for (x in chunkIds) {
 在 DolphinDB 中，可以使用 SQL 快速实现 4 个设备状态查询需求，并且代码十分简洁。
 
 - 案例 1：查询某个设备最近的 100 条记录：
+
 ```python
 noise = loadTable(database("dfs://NoiseDB"),"noise")
 select * from noise 
@@ -186,7 +189,7 @@ CPU: 2 cores
 
 由于端到端的时间，容易受到网络抖动和客户端实现性能的影响，因此本次测试的测量时间设定为从查询引擎接收到请求至计算出结果为止。
 
-![img](images/iot_query_case/time.png)
+![img](./images/iot_query_case/time.png)
 
 ### 4.2 测试结果
 

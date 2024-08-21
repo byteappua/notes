@@ -46,7 +46,7 @@ NODE_1 guest 12c0be95-e1... unknown unknown 4     2           2020.03.07T20:42:0
 
 另一种方法是在web集群管理器上查看作业。从1.30.16版本起，DolphinDB在web集群管理界面上增加了作业管理功能，支持查看和取消作业。如下图所示，点击左侧边栏中的作业管理后，右边界面会显示运行中的同步作业、已提交的批处理和定时作业。点击同步作业的 `+`,可显示同步作业的详细信息，点击`停止`，可取消作业。
 
-![image](./images/manageJobOnWeb.png?raw=true)
+![image](./images/manageJobOnWeb.png)
 
 ### 1.3 同步作业的取消
 

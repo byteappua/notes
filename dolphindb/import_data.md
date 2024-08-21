@@ -366,7 +366,7 @@ tb.append!(data);
 
 每个文件的结构都是一致的，如图所示：
 
-![csvfile](images/csvfile.PNG?raw=true)
+![csvfile](./images/csvfile.PNG)
 
 ### 6.1. 分区规划
 
@@ -391,8 +391,8 @@ yearRange = date(2008.01M + 12*0..22);
 symbols = array(SYMBOL, 0, 100)
 yearDirs = files(rootDir)[`filename]
 for(yearDir in yearDirs){
-	path = rootDir + "/" + yearDir
-	symbols.append!(files(path)[`filename].upper().strReplace(".CSV",""))
+ path = rootDir + "/" + yearDir
+ symbols.append!(files(path)[`filename].upper().strReplace(".CSV",""))
 }
 symbols = symbols.distinct().sort!().append!("999999");
 symRanges = symbols.cutPoints(100)
@@ -425,11 +425,11 @@ datetimeParse(format(time,"000000000"),"HHmmssSSS")
 
 ```txt
 def loadCsvFromYearPath(path, dbPath, tableName){
-	symbols = files(path)[`filename]
-	for(sym in symbols){
-		filePath = path + "/" + sym
-		t=loadText(filePath)
-		database(dbPath).loadTable(tableName).append!(select symbol, exchange,cycle, tradingDay,date,datetimeParse(format(time,"000000000"),"HHmmssSSS"),open,high,low,close,volume,turnover,unixTime from t )
+ symbols = files(path)[`filename]
+ for(sym in symbols){
+  filePath = path + "/" + sym
+  t=loadText(filePath)
+  database(dbPath).loadTable(tableName).append!(select symbol, exchange,cycle, tradingDay,date,datetimeParse(format(time,"000000000"),"HHmmssSSS"),open,high,low,close,volume,turnover,unixTime from t )
     }
 }
 ```
@@ -441,11 +441,11 @@ nodesAlias="NODE" + string(1..4)
 years= files(rootDir)[`filename]
 
 index = 0;
-for(year in years){	
-	yearPath = rootDir + "/" + year
-	des = "loadCsv_" + year
-	rpc(nodesAlias[index%nodesAlias.size()],submitJob,des,des,loadCsvFromYearPath,yearPath,dbPath,`stockData)
-	index=index+1
+for(year in years){ 
+ yearPath = rootDir + "/" + year
+ des = "loadCsv_" + year
+ rpc(nodesAlias[index%nodesAlias.size()],submitJob,des,des,loadCsvFromYearPath,yearPath,dbPath,`stockData)
+ index=index+1
 }
 ```
 

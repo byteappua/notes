@@ -11,14 +11,14 @@ ETL (Extraction-Transformation-Loading) 是商业智能、数据仓库以及数�
 - [从4.5小时到3.5分钟，如何利用 DolphinDB 高效清洗数据](#从45小时到35分钟如何利用-dolphindb-高效清洗数据)
 - [1 场景简述与数据准备](#1-场景简述与数据准备)
 - [2 常规思路](#2-常规思路)
-	- [2.1 优化前的代码](#21-优化前的代码)
-	- [2.2 性能瓶颈分析](#22-性能瓶颈分析)
+ 	- [2.1 优化前的代码](#21-优化前的代码)
+ 	- [2.2 性能瓶颈分析](#22-性能瓶颈分析)
 - [3 如何优化](#3-如何优化)
-		- [3.1 降低问题空间复杂度](#31-降低问题空间复杂度)
-		- [3.2 提高处理速度](#32-提高处理速度)
+  - [3.1 降低问题空间复杂度](#31-降低问题空间复杂度)
+  - [3.2 提高处理速度](#32-提高处理速度)
 - [4 优化的实现](#4-优化的实现)
-	- [4.1 优化后的代码](#41-优化后的代码)
-	- [4.2 优势分析](#42-优势分析)
+ 	- [4.1 优化后的代码](#41-优化后的代码)
+ 	- [4.2 优势分析](#42-优势分析)
 - [5 总结](#5-总结)
 - [6 附录](#6-附录)
 
@@ -39,7 +39,7 @@ ETL (Extraction-Transformation-Loading) 是商业智能、数据仓库以及数�
 | sellorderid | INT       | 卖单ID    |
 | unix        | TIMESTAMP | unix时间戳 |
 
-![img](images/data_etl/ETL.png)
+![img](./images/data_etl/ETL.png)
 
 根据业务团队需求，我们要基于这份逐笔成交数据，转化字段类型，增加股票后缀、交易金额、交易类型，过滤交易失败记录等。这一过程涉及大量的历史数据处理，处理的数据集规模十分庞大（以深交所逐笔成交数据为例，压缩前一年的存储大小为1.7 T），这就要求 ETL 处理程序具备高性能。
 
@@ -62,7 +62,7 @@ ETL (Extraction-Transformation-Loading) 是商业智能、数据仓库以及数�
   - OS：64 位 CentOS Linux 7 (Core)
 - DolphinDB server 部署
   - 服务器版本：2.00.6
-  - 服务器部署模式：高可用集群（数据节点 * 3，控制节点 * 3）
+  - 服务器部署模式：高可用集群（数据节点 *3，控制节点* 3）
 
 # 2 常规思路
 
@@ -90,23 +90,23 @@ def genDataV1(date1, dateN){
     tradeTgt = loadTable("dfs://formatData", "trade")
     for (aDate in date1..dateN){
         tradeSecurityID = (exec distinct(securityID) from tradeSrc where tradingdate = aDate).shuffle()
-        for (m in tradeSecurityID){		
-		    tradingdf = select  * from tradeSrc where securityID = m and tradingdate = aDate    
-		    tradingdf["symbol"] = m + "SZ"        
-		    //print("stock " + m + ",date is " + aDate + ",tradingdf size " + tradingdf.size())  
-		    tradingdf["buysellflag"] =iif(tradingdf["sellorderid"] > tradingdf["buyorderid"],"S", "B")
-		    tradingdf["tradeamount"] = tradingdf["tradevolume"] * tradingdf["tradeprice"]
-		    tradingdf = tradingdf[(tradingdf["tradetype"] == "0") || (tradingdf["tradetype"] == "F")]
-		    tradingdf = select symbol,tradingdate, tradingtime, recid, tradeprice, tradevolume, tradeamount, buyorderid, sellorderid, buysellflag, unix from tradingdf
-		    tradingdf = select * from tradingdf order by symbol, tradingtime, recid     
-		    tradingdf.replaceColumn!("tradingdate", toIntDate(::date(tradingdf.tradingDate)))            
-		    tradingtime = string(exec tradingtime from tradingdf)
-		    tradingdf.replaceColumn!(`tradingtime, tradingtime)
-		    unix = long(exec unix from tradingdf)
-		    tradingdf.replaceColumn!(`unix, unix)                                             
-		    tradeTgt.append!(tradingdf)	      		
+        for (m in tradeSecurityID){  
+      tradingdf = select  * from tradeSrc where securityID = m and tradingdate = aDate    
+      tradingdf["symbol"] = m + "SZ"        
+      //print("stock " + m + ",date is " + aDate + ",tradingdf size " + tradingdf.size())  
+      tradingdf["buysellflag"] =iif(tradingdf["sellorderid"] > tradingdf["buyorderid"],"S", "B")
+      tradingdf["tradeamount"] = tradingdf["tradevolume"] * tradingdf["tradeprice"]
+      tradingdf = tradingdf[(tradingdf["tradetype"] == "0") || (tradingdf["tradetype"] == "F")]
+      tradingdf = select symbol,tradingdate, tradingtime, recid, tradeprice, tradevolume, tradeamount, buyorderid, sellorderid, buysellflag, unix from tradingdf
+      tradingdf = select * from tradingdf order by symbol, tradingtime, recid     
+      tradingdf.replaceColumn!("tradingdate", toIntDate(::date(tradingdf.tradingDate)))            
+      tradingtime = string(exec tradingtime from tradingdf)
+      tradingdf.replaceColumn!(`tradingtime, tradingtime)
+      unix = long(exec unix from tradingdf)
+      tradingdf.replaceColumn!(`unix, unix)                                             
+      tradeTgt.append!(tradingdf)         
         }
-	}
+ }
 }
 ```
 
@@ -200,37 +200,37 @@ DolphinDB 可以使用多个服务器构建一个水平扩展的分布式集群�
 
 按天批量处理所有股票数据，DolphinDB 会将这一天20个分区内的3000个股票的数据，生成20个子任务并行处理，自动调度至集群中的各个节点，进行分布式计算。
 
-![img](images/data_etl/distribute.png)
+![img](./images/data_etl/distribute.png)
 
 优化后代码如下：
 
 ```python
 def transformData(tradeDate){
-	tradeSrc = loadTable("dfs://originData", "trade")
-	tradeTgt = loadTable("dfs://formatData", "trade")
-	data = select 
-		securityID + "SZ" as securityID
-		,toIntDate(tradingdate) as  tradingdate
-		,tradingtime$STRING as tradingtime
-		,recid as recid 
-		,tradeprice
-		,tradevolume
-		,tradevolume * tradeprice as tradeamount     	
-		,buyorderid as buyrecid
-		,sellorderid as sellrecid
-		,iif(sellorderid>  buyorderid,"S", "B") as buysellflag    	
-		,unix$LONG as unix
-	from tradeSrc
-	where tradingdate = tradeDate and tradetype in ["0", "F"]
-	tradeTgt.append!(data)
-	pnodeRun(flushOLAPCache)
+ tradeSrc = loadTable("dfs://originData", "trade")
+ tradeTgt = loadTable("dfs://formatData", "trade")
+ data = select 
+  securityID + "SZ" as securityID
+  ,toIntDate(tradingdate) as  tradingdate
+  ,tradingtime$STRING as tradingtime
+  ,recid as recid 
+  ,tradeprice
+  ,tradevolume
+  ,tradevolume * tradeprice as tradeamount      
+  ,buyorderid as buyrecid
+  ,sellorderid as sellrecid
+  ,iif(sellorderid>  buyorderid,"S", "B") as buysellflag     
+  ,unix$LONG as unix
+ from tradeSrc
+ where tradingdate = tradeDate and tradetype in ["0", "F"]
+ tradeTgt.append!(data)
+ pnodeRun(flushOLAPCache)
 }
 
 allDays = 2022.05.01..2022.05.20
 for(aDate in allDays){
-	jobId = "transform_"+ strReplace(aDate$STRING, ".", "")	
-	jobDesc = "transform data"
-	submitJob(jobId, jobDesc, transformData, aDate)
+ jobId = "transform_"+ strReplace(aDate$STRING, ".", "") 
+ jobDesc = "transform data"
+ submitJob(jobId, jobDesc, transformData, aDate)
 }
 
 ```
@@ -249,7 +249,7 @@ for(aDate in allDays){
 
 所有的处理逻辑，包括过滤数据、类型转换、增加派生字段，通过一次 read 即可完成，无需反复读取数据和对数据进行转换。
 
-![img](images/data_etl/rtt.png)
+![img](./images/data_etl/rtt.png)
 
 - 向量化
 
@@ -277,7 +277,7 @@ OLAP 引擎采用列式存储，一列数据读取到内存中以 vector 形式�
 
 - [分区数据库设计和操作](https://gitee.com/dolphindb/Tutorials_CN/blob/master/database.md)
 
-- [从一次SQL查询的全过程看DolphinDB的线程模型](https://gitee.com/dolphindb/Tutorials_CN/blob/master/thread_model_SQL.md) 
+- [从一次SQL查询的全过程看DolphinDB的线程模型](https://gitee.com/dolphindb/Tutorials_CN/blob/master/thread_model_SQL.md)
 
 - [DolphinDB SQL执行计划教程](https://gitee.com/dolphindb/Tutorials_CN/blob/master/DolphinDB_Explain.md)
 

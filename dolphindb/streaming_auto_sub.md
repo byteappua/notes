@@ -2,7 +2,7 @@
 
 DolphinDB 内置的流数据框架支持流数据的发布、订阅、预处理、实时内存计算、复杂指标的滚动窗口计算等，是一个运行高效、使用便捷的流数据处理框架。
 
-![01.流数据处理框架](images/streaming_auto_sub/streaming_structure.png)
+![01.流数据处理框架](./images/streaming_auto_sub/streaming_structure.png)
 
 本教程主要解决基于 DolphinDB 流数据处理框架完成业务代码开发后，如何部署节点启动时的流计算自动订阅问题。
 
@@ -20,7 +20,7 @@ DolphinDB 内置的流数据框架支持流数据的发布、订阅、预处理�
 
 上述业务在 DolphinDB 中的处理流程如下图所示：
 
-![02.业务处理流程图](images/streaming_auto_sub/business_process.png)
+![02.业务处理流程图](./images/streaming_auto_sub/business_process.png)
 
 处理流程图说明：
 
@@ -40,7 +40,7 @@ DolphinDB 内置的流数据框架支持流数据的发布、订阅、预处理�
 
 DolphinDB 系统的启动流程如下图所示：
 
-![03.DolphinDB系统启动流程](images/streaming_auto_sub/system_startup.png)
+![03.DolphinDB系统启动流程](./images/streaming_auto_sub/system_startup.png)
 
 * 系统初始化脚本（dolphindb.dos）
 
@@ -153,7 +153,7 @@ login("admin", "123456")
 
 可以在右下角的变量栏观察到持久化流表 snapshotStream、snapshotStreamProcess、snapshotAggr1min 已经成功定义加载：
 
-![04.变量栏](images/streaming_auto_sub/variable_bar.png)
+![04.变量栏](./images/streaming_auto_sub/variable_bar.png)
 
 执行流数据发布表订阅状信息询函数：
 
@@ -163,7 +163,7 @@ getStreamingStat().pubTables
 
 返回所有订阅信息：
 
-![05.订阅信息](images/streaming_auto_sub/subscription_information.png)
+![05.订阅信息](./images/streaming_auto_sub/subscription_information.png)
 
 执行响应式状态引擎信息询函数：
 
@@ -173,7 +173,7 @@ getStreamEngineStat().ReactiveStreamEngine
 
 返回信息：
 
-![06.响应式状态引擎查询信息](images/streaming_auto_sub/reactive_state_engine_query_information.png)
+![06.响应式状态引擎查询信息](./images/streaming_auto_sub/reactive_state_engine_query_information.png)
 
 执行时间序列引擎信息询函数：
 
@@ -183,7 +183,7 @@ getStreamEngineStat().TimeSeriesEngine
 
 返回信息：
 
-![07.时间序列引擎查询信息](images/streaming_auto_sub/time_series_engine_query_information.png)
+![07.时间序列引擎查询信息](./images/streaming_auto_sub/time_series_engine_query_information.png)
 
 此时，只需要将实时 Level2 的股票快照数据通过 API 写入流数据表 snapshotStream，就会按照上述的业务处理逻辑对流数据进行实时处理。
 
@@ -209,7 +209,7 @@ select * from snapshotAggr1min where SecurityID="000001.SZ"
 
 查询结果返回至客户端：
 
-![08.查询结果](images/streaming_auto_sub/query_result.png)
+![08.查询结果](./images/streaming_auto_sub/query_result.png)
 
 同时可以执行下述代码，查询写入数据库的持久化数据的条数：
 
@@ -219,11 +219,11 @@ select count(*) from loadTable("dfs://snapshot", "snapshot")
 
 查询结果返回至客户端：
 
-![09.数据库查询结果](images/streaming_auto_sub/database_query_result.png)
+![09.数据库查询结果](./images/streaming_auto_sub/database_query_result.png)
 
 观察下图后可知，本次回放的 snapshot 内存表的数据条数是 24909 条，说明写入 snapshotStream 流数据表的所有数据全部被写入数据库完成了数据持久化，未发生数据丢失。
 
-![10.snapshot内存表](images/streaming_auto_sub/napshot_inmemeory_table.png)
+![10.snapshot内存表](./images/streaming_auto_sub/napshot_inmemeory_table.png)
 
 ## 5. 总结
 
@@ -234,4 +234,3 @@ select count(*) from loadTable("dfs://snapshot", "snapshot")
 [业务代码](script/streaming_auto_sub/startup.dos)
 
 [csv 文本文件](data/streaming_auto_sub/stockData.csv)
-

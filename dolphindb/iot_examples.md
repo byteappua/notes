@@ -3,43 +3,43 @@
 本教程介绍物联网领域 DolphinDB 用户在安装部署、分布式数据库设计、数据写入和查询、流计算和高可用测试等过程中的常见问题、相应的解决方案与注意事项，以帮助新用户快速入门。
 
 - [1. 快速体验](#1-快速体验)
- 	- [1.1 安装部署单节点服务](#11-安装部署单节点服务)
- 	- [1.2 测试 GUI 和 Web 连接](#12-测试-gui-和-web-连接)
- 	- [1.3 使用脚本建库建表](#13-使用脚本建库建表)
- 	- [1.4 数据库增删改查](#14-数据库增删改查)
- 	- [1.5  Grafana 连接 DolphinDB](#15--grafana-连接-dolphindb)
- 	- [1.6 DolphinDB 与其他数据库异同点小结](#16-dolphindb-与其他数据库异同点小结)
+  - [1.1 安装部署单节点服务](#11-安装部署单节点服务)
+  - [1.2 测试 GUI 和 Web 连接](#12-测试-gui-和-web-连接)
+  - [1.3 使用脚本建库建表](#13-使用脚本建库建表)
+  - [1.4 数据库增删改查](#14-数据库增删改查)
+  - [1.5  Grafana 连接 DolphinDB](#15--grafana-连接-dolphindb)
+  - [1.6 DolphinDB 与其他数据库异同点小结](#16-dolphindb-与其他数据库异同点小结)
 - [2. 分布式数据库设计和测试](#2-分布式数据库设计和测试)
- 	- [2.1 DolphinDB 存储引擎](#21-dolphindb-存储引擎)
- 	- [2.2 单值模型](#22-单值模型)
- 	- [2.3 多值模型](#23-多值模型)
- 	- [2.4 使用脚本生成测试数据](#24-使用脚本生成测试数据)
+  - [2.1 DolphinDB 存储引擎](#21-dolphindb-存储引擎)
+  - [2.2 单值模型](#22-单值模型)
+  - [2.3 多值模型](#23-多值模型)
+  - [2.4 使用脚本生成测试数据](#24-使用脚本生成测试数据)
 - [3. 历史数据查询](#3-历史数据查询)
- 	- [3.1 趋势查询](#31-趋势查询)
- 	- [3.2 对比查询](#32-对比查询)
- 	- [3.3 分组查询 top N](#33-分组查询-top-n)
- 	- [3.4 关联查询](#34-关联查询)
- 	- [3.5 降精度](#35-降精度)
- 	- [3.6 插值查询](#36-插值查询)
- 	- [3.7 去重](#37-去重)
- 	- [3.8 函数视图](#38-函数视图)
- 	- [3.9 API 查询数据](#39-api-查询数据)
+  - [3.1 趋势查询](#31-趋势查询)
+  - [3.2 对比查询](#32-对比查询)
+  - [3.3 分组查询 top N](#33-分组查询-top-n)
+  - [3.4 关联查询](#34-关联查询)
+  - [3.5 降精度](#35-降精度)
+  - [3.6 插值查询](#36-插值查询)
+  - [3.7 去重](#37-去重)
+  - [3.8 函数视图](#38-函数视图)
+  - [3.9 API 查询数据](#39-api-查询数据)
 - [4.  生产数据写入](#4--生产数据写入)
- 	- [4.1 java API](#41-java-api)
- 	- [4.2 c# API](#42-c-api)
- 	- [4.3 Python API](#43-python-api)
- 	- [4.4 C++ API](#44-c-api)
- 	- [4.5 提升写入性能](#45-提升写入性能)
- 	- [4.6 提升数据压缩比](#46-提升数据压缩比)
+  - [4.1 java API](#41-java-api)
+  - [4.2 c# API](#42-c-api)
+  - [4.3 Python API](#43-python-api)
+  - [4.4 C++ API](#44-c-api)
+  - [4.5 提升写入性能](#45-提升写入性能)
+  - [4.6 提升数据压缩比](#46-提升数据压缩比)
 - [5. 实时数据和流计算](#5-实时数据和流计算)
- 	- [5.1 数据写入流表](#51-数据写入流表)
- 	- [5.2 使用内置计算引擎](#52-使用内置计算引擎)
- 	- [5.3 自定义计算引擎](#53-自定义计算引擎)
+  - [5.1 数据写入流表](#51-数据写入流表)
+  - [5.2 使用内置计算引擎](#52-使用内置计算引擎)
+  - [5.3 自定义计算引擎](#53-自定义计算引擎)
 - [6. 高可用测试](#6-高可用测试)
- 	- [6.1 数据高可用测试](#61-数据高可用测试)
- 	- [6.2 元数据高可用测试](#62-元数据高可用测试)
- 	- [6.3 跨机房容灾](#63-跨机房容灾)
- 	- [6.4 数据备份和恢复](#64-数据备份和恢复)
+  - [6.1 数据高可用测试](#61-数据高可用测试)
+  - [6.2 元数据高可用测试](#62-元数据高可用测试)
+  - [6.3 跨机房容灾](#63-跨机房容灾)
+  - [6.4 数据备份和恢复](#64-数据备份和恢复)
 
 ## 1. 快速体验
 
@@ -70,7 +70,7 @@ localSite=localhost:8900:local8900
 ```
 
 启动后出现如下界面。然后在 Console 中输入`1+1;`，若输出 2，即安装成功。
-![image](./images/iotExam/serverStarted.png?raw=true)
+![image](./images/iotExam/serverStarted.png)
 
 > 注意：
 
@@ -429,7 +429,7 @@ login('admin', '123456'); select gmtime(timestamp(datetime)) as time_sec, tag1  
 
 在右上角设置定时刷新及数据时间段的长度，就可以看到实时的数据变化走势图。
 
-![datasource1](./images/iotExam/newDashboard.png?raw=true)
+![datasource1](./images/iotExam/newDashboard.png)
 
 上图若不能正常显示，请检查：
 
@@ -809,8 +809,8 @@ select * from lj(alarm, tmp,`time`deviceId`ID,`time`deviceID`ID) where time > to
 |ID| deviceID| time| priority| desc| actionTime| confirmUser| confirmRemark| t2_actionTime| clearUser| clearRemark|
 |----|----|----|----|----|----|----|----|----|----|----|
 |b9f...| BDSA11_PSCADA| 2020.11.05T17:10:11| 1| CONN_FAIL| 2020.11.05T17:19:26| admin| test confirm| 2020.11.05T17:30:53| admin| test clear|
-|bab...| DMS01| 2020.11.05T17:10:11| 2| OFFLINE| 2020.11.05T17:19:26| admin| test confirm||||   
-|b51...| XKZDEPOT_CCTV_DI20| 2020.11.05T17:10:11| 3| ERROR| ||||||     
+|bab...| DMS01| 2020.11.05T17:10:11| 2| OFFLINE| 2020.11.05T17:19:26| admin| test confirm||||
+|b51...| XKZDEPOT_CCTV_DI20| 2020.11.05T17:10:11| 3| ERROR| ||||||
 
 ### 3.5 降精度
 
@@ -918,6 +918,7 @@ addFunctionView(task1)
 ### 3.9 API 查询数据
 
 DolphinDB 提供 Python, C++, Java, C#, Go, JavaScript, Rust 等常用语言的 API 用于读写数据库。通常数据查询的流程如下：
+
 - 1. 建立一个连接并登录
 - 2. 通过 run("DolphinDBScript") 运行查询语句查询或 run("DolphinDBFunctionName",args) 运行函数或函数视图查询。
 
@@ -1140,6 +1141,7 @@ API 的写入性能的优化主要可通过以下几个方面：
 - 并行写入：将不同分区的数据，分多个任务并行写入。
 
 DolphinDB 的最小存储单元是分区，同一个分区不允许多个线程同时写入，否则会抛出异常。所以在并行写入时，需要考虑将数据按分区进行分流，避免同时向一个分区写入数据。具体多线程写入的实现案例请参阅[Java 多线程写入示例代码](https://github.com/dolphindb/api-java/blob/master/example/DFSWritingWithMultiThread.java)和[c++ 多线程并行写入示例代码](https://gitee.com/dolphindb/api-cplusplus/tree/master/example/DFSWritingWithMultiThread)。
+
 - 异步写入：异步写入在写入时不需要等待 server 回复确认消息，可显著提高连续写入的速度，适用于对写入速度要求高但可靠性要求不苛刻的场景。使用异步写入的方法是在声明 DBConnection 类变量的时候，置 enableAYSN 参数值为 true 即可。适用于 DolphinDB 1.10.17、1.20.6 及以上 linux64 版本。
 
 ### 4.6 提升数据压缩比
@@ -1173,6 +1175,7 @@ DolphinDB 压缩算法支持压缩效果和解压缩时间综合性能较高的 
 ## 5. 实时数据和流计算
 
 DolphinDB 提供了流数据表 (stream table) 和流计算引擎用于实时数据处理。内置流计算框架目前已支持[时序聚合引擎](./stream_aggregator.md)、[横截面聚合引擎](./streaming_crossSectionalAggregator.md)、[异常检测引擎](./Anomaly_Detection_Engine.md)和自定义流计算引擎。
+
 - 时序聚合引擎 (Time-series Aggregator)：能对设备状态进行纵向聚合计算（按时间序列聚合），或者将多个设备状态横向聚合后再按时间聚合。时序聚合支持滑动窗口的流式计算。DolphinDB 对内置的窗口聚合函数均进行了性能优化，单核 CPU 每秒可完成近百万状态的时序聚合。
 - 横截面聚合引擎 (Cross-sectional Aggregator)：是快照引擎的扩展，对设备状态进行横向聚合计算，比如计算一批设备的最新温度均值。
 - 异常检测引擎 (Anomaly Detection Engine)：能实时检测数据是否符合用户自定义的警报指标，如发现异常数据，将它们输出到表中，满足物联网实时监控和预警的需求。
@@ -1255,6 +1258,7 @@ DolphinDB 提供了时序聚合引擎和横截面聚合引擎来配合流数据�
 - 3. 根据需求设定订阅过滤器，仅订阅计算所需的数据。
 
  比如下例中使用了 Speed 类测点的数据，假设一共 100 个设备，每一个设备 50 个测点，其中 1 号测点是 speed，那么在订阅时可以使用 DolphinDB 脚本：filter = (0..99)*50+1 以设定 filter 为[1,51,101,151...]。具体 filter 的用法请参考[`setStreamTableFilterColumn`](https://www.dolphindb.cn/cn/help/FunctionsandCommands/CommandsReferences/s/setStreamTableFilterColumn.html)
+
 - 4. 通过`subscribeTable`设立流数据订阅以及写入聚合引擎的规则。
 - 5. 数据进入流表后触发订阅及聚合引擎计算。
 
@@ -1451,7 +1455,7 @@ s.connect(host="192.168.1.12", port=21117, userid="admin", password="123456", hi
 
 跨机房异步容灾组网架构如下图：
 
-![asynDisasterRecovery](./images/iotExam/asynDisasterRecovery.PNG?raw=true)
+![asynDisasterRecovery](./images/iotExam/asynDisasterRecovery.PNG)
 
 主备系统部署方案：
 

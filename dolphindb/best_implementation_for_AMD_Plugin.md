@@ -114,7 +114,7 @@ loadPlugin("/DolphinDB/server/plugins/amdquote/PluginAmdQuote.txt")
 
 整个数据流转的过程如下图所示：
 
-![](images/best_implementation_for_AMD_Plugin/best_implementation_for_AMD_Plugin.png)
+![](./images/best_implementation_for_AMD_Plugin/best_implementation_for_AMD_Plugin.png)
 
 > AMD 插件不支持订阅一个数据源同时输出到多张表，上图中逐笔成交订阅只能要么输出到流表 execution，要么输出到跨进程共享内存表 IPCExecution。本例将统计两种方式数据的全过程穿透时间作性能分析。
 
@@ -258,9 +258,11 @@ subscribeTable(tableName=snapshotTbName, actionName="saveSnapshotToDFS", offset=
 ```
 
 创建完相关订阅后，可以通过执行如下脚本查看已创建的订阅信息：
+
 ```
 getStreamingStat().pubTables
 ```
+
 | tableName | subscriber     | msgOffset | actions           |
 | --------- | -------------- | --------- | ----------------- |
 | snapshot  | localhost:8893 | 0         | saveSnapshotToDFS |
@@ -277,14 +279,17 @@ amdQuote::subscribe(handle, `snapshot, snapshot, 102, , handleSnapshotSubs{reord
 ```
 
 对部分重要参数值的解释：
+
 - marketType 参数值 101 表示上海市场，102 表示深圳市场。
 - codeList 参数值为空，表示订阅指定市场下所有的代码。
 - transform 参数值为 handleSnapshotSubs{reorderedColNames=reorderedColNames}，使用了[部分应用](https://dolphindb.cn/cn/help/Functionalprogramming/PartialApplication.html)来固定 handleSnapshotSubs 方法的 reorderedColNames 参数值，使其变成了一个一元函数，空缺的参数 msg 将由 amdQuote::subscribe 在调用 transform 时填充。
 
 创建完相关订阅后，可以通过执行如下脚本查看已创建的订阅信息：
+
 ```
 amdQuote::getStatus(handle)
 ```
+
 | dataType | marketType |
 | -------- | ---------- |
 | snapshot | 101        |

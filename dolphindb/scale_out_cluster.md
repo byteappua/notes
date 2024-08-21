@@ -87,7 +87,7 @@ tb.append!(data)
 
 执行完后点击集群web管理界面的 DFS Explorer 按钮，查看生成的数据分布情况。
 
-![image](./images/scaleout/scale_dfs_exp1.PNG?raw=true)
+![image](./images/scaleout/scale_dfs_exp1.PNG)
 
 在后续完成集群扩展之后，我们会向此数据库中追加数据，来验证拓展部分是否已经启用。
 
@@ -144,7 +144,7 @@ localSite,mode
 
 - 访问集群web管理界面 ```http://172.18.0.10:8990``` ，关闭所有的数据节点。
 
- ![image](./images/scaleout/controller_stopAll.PNG?raw=true)
+ ![image](./images/scaleout/controller_stopAll.PNG)
 
 - 在172.18.0.10服务器上执行 ```pkill -9 dolphindb``` 以关闭controller。
 
@@ -152,7 +152,7 @@ localSite,mode
 
 - 回到web管理界面，可以看到已经新增了一个agent4，在web界面上启动所有数据节点。
 
- ![image](./images/scaleout/Controller_StartAll.PNG?raw=true)
+ ![image](./images/scaleout/Controller_StartAll.PNG)
 
 至此我们已经完成了离线方式新节点的增加。
 
@@ -180,7 +180,7 @@ tb.append!(table(1001..2000 as id,rand(`A`B`C,1000) as name))
 
 点击DFS Explorer并打开scaleout_test_db，可以看到数据已经分布到新添加的 node4 节点上。
 
-![image](./images/scaleout/scale_dfs_exp2.PNG?raw=true)
+![image](./images/scaleout/scale_dfs_exp2.PNG)
 
 ### 3.4 扩展数据节点后的数据分布机制
 
@@ -227,7 +227,7 @@ tb.append!(table(1501..2000 as id,rand(`A`B`C,500) as name))
 
 数据已被写入：
 
-![image](./images/scaleout/3.PNG?raw=true)
+![image](./images/scaleout/3.PNG)
 
 ## 5. 常见问题
 

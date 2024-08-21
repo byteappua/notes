@@ -7,6 +7,7 @@
 为解决这些问题，越来越多的券商和私募机构开始采用 DolphinDB 作为分析型的分布式时序数据库。DolphinDB 提供高效的数据存储和计算能力，使得高频数据的因子计算变得更加便捷和高效。
 
 因此，本文将分别介绍如何基于 DolphinDB + 各类文件存储实现因子计算，旨在对比 DolphinDB 一体化因子计算方案与 Python + 各类文件存储的性能差异。通过本文的对比，读者可以了解 DolphinDB 一体化因子计算的优势，并在实际应用中做出更加明智的选择。
+
 - [Python + 文件存储与 DolphinDB 因子计算性能比较](#python--文件存储与-dolphindb-因子计算性能比较)
   - [测试基础环境](#测试基础环境)
     - [软硬件信息](#软硬件信息)
@@ -20,9 +21,6 @@
     - [如何复现本文的代码？](#如何复现本文的代码)
   - [总结](#总结)
   - [附录](#附录)
-
-
-
 
 ## 测试基础环境
 
@@ -76,8 +74,6 @@ Level 2 行情数据是目前国内证券市场上最为完整，颗粒度最为
 | 000155         | 2021.12.01T09:41:00.000 | [29.3000,29.2900,29.2800,29.2700,29.2600,29.2500,29.2400,29.2300,29.2200,29.2100] | [3700,11000,1400,1700,300,600,3800,200,600,1700]      |
 | 000688         | 2021.12.01T09:40:39.000 | [13.5300,13.5100,13.5000,13.4800,13.4700,13.4500,13.4400,13.4200,13.4000,13.3800] | [500,1200,102200,5500,700,47000,1000,6500,18400,1000] |
 
-
-
 ## 测试场景
 
 本次测试使用的数据是全市场 2021.12.01 这一个交易日的全部 Level2 历史行情快照数据，其中 Pickle，Parquet，Feather，Hdf5 四种格式的数据都按标的代码分组存储，而 Npz 格式的数据是将所有数据均匀分成十二组后进行存储。以上的这些存储方式都是为了达到计算性能的最优，而暂不考虑存储性能。在实践过程中，可以自己选择不同的存储方式，如 `HDFStore( )` 函数可将多个 dataframe 存储为一个 hdf5 文件，压缩比的表现较好，然而并发读写的效率会有所下降。
@@ -92,7 +88,7 @@ Level 2 行情数据是目前国内证券市场上最为完整，颗粒度最为
 
 十档买卖委托均价即为十档买卖委托额之和除以十档买卖委托量之和：
 
-![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_1.png](images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_1.png)
+![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_1.png](./images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_1.png)
 
 十档买卖委托均价线性回归斜率为十档买卖委托均价对时间 t 的线性回归的斜率。
 
@@ -100,26 +96,24 @@ Level 2 行情数据是目前国内证券市场上最为完整，颗粒度最为
 
 十档净委买增额因子指的是在有效十档范围内买方资金总体增加量，即所有买价变化量的总和：
 
-![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_2.png](images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_2.png)
+![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_2.png](./images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_2.png)
 
 有效十档范围内表示不考虑已不在十档范围内的档位，即表示只考虑以下区间的档位：
 
-![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_3.png](images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_3.png)
-
-
+![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_3.png](./images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_3.png)
 
 #### DolphinDB 中因子实现
 
 - 十档买卖委托均价线性回归斜率
 
-十档买卖委托均价线性回归斜率的计算需要的参数分别为 OfferOrderQty、BidOrderQty、OfferPrice、BidPrice 四个字段，均为[数组向量](https://gitee.com/link?target=https%3A%2F%2Fwww.dolphindb.cn%2Fcn%2Fhelp%2FDataTypesandStructures%2FDataForms%2FVector%2FarrayVector.html%3Fhighlight%3Dtoarray%23array-vector)数据类型，分别为买卖十档价格和十档委托数量。使用 `rowSum` 这一内建聚合函数提高了因子的计算效率。通过 `linearTimeTrend` 函数获取因子值对时间 t 的滑动线性回归斜率，该函数返回线性回归的截距和斜率。`price.ffill().linearTimeTrend(lag1-1).at(1).nullFill(0).mavg(lag2, 1).nullFill(0) ` 表示获取十档买卖委托均价对时间t的线性回归的斜率。
+十档买卖委托均价线性回归斜率的计算需要的参数分别为 OfferOrderQty、BidOrderQty、OfferPrice、BidPrice 四个字段，均为[数组向量](https://gitee.com/link?target=https%3A%2F%2Fwww.dolphindb.cn%2Fcn%2Fhelp%2FDataTypesandStructures%2FDataForms%2FVector%2FarrayVector.html%3Fhighlight%3Dtoarray%23array-vector)数据类型，分别为买卖十档价格和十档委托数量。使用 `rowSum` 这一内建聚合函数提高了因子的计算效率。通过 `linearTimeTrend` 函数获取因子值对时间 t 的滑动线性回归斜率，该函数返回线性回归的截距和斜率。`price.ffill().linearTimeTrend(lag1-1).at(1).nullFill(0).mavg(lag2, 1).nullFill(0)` 表示获取十档买卖委托均价对时间t的线性回归的斜率。
 
 ```
 @state
 def level10_InferPriceTrend(bid, ask, bidQty, askQty, lag1=60, lag2=20){
-	inferPrice = (rowSum(bid*bidQty)+rowSum(ask*askQty))\(rowSum(bidQty)+rowSum(askQty))
-	price = iif(bid[0] <=0 or ask[0]<=0, NULL, inferPrice)
-	return price.ffill().linearTimeTrend(lag1-1).at(1).nullFill(0).mavg(lag2, 1).nullFill(0)
+ inferPrice = (rowSum(bid*bidQty)+rowSum(ask*askQty))\(rowSum(bidQty)+rowSum(askQty))
+ price = iif(bid[0] <=0 or ask[0]<=0, NULL, inferPrice)
+ return price.ffill().linearTimeTrend(lag1-1).at(1).nullFill(0).mavg(lag2, 1).nullFill(0)
 }
 ```
 
@@ -137,8 +131,6 @@ def level10_Diff(price, qty, buy, lag=20){
         return msum(amtDiff, lag, 1).nullFill(0)
 }
 ```
-
-
 
 #### Python 中因子实现
 
@@ -210,8 +202,6 @@ def level10_Diff(df, lag=20):
     return temp[["SecurityID","DateTime", "amtDiff"]].fillna(0)
 ```
 
-
-
 ## 计算结果对比
 
 ### 计算性能对比
@@ -262,8 +252,6 @@ Level 2 行情快照数据一天的数据量超过 10 G，因此金融量化工�
 | **Python+Hdf5**    | 3996.9/**182.9**                                         | 1774.5/**80.5**                            |
 | **Python+Npz**     | 5031.4/**230.3**                                         | 2437.3/**110.6**                           |
 
-
-
 从比对结果可以看到，本次测试中，在不同 CPU 核数和不同文件存储形式维度下，对于十档买卖委托均价线性回归斜率，DolphinDB 一体化计算比 Python+ 各类存储文件最高可达近200倍提升，平均约100倍左右的提升。考虑两种计算方式的特点，原因大概如下：
 
 - DolphinDB 自有的数据存储系统的读取效率远优于 Python 读取使用通用存储方式的各类文件存储。
@@ -276,8 +264,6 @@ Level 2 行情快照数据一天的数据量超过 10 G，因此金融量化工�
 - 代码实现方面，DolphinDB 的库内 SQL计算更易于实现因子计算调用及并行调用。
 - 并行计算方面，DolphinDB 可以自动使用当前可用的 CPU 资源，而Python 脚本需要通过并行调度代码实现，但更易于控制并发度。
 - 计算速度方面，DolphinDB 的库内计算比 Python + 各类文件存储 的计算方式快 50 至 200 倍之间。
-
-
 
 ### 计算准确性对比
 
@@ -295,8 +281,6 @@ print(assert_frame_equal)
 对于assert_frame_equal函数，对比结果一致时不输出任何结果，不一致时返回报错信息
 """
 ```
-
-
 
 ## 常见问题解答
 
@@ -334,33 +318,31 @@ unzip python_plus_file_VS_dolphindb_on_factor_calc.zip -d ./
 
   - 运行 00_dolphindb_script/00_genSimulatedData.dos，生成模拟数据
 
-    ![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_4.png](images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_4.png "snapshot模拟数据生成" )
-
-    
+    ![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_4.png](./images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_4.png "snapshot模拟数据生成" )
 
   - 运行 00_dolphindb_script/01_saveAsCsv.dos，将模拟数据保存为csv文件
 
-    ![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_5.png](images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_5.png "snapshot数据导出")
+    ![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_5.png](./images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_5.png "snapshot数据导出")
 
   - 运行 00_dolphindb_script/02_level10Diff.dos，在 DolphinDB 中计算因子1
 
-    ![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_6.png](images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_6.png "计算因子1")
+    ![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_6.png](./images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_6.png "计算因子1")
 
   - 运行 00_dolphindb_script/03_level10InferPriceTrend.dos，在 dolphindb 中计算因子2
 
-    ![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_7.png](images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_7.png "计算因子2")
+    ![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_7.png](./images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_7.png "计算因子2")
 
   - 运行 00_python_script/save_given_format_file/04_save_pickle.py，将 csv 文件保存为 pickle 文件
 
-    ![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_8.png](images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_8.png "pickle文件")
-    
+    ![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_8.png](./images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_8.png "pickle文件")
+
   - 运行 00_python_script/calc_factor/05_level10Diff_pickle.py，在 python 中计算因子1
 
-    ![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_9.png](images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_9.png "py计算因子1")
+    ![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_9.png](./images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_9.png "py计算因子1")
 
   - 运行 00_python_script/calc_factor/06_level10InferPriceTrend_pickle.py，在 python 中计算因子2
 
-    ![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_10.png](images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_10.png "py计算因子2")
+    ![images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_10.png](./images/DolphinDB_VS_Python+File_Storage/DolphinDB_VS_Python+File_Storage_10.png "py计算因子2")
 
 此处以 pickle 为例，若希望测试其他文件形式，请先运行对应脚本保存对应格式的文件，再运行因子计算的脚本。
 
