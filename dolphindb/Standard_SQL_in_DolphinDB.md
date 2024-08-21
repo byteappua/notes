@@ -69,7 +69,7 @@
 | GLOBAL                     | ×          | 不支持定义 GLOBAL TEMPORARY TABLE                            |
 | IDENTITY                   | ×          | 需要自定义标识列，或者用 `rowNo` 替代                        |
 | INTERSECT                  | ×          | 暂不支持取交集，用 WHERE 过滤                                |
-| LAST                       | ×          | `<fetch orientation>` 的关键字之一，表示取最后几行记录。目前 DolphinDB 仅支持在 CONTEXT BY LIMIT 中指定取最后几行记录。<br>注：内部存在同名关键字 LAST 用于排序时指定空值位置，用法 NULLS LAST。 |
+| LAST                       | ×          | `fetch orientation` 的关键字之一，表示取最后几行记录。目前 DolphinDB 仅支持在 CONTEXT BY LIMIT 中指定取最后几行记录。<br>注：内部存在同名关键字 LAST 用于排序时指定空值位置，用法 NULLS LAST。 |
 | NATURAL                    | ×          | 不支持 NATURAL JOIN，用 INNER JOIN 替代                      |
 | OUTER                      | ×          | 直接用 LEFT JOIN, RIGHT JOIN, FULL JOIN 替代                 |
 | OVERLAPS                   | ×          | 用 EXITS 替代                                                |
@@ -146,7 +146,7 @@
 | WITH                       | √          |                                                              |
 | CHARACTER_LENGTH           | ○          | 对应 `strlen` 函数                                           |
 | FETCH                      | ○          | 用 TOP / LIMIT 子句替代                                      |
-| FIRST                      | ○          | `<fetch orientation>` 的关键字之一，可以用 TOP/LIMIT 替代<br>注：内部存在同名关键字 FIRST 用于排序时指定空值位置，用法 NULLS FIRST。 |
+| FIRST                      | ○          | `fetch orientation` 的关键字之一，可以用 TOP/LIMIT 替代<br>注：内部存在同名关键字 FIRST 用于排序时指定空值位置，用法 NULLS FIRST。 |
 | TRANSACTION                | ○          | 对应 TRANSACTION 关键字                                    |
 | WHILE                      | ○          | 用内部 FOR 或 DO-WHILE 代替                              |
 
@@ -525,7 +525,7 @@ select distinct DEPARTMENT_ID, MANAGER_ID from employees
 
 ### 3.3 any / all
 
-支持使用 any / all 进行谓词比较，谓词包括：=, !=, >, <, <=,  >=.
+支持使用 any / all 进行谓词比较，谓词包括：`=, !=, >, <, <=,  >=`.
 
 - any
 
@@ -658,12 +658,12 @@ join 在分析场景应用广泛，尤其是在数据仓库维度建模中，通
 | **分类**             | **语法**                                                     | **DolphinDB支持情况** |
 | :------------------- | :----------------------------------------------------------- | :-------------------- |
 | 交叉连接（笛卡尔积） | t1 cross join t2                                             | √                     |
-| 等值连接             | t1 \[inner] join t2 on t1.id = t2.id                           | √                     |
-| 非等值连接           | t1 join t2 on t1.id <op> t2.id<br>op包括：>, <,>=, <=, <>, between…and | X                     |
+| 等值连接             | `t1 \[inner] join t2 on t1.id = t2.id`                        | √                     |
+| 非等值连接           | `t1 join t2 on t1.id <op> t2.id<br>op包括：>, <,>=, <=, <>, between…and` | X                     |
 | 外连接               | 左连接：t1 left join t2<br>右连接：t1 right join t2 <br>全连接：t1 full join t2 | √                     |
 | 自然连接             | t1 natural join t2                                           | X                     |
-| using 连接           | t1 \[inner] join t2 using(id)                                | X                     |
-| 自连接               | t t1 join t t2  on  t1.id \<op> t2.id<br>op 包括：=,>, <,>=, <=, <>, between…and | √                     |
+| using 连接           |`t1 \[inner] join t2 using(id)`                                | X                     |
+| 自连接               | `t t1 join t t2  on  t1.id \<op> t2.id<br>op 包括：=,>, <,>=, <=, <>, between…and` | √                     |
 
 ### 4.1 标准 SQL 的各种类型的关联、笛卡尔积
 

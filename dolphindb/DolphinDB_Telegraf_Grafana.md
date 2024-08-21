@@ -510,7 +510,7 @@ debug = true
 
 ```
 
-3. 修改 DolphinDB 配置文件，用于支持创建磁盘持久化流表。在 dolphindb.cfg 中设置持久化路径如下（<DolphinDBDir>是自定义的数据存放路径，可以与 server 保持同一目录）：
+3. 修改 DolphinDB 配置文件，用于支持创建磁盘持久化流表。在 dolphindb.cfg 中设置持久化路径如下（`DolphinDBDir`是自定义的数据存放路径，可以与 server 保持同一目录）：
 
 ```
 volumes=<DolphinDBDir>/volumes 
