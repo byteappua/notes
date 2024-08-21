@@ -562,7 +562,7 @@ Grafana中的 `Alert` 模块提供了告警和预警功能，使用告警和预�
 
 3.为设置告警规则所在的组，在同一个组里的告警规则的评估间隔是相同的。
 
-​其余的为非必选选项，可以删除。`Summary` 为可使用模板变量，使得在告警消息中显示出具体的设备名称和值，如 `{{$labels.job}} 服务器cpu使用率为：{{values.B}}$`，若 A 服务器的 CPU 使用率为90.14，则使用该语句后，在告警消息中会显示出：A 服务器 CPU 使用率为：90.14。更多支持的模板变量见[grafana模板变量](https://grafana.com/docs/grafana/latest/alerting/contact-points/message-templating/template-data/)。
+​其余的为非必选选项，可以删除。`Summary` 为可使用模板变量，使得在告警消息中显示出具体的设备名称和值，如 `labels.job 服务器cpu使用率为：values.B`，若 A 服务器的 CPU 使用率为90.14，则使用该语句后，在告警消息中会显示出：A 服务器 CPU 使用率为：90.14。更多支持的模板变量见[grafana模板变量](https://grafana.com/docs/grafana/latest/alerting/contact-points/message-templating/template-data/)。
 
 ​`Dashboard UID` 和 `Panel ID` 是一对组合使用的选项，其作用为：当告警触发时，Grafana 会在对应的 Dashboard UID 下对应的 Panel ID 里进行 warning 标识。如图所示：
 

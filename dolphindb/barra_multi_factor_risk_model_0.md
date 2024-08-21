@@ -3,6 +3,7 @@
 2018 年 MSCI 发布了中国 A 股全市场股票模型（The Barra China Equity Model，即 Barra CNE6 模型）。与传统的时间序列回归模型有所不同，Barra 模型能够更高效准确地捕捉横截面上机构头寸在各种因子（包括市值等风格因子）上的暴露。并且当模型中纳入具有时序记忆的变量时，它可以共享截面回归和时序回归模型的一些优良性质。该模型采用多层次的因子体系，能够更精细地预测和解释中国股票市场的风险，对中国 A 股的风险评估、组合优化和量化策略产生了积极且广泛的影响。
 
 本文将详细介绍通过 DolphinDB 实现 Barra CNE6 中的 CNLT 长期模型的整个流程。
+
 - [1 Barra 多因子模型简介](#1-barra-多因子模型简介)
   - [1.1 Barra 多因子模型](#11-barra-多因子模型)
   - [1.2 Barra 收益风险模型](#12-barra-收益风险模型)
@@ -57,7 +58,7 @@ Barra 多因子模型的核心目的在于准确评估个股和因子的风险�
 
 ![img](./images/barra_multi_factor_risk_model/1.2-2.svg)
 
-若从股票收益率的协方差矩阵的角度评估风险，可能存在由于股票数 N 远大于交易日期数 252 导致股票收益率协方差矩阵满秩的问题，且需要计算 N*(N+1)/2 次，复杂度很高。基于 Barra 模型，为求得股票收益率的风险矩阵 ![img](./images/barra_multi_factor_risk_model/v.svg)，只需要分别求得因子收益率的风险矩阵 ![img](./images/barra_multi_factor_risk_model/vf.svg) 以及个股特异性收益的风险矩阵 ![img](./images/barra_multi_factor_risk_model/delta.svg) ，只需要计算 n * (n + 1) / 2 + n 次，进一步规避了收益率协方差矩阵满秩的问题。
+若从股票收益率的协方差矩阵的角度评估风险，可能存在由于股票数 N 远大于交易日期数 252 导致股票收益率协方差矩阵满秩的问题，且需要计算 N*(N+1)/2 次，复杂度很高。基于 Barra 模型，为求得股票收益率的风险矩阵 ![img](./images/barra_multi_factor_risk_model/v.svg)，只需要分别求得因子收益率的风险矩阵 ![img](./images/barra_multi_factor_risk_model/vf.svg) 以及个股特异性收益的风险矩阵 ![img](./images/barra_multi_factor_risk_model/delta.svg) ，只需要计算 n* (n + 1) / 2 + n 次，进一步规避了收益率协方差矩阵满秩的问题。
 
 ## 2 基于 DolphinDB 的因子合成
 
@@ -308,7 +309,6 @@ Barra 多因子模型的核心目的在于准确评估个股和因子的风险�
 </tbody>
 </table>
 
-
 在调用计算单个三级风格因子时，采用 get + 因子名（首字母大写），例如，Blev（Beta Leverage）, Stom（Size Turnover Momentum）, Stoq（Stock Quality）因子计算如下：
 
 ```
@@ -318,7 +318,6 @@ getStoq(startTime = 2022.01.03,windows = 63,endTime = 2023.01.02)
 ```
 
 单个因子计算函数的返回结果均是窄表，返回结果大致如下：
-
 
 ![图片-20231113-091026.png](./images/barra_multi_factor_risk_model/sample.png)
 
@@ -345,7 +344,6 @@ getIndustry(startTime = 2022.01.01,endTime = 2023.01.02,method = 'SW_2021')
 <center style="color: black;">对应的部分返回结果图一</center>
 <br>
 
-
 ```
 getIndusrtyWeighted(startTime = 2022.01.03,endTime = 2023.01.02,method = 'SW_2021')
 ```
@@ -354,7 +352,6 @@ getIndusrtyWeighted(startTime = 2022.01.03,endTime = 2023.01.02,method = 'SW_202
 
 <center style="color: black;">对应的部分返回结果图二</center>
 <br>
-
 
 ```
 getIndusrtyFactor(startTime = 2022.01.03,endTime = 2023.01.02,method = 'SW_2021')
@@ -582,7 +579,6 @@ tbfsc = sql(select = sqlCol(tmppivot.columnNames()[11:20]),from = tmppivot).eval
 plot(tbfsc,tmppivot.record_date,extras={multiYAxes: false},title = "因子fsc 月频时序图")
 ```
 
-
 ![image-20240221-134803.png](./images/barra_multi_factor_risk_model/因子的%20FSC%20月频时序图.png)
 
 <center style="color: black;">因子的 FSC 月频时序图</center>
@@ -600,7 +596,6 @@ baseline = take(0.03,(shape tbic)[0])
 plot(table(tbic,baseline),tmppivot1.record_date,
     extras={multiYAxes: false},title = "因子ic 月频时序图")
 ```
-
 
 ![图片-20231113-092626.png](./images/barra_multi_factor_risk_model/因子的%20IC%20月频时序图.png)
 
@@ -621,7 +616,6 @@ baseline_pos = take(0.03,(shape tbstat)[0])
 plot(table(tbstat,baseline_neg,baseline_pos),tmppivot2.record_date,
     extras={multiYAxes: false},title = "因子t_stat 月频时序图")
 ```
-
 
 ![图片-20231113-092811.png](./images/barra_multi_factor_risk_model/因子%20t_stat%20月频时序图.png)
 
@@ -722,7 +716,6 @@ plot(table(tbstat,baseline_neg,baseline_pos),
 ![图片-20231113-090524.png](./images/barra_multi_factor_risk_model/合成因子前的因子暴露.png)
 
 合成因子前的因子暴露
-
 
 合成后的一级因子：
 
@@ -846,8 +839,6 @@ Output:
 
 ![img](./images/barra_multi_factor_risk_model/3.2.1.1-1.svg)
 
-其中 ![img](./images/barra_multi_factor_risk_model/3.2.1.1-2.svg) 为不考虑自相关性的样本协方差矩阵， ![img](./images/barra_multi_factor_risk_model/3.2.1.1-3.svg) 代表着由当期的收益率向量以及滞后i期的收益率向量所得到的自协方差矩阵，但 ![img](./images/barra_multi_factor_risk_model/gammai.svg) 本身并不对称，因此对于任何的滞后期 i，都需要 ![img](./images/barra_multi_factor_risk_model/gammai.svg) 和 ![img](./images/barra_multi_factor_risk_model/gamma'i.svg) 成对出现。
-
 - 步骤二，对 ![img](./images/barra_multi_factor_risk_model/gammai.svg) 的修正加入 Bartlett 权重系数 ![img](./images/barra_multi_factor_risk_model/3.2.1.1-4.svg)，该系数与滞后期成反比，若收益率向量间的滞后期越长，则赋予 ![img](./images/barra_multi_factor_risk_model/gammai.svg) 的权重则越小。经过证明可以发现，该修正后所得到的样本风险矩阵 ![img](./images/barra_multi_factor_risk_model/vf.svg) 是真实的风险矩阵的相合估计，且是半正定矩阵。
 
 ![img](./images/barra_multi_factor_risk_model/3.2.1.1-5.svg)
@@ -859,7 +850,7 @@ Output:
 - eigenfactor 之间彼此独立，两两之间的协方差为零。
 - 方差最小的 eigenfactor 代表以最小化组合方差为目标函数实现的组合，而方差最大的 eigenfactor 代表以最大化组合方差为目标函数实现的组合。
 
-然而若直接特征分解会存在偏差，其中风险越小的 eigenfactor portfolio 的偏差反而较大，因此需要进行 Eigenfactor 调整。本文 Eigenfactor 调整对应的接口为 `eigenCovAdjusted` 函数，在 `getRetTable `函数中当参数 `eigenfactor=true` 时被调用。
+然而若直接特征分解会存在偏差，其中风险越小的 eigenfactor portfolio 的偏差反而较大，因此需要进行 Eigenfactor 调整。本文 Eigenfactor 调整对应的接口为 `eigenCovAdjusted` 函数，在 `getRetTable`函数中当参数 `eigenfactor=true` 时被调用。
 
 ```
 /* eigenCovAdjusted
@@ -956,7 +947,6 @@ retOut1.bias                             // bias统计量
 plot(retOut1.R2.stR2,retOut1.R2.record_date,"𝑆𝑡𝑢𝑑𝑒𝑛𝑡𝑖𝑧𝑒𝑑 R2 月频时序图")
 ```
 
-
 ![image-20240221-135437.png](./images/barra_multi_factor_risk_model/studentized%20R2%20月频时序图.png)
 
 <center style="color: black;">studentized R2 月频时序图</center>
@@ -1040,8 +1030,6 @@ predictOut.bias                             // 预测模型bias统
 
 ![img](./images/barra_multi_factor_risk_model/4.2.3-1.svg)
 
-
-
 ```
 /* getOptimizeWeights
 组合权重优化中的聚合函数
@@ -1116,11 +1104,11 @@ portWeight4 = getOptimizeWeights(facTable = facTable2,retOut = retOut2,st = st,
 /*
 获取因子的Bias时序统计量和获取个股的特质收益统计量
 Input：
-			retOut			getRetTable()函数返回的结果
-			index_name		指数代码
-			method			等权方法或者流通市值方法 'equal'，'float_market'
+   retOut   getRetTable()函数返回的结果
+   index_name  指数代码
+   method   等权方法或者流通市值方法 'equal'，'float_market'
 Output:
-			Bias统计量
+   Bias统计量
 */
 ```
 
@@ -1246,7 +1234,7 @@ mean(outAccurary)
 
 本模块将详细说明 基于DolphinDB的Barra 模型实现和应用的使用流程和注意事项。
 
-### 5.1 因子计算模块 barraFactorsCal 
+### 5.1 因子计算模块 barraFactorsCal
 
 第一步首先是准备相应的真实数据或者模拟数据：可以参考附件中的建库建表模拟数据的脚本，然后加载所有的计算因子的脚本和模型调用验证脚本。
 
@@ -1341,7 +1329,7 @@ getIndustryFactor(startTime = 2022.01.03,endTime = 2023.01.02,method = 'SW_2021'
 getIndustryFactor(startTime = 2022.01.03,endTime = 2023.01.02,method = 'CITIC')
 ```
 
-### 5.2 因子合成模块 barraFactorsMerge 
+### 5.2 因子合成模块 barraFactorsMerge
 
 #### 5.2.1 因子预处理
 
@@ -1639,7 +1627,7 @@ facTable1.columnNames()
 select * from facTable1 limit 100
 ```
 
-### 5.3 因子模型模块 barraFactorsModel 
+### 5.3 因子模型模块 barraFactorsModel
 
 #### 5.3.1 风险收益模型
 
@@ -1808,15 +1796,15 @@ plot(tmpIndexBias.wavg_bias_stat,tmpIndexBias.record_date,extras={multiYAxes: fa
 [6] Menchero, J., D. J. Orr, and J. Wang (2011). The Barra US Equity Model (USE4). MSCI Barra Research Notes.  
 [7] Ledoit, Olivier, and Michael Wolf. "Improved estimation of the covariance matrix of stock returns with an application to portfolio selection." Journal of empirical finance 10.5 (2003): 603-621.  
 [8] 林晓明,陈烨.因子合成方法实证分析华泰多因子系列之十[R].中国:华泰证券,2018.  
-[9] 林晓明,陈烨.华泰多因子模型体系初华泰多因子系列之一[R].中国:华泰证券,2016.      
+[9] 林晓明,陈烨.华泰多因子模型体系初华泰多因子系列之一[R].中国:华泰证券,2016.
 
 ## 8 附录
 
-- 因子对应数据源表：[因子对应表.xlsx](./script/barra_multi_factor_risk_model/因子对应表.xlsx) 
-- 建库建表和模拟数据：[createTable.dos](./script/barra_multi_factor_risk_model/test/createTable.dos) 
-- 因子计算模块 barraFactorsCal：[barraFactorsCal.dos](./script/barra_multi_factor_risk_model/barra/barraFactorsCal.dos) 
-- 因子合成模块 barraFactorsMerge：[barraFactorsMerge.dos](./script/barra_multi_factor_risk_model/barra/barraFactorsMerge.dos) 
-- 多因子模型模块 barraFactorsModel：[barraFactorsModel.dos](./script/barra_multi_factor_risk_model/barra/barraFactorsModel.dos) 
-- 因子计算测试脚本：[factorsCalTest.dos](./script/barra_multi_factor_risk_model/test/factorsCalTest.dos) 
-- 因子合成测试脚本：[factorsMergeTest.dos](./script/barra_multi_factor_risk_model/test/factorsMergeTest.dos) 
-- 多因子模型测试脚本：[factorsModelTest.dos](./script/barra_multi_factor_risk_model/test/factorsModelTest.dos) 
+- 因子对应数据源表：[因子对应表.xlsx](./script/barra_multi_factor_risk_model/因子对应表.xlsx)
+- 建库建表和模拟数据：[createTable.dos](./script/barra_multi_factor_risk_model/test/createTable.dos)
+- 因子计算模块 barraFactorsCal：[barraFactorsCal.dos](./script/barra_multi_factor_risk_model/barra/barraFactorsCal.dos)
+- 因子合成模块 barraFactorsMerge：[barraFactorsMerge.dos](./script/barra_multi_factor_risk_model/barra/barraFactorsMerge.dos)
+- 多因子模型模块 barraFactorsModel：[barraFactorsModel.dos](./script/barra_multi_factor_risk_model/barra/barraFactorsModel.dos)
+- 因子计算测试脚本：[factorsCalTest.dos](./script/barra_multi_factor_risk_model/test/factorsCalTest.dos)
+- 因子合成测试脚本：[factorsMergeTest.dos](./script/barra_multi_factor_risk_model/test/factorsMergeTest.dos)
+- 多因子模型测试脚本：[factorsModelTest.dos](./script/barra_multi_factor_risk_model/test/factorsModelTest.dos)
