@@ -9,6 +9,7 @@ DolphinDB支持流数据的发布、订阅、预处理、实时内存计算、�
 ![image](images/haStream.png?raw=true)
 
 如上图所示，DolphinDB流数据高可用功能采用了基于Raft协议的高可用多副本架构。相同流数据的副本存储在Raft组内不同的数据节点上，Raft协议用来维护多个副本的一致性。Raft组具有自动恢复的性质，当少数节点失效的时候不影响Raft组的正常工作，当大多数节点失效的时候，Raft组则会停止服务。Raft组能够容忍小于半数的节点宕机，例如包含三个节点的组，可以容忍一个节点出现故障；包含五个节点的组，可以容忍两个节点出现故障。正常情况下Raft组内只有一个Leader（领导节点）负责响应来自所有客户端的请求、为客户端提供服务，其他节点都是Follower（追随节点）。DolphinDB流数据的高可用包括Broker的高可用、生产者和消费者的高可用，并具有以下特性：
+
 - 每个节点上可以定义一个或多个Raft组，一个Raft组可以接纳多个流数据表。
 - 一个流数据表创建时可指定一个Raft组，表明该表为高可用的流数据表。如果没有指定Raft组，就是普通的流数据表。
 - Publisher向Leader写入数据。若写入失败或者收到非Leader异常，就自动切换到新的Leader节点写入。
@@ -21,10 +22,11 @@ DolphinDB支持流数据的发布、订阅、预处理、实时内存计算、�
 ### 2.1 集群配置
 
 在启用流数据高可用功能前，需要先在多个服务器上部署DolphinDB集群（目前高可用功能仅在集群中支持，在单节点模式中不支持)，然后根据[流数据教程](./streaming_tutorial.md)配置相关参数，再创建高可用流数据表。高可用相关的配置项主要的有：
+
 - streamingHAMode：高可用功能采用的协议，目前固定配置为raft，表明流数据高可用功能采用了Raft协议。
 - streamingRaftGroups：配置Raft组。格式为:"groupId:data_node+"，其中groupId表示Raft组号，为大于等于2的整数，data_node为数据节点，须配置至少3个，中间用冒号分隔。系统支持配置多组，用逗号分隔。建议每组的数据节点分别位于不同的服务器上，以防止一台服务器宕机，组内数据节点都不可用。
 - persistenceDir：流数据表的保存路径。高可用流数据表数据要保存到磁盘上，必须配置persistenceDir。在集群模式中，应当为每个数据节点配置不同的persistenceDir。
-- streamingHADir：流数据Raft日志文件的存储目录。Raft日志包括注册表、删除表、append（追加）数据等信息。为保证断电后不丢失数据，DolphinDB会调用fsync把日志刷到磁盘上。一般HDD硬盘上fsync性能比较差，例如有的HDD硬盘刷一次要10-30毫秒，为了保证性能，建议这个目录配置在SSD硬盘上。如果不配置，系统默认值为 <HomeDir>/log/streamLog。如果在同一个服务器上部署了多个数据节点，每个节点应当配置不同的streamingHADir。
+- streamingHADir：流数据Raft日志文件的存储目录。Raft日志包括注册表、删除表、append（追加）数据等信息。为保证断电后不丢失数据，DolphinDB会调用fsync把日志刷到磁盘上。一般HDD硬盘上fsync性能比较差，例如有的HDD硬盘刷一次要10-30毫秒，为了保证性能，建议这个目录配置在SSD硬盘上。如果不配置，系统默认值为 `HomeDir`/log/streamLog。如果在同一个服务器上部署了多个数据节点，每个节点应当配置不同的streamingHADir。
 - streamingHAPurgeInterval：Raft日志垃圾回收周期。在系统运行时，节点中的Raft日志信息若不断增长，会影响节点恢复时状态回放的效率。Raft采用Checkpoint（检查点）的方式来截断日志。做Checkpoint有一些需要注意的性能点：不要做得太频繁，否则消耗磁盘带宽；也不要做得太不频繁，否则一旦节点重启需要回放大量日志，影响可用性。系统默认值300，单位为秒。
 
 用户需要在集群cluster.cfg配置文件中配置上述参数。以下例子配置了2个Raft组，组2包含3个数据节点，分别为DataNode1、DataNode3和DataNode5。组3包含3个数据节点，分别为DataNode2、DataNode4和DataNode6。
@@ -47,16 +49,21 @@ streamingRaftGroups=2:DataNode1:DataNode3:DataNode5,3:DataNode2:DataNode4:DataNo
 ### 2.3 获取Raft组的Leader
 
 在集群中配置Raft组后，每个Raft组会自动选出Leader，组中其他节点为Follower，由Leader为客户端提供流数据订阅服务。当Leader出现故障不可用时，系统会自动选举出新的Leader来提供流数据服务。获取指定raft组的Leader，可以调用函数[`getStreamingLeader`](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getStreamingLeader.html)。函数语法如下：
+
 ```
 getStreamingLeader(groupId)
 ```
+
 其中参数groupId是Raft组的编号。
 
 需要注意的是，要获取指定Raft组的Leader，只能在该组配置的数据节点上运行该函数。例如要获取上述例子配置的Raft组2的Leader，可以在DataNode1、DataNode3或DataNode5上运行下列代码：
+
 ```
 getStreamingLeader(2)
 ```
+
 若要在其他节点上获取组2的Leader，需要先获取配置了该组的任意节点，然后使用`rpc`函数到该节点获取Leader。例子如下：
+
 ```
 t=exec top 1 id,node from pnodeRun(getStreamingRaftGroups) where id =2
 leader=rpc(t.node[0],getStreamingLeader,t.id[0])
@@ -65,30 +72,37 @@ leader=rpc(t.node[0],getStreamingLeader,t.id[0])
 ### 2.4 创建高可用流数据表
 
 创建高可用流数据表使用函数[`haStreamTable`](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/h/haStreamTable.html)。语法如下：
+
 ```
 haStreamTable(raftGroup, table, tableName, cacheLimit, [keyColumn], [retentionMinutes=1440])
 ```
+
 参数raftGroup是一个大于1的整数，表示Raft组的ID，它必须是通过streamingRaftGroups配置的Raft组中的一个成员。
 
 可选参数keyColumn是一个字符串，表示主键。设置了keyColumn后，系统能根据keyColumn自动过滤重复数据。比如从设备采集的流数据，这个keyColumn产生规则可以是设备编号+每个设备的消息唯一号；从股市获取的股票信息，keyColumn可以是股票编码+每个股票消息的唯一号，这样从多个采集源采集入库或重复入库，都能保证数据不重复。
 
 一个Raft组可以包含多个高可用流数据表。这里要注意以下几点：
+
 - 高可用流表在日志中持久化了表结构信息，重启后不需要重新建表。普通流表在节点重启后，需要重新创建流表。
 - 客户端只需订阅Raft组中任意一个数据节点上的高可用流数据表，并启用订阅的自动重连功能。Leader上的高可用流数据表会向客户端发布数据。如果Raft组中的Leader宕机，系统会选举出新的Leader继续发布数据，客户端会自动切换订阅到新的Leader上的高可用流数据表。
 - 在启动高可用流数据功能后，普通流表和高可用流表可共存于同一个数据节点上。普通流表与高可用流表也可互相兼容，但从普通流表转化为同名高可用流表时，要注意清除之前普通流表的数据和日志（使用`dropStreamTable`命令进行删除）。与普通流表一样，查看高可用流表的元数据信息可使用`getPersistenceMeta`函数。
 
 下面的例子在Raft组2上创建了一个高可用流数据表haDevSt，其中cacheLimit是100000，keyColumn是id。
+
 ```
 t1=table(1:0, ["id","source_address","source_port","destination_address","destination_port"], [STRING,INT,INT,INT,INT] )
 haStreamTable(2,t1,"haDevSt",100000,"id")
 
 ```
+
 ### 2.5 删除高可用流数据表
 
 删除高可用流数据表可调用命令[`dropStreamTable`](https://www.dolphindb.cn/cn/help/FunctionsandCommands/CommandsReferences/d/dropStreamTable.html)。语法如下：
+
 ```
 dropStreamTable(tableName)
 ```
+
 用户需要在取消所有订阅客户端后才能删除流数据表。
 
 注意：`dropStreamTable`也支持删除普通流表。普通流表还可以用[`clearTablePersistence`](https://www.dolphindb.cn/cn/help/FunctionsandCommands/CommandsReferences/c/clearTablePersistence.html)(objByName( tableName))（若有持久化）和[`undef`](https://www.dolphindb.cn/cn/help/FunctionsandCommands/CommandsReferences/u/undef.html)(tableName,SHARED)命令删除。
@@ -98,11 +112,14 @@ dropStreamTable(tableName)
 ### 3.1 写入流数据
 
 生产者向流数据表写入数据，只能向Leader节点写入，向Follower节点写数据会抛出NotLeader异常。目前JAVA API、C++ API和Python API已支持流数据生产者的高可用，能自动捕获这个异常，并获取异常中携带的新Leader的节点信息，然后向新Leader继续写入数据。在API中，要求在connect函数中指定highAvailabilitySites参数。highAvailabilitySites是一个String类型的Array，每个String都是host:port格式。这样在Leader切换时，就能自动切换到highAvailabilitySites中的另一个节点，即新的Leader。JAVA API代码举例如下：
+
 ```
 String[] haSites = new String[]{"192.168.1.11:19151","192.168.1.12:19153","192.168.1.13:19155"};
 conn.connect(host,port,"admin", "123456", initScript, true,haSites);
 ```
+
 Python API代码举例如下：
+
 ```
 conn.connect(host, port, "admin","123456", initScript, True, ["192.168.1.2:9921", "192.168.1.3:9921","192.168.1.4:9921"])
 ```
@@ -120,11 +137,13 @@ t1=table(1:0, ["id","source_address","source_port","destination_address","destin
 haStreamTable(2,t1,"haDevSt",100000,"id")
 
 t=select id,node from pnodeRun(getStreamingRaftGroups) where id =2
-def msgProc(msg){ //todo		
+def msgProc(msg){ //todo  
 }
 subscribeTable(server=t.node[0], tableName="haDevSt",  handler=msgProc{}, reconnect=true, persistOffset=true)
 ```
+
 当流表启用高可用时，API客户端连接必须启用重连功能。目前JAVA API、C++ API和Python API已支持流数据消费者的高可用。其实现原理如下：
+
 - 客户端订阅时，保存raftGroup中所有节点的site（节点信息）。
 - Leader变为Follower时，Broker会主动关闭这个组中所有的流表对应的订阅，所以客户端就会发起重连。
 - 客户端重连时如果连接到了Follower上，会收到Not Leader Exception的异常，这个异常中还携带了目前新Leader的信息（如果Leader尚未被选出，Follower就返回自身节点信息）。客户端收到这个异常之后，等待一段时间后再尝试连接新的Leader。
@@ -174,6 +193,6 @@ DolphinDB的Raft日志内容包含流数据表的增删信息和流数据表记�
 
 ## 6. 总结
 
-DolphinDB流数据内置框架采用基于Raft协议的高可用多副本架构，实现了Broker的高可用、生产者和消费者的高可用。性能测试结果显示，当列数较少、每批量特别小（如每批写记录为个位数）时，对高可用流表的写入性能影响较大。当列数较多或批量较大（如100-1000）时，高可用流表与普通流表的写入性能差别就不太明显。 
+DolphinDB流数据内置框架采用基于Raft协议的高可用多副本架构，实现了Broker的高可用、生产者和消费者的高可用。性能测试结果显示，当列数较少、每批量特别小（如每批写记录为个位数）时，对高可用流表的写入性能影响较大。当列数较多或批量较大（如100-1000）时，高可用流表与普通流表的写入性能差别就不太明显。
 
 [附录脚本](script/hastreaming.dos)

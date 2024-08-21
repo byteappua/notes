@@ -33,6 +33,7 @@ export default defineConfig({
     },
   },
   vite: {
+    assetsInclude: ["**/*.svg", "dolphindb/barra_multi_factor_risk_model_0.md"],
     plugins: [
       AutoNav({
         // pattern: ["**/!(README|TODO).md"], // 也可以在这里排除不展示的文件，例如不匹配 README 和 TODO 文件

@@ -30,7 +30,7 @@
 ## 1. 总体架构
 
 <img src="./
-<img src="images/DolphinDB_AI_DataLoader_for_Deep_Learning/DolphinDB_AI_DataLoader_for_Deep_Learning_1.png" width="550">
+<img src="./images/DolphinDB_AI_DataLoader_for_Deep_Learning/DolphinDB_AI_DataLoader_for_Deep_Learning_1.png" width="550">
 
 **主要包括以下功能模块:**
 

@@ -4,7 +4,7 @@ DolphinDB 定时作业（scheduled job）功能，实现系统在规定时间以
 
 ## 1. 创建定时作业
 
-使用函数 [scheduleJob](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/s/scheduleJob.html) 创建定时作业。作业创建后，系统会序列化作业定义信息并保存到文件`<homeDir>/sysmgmt/jobEditlog.meta`。语法如下：
+使用函数 [scheduleJob](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/s/scheduleJob.html) 创建定时作业。作业创建后，系统会序列化作业定义信息并保存到文件``HomeDir`/sysmgmt/jobEditlog.meta`。语法如下：
 
 ```
 scheduleJob(jobId, jobDesc, jobFunc, scheduleTime, startDate, endDate, frequency, [days], [onComplete])
@@ -50,13 +50,13 @@ scheduleJob(`weeklyjob, "rm log", shell{"rm /home/DolphinDB/server/dolphindb.log
 
 ```
 def computeK(){
-	barMinutes = 7
-	sessionsStart=09:30:00.000 13:00:00.000
-	OHLC =  select first(price) as open, max(price) as high, min(price) as low,last(price) as close, sum(volume) as volume 
-		from loadTable("dfs://stock","trades")
-		where time > today() and time < now()
-		group by symbol, dailyAlignedBar(timestamp, sessionsStart, barMinutes*60*1000) as barStart
-	append!(loadTable("dfs://stock","OHLC"),OHLC)
+ barMinutes = 7
+ sessionsStart=09:30:00.000 13:00:00.000
+ OHLC =  select first(price) as open, max(price) as high, min(price) as low,last(price) as close, sum(volume) as volume 
+  from loadTable("dfs://stock","trades")
+  where time > today() and time < now()
+  group by symbol, dailyAlignedBar(timestamp, sessionsStart, barMinutes*60*1000) as barStart
+ append!(loadTable("dfs://stock","OHLC"),OHLC)
 }
 scheduleJob(`kJob, "7 Minutes", computeK, 15:00m, 2020.01.01, 2021.12.31, 'W', [1,2,3,4,5]);
 ```
@@ -94,7 +94,7 @@ getScheduledJobs([jobIdPattern])
 2. 函数的返回值是表格形式的定时作业信息。若 *jobId* 没有指定，则返回所有作业；
 3. 可以通过 pnodeRun(getScheduledJobs) 或在 web 上的作业管理“已定时的作业”中查看查询集群的定时作业信息。
 
-系统会将每次作业的执行情况保存在目录 `<homeDir>/batchJobs` 下，包括定时作业的运行日志和返回值。运行日志保存在 `<jodId>.msg` 文件中；如果定时任务有返回值，它会保存在 `<jobId>.object` 文件中。可以使用函数 [getJobMessage](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getJobMessage.html) 查看每个作业的运行日志，使用函数 [getJobReturn](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getJobReturn.html) 查看作业的返回值。
+系统会将每次作业的执行情况保存在目录 ``HomeDir`/batchJobs` 下，包括定时作业的运行日志和返回值。运行日志保存在 `<jodId>.msg` 文件中；如果定时任务有返回值，它会保存在 `<jobId>.object` 文件中。可以使用函数 [getJobMessage](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getJobMessage.html) 查看每个作业的运行日志，使用函数 [getJobReturn](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getJobReturn.html) 查看作业的返回值。
 
 注意 *jobID* 的取值：
 
@@ -105,8 +105,8 @@ getScheduledJobs([jobIdPattern])
 
 ```
 def foo(){
-	print "test scheduled job at"+ now()
-	return now()
+ print "test scheduled job at"+ now()
+ return now()
 }
 scheduleJob(`testJob, "foo", foo, 17:00m+0..2*30, today(), today(), 'D');
 ```
@@ -114,11 +114,11 @@ scheduleJob(`testJob, "foo", foo, 17:00m+0..2*30, today(), today(), 'D');
 运行 getRecentJobs()得到示例5的作业信息。
 
 ```
-jobId	            jobDesc	startTime	            endTime
+jobId             jobDesc startTime             endTime
 ------              ------- ----------------------- ----------------------
-testJob	            foo 	2020.02.14T17:00:23.636	2020.02.14T17:00:23.639
-testJob20200214	    foo 	2020.02.14T17:30:23.908	2020.02.14T17:30:23.910
-testJob20200214000  foo 	2020.02.14T18:00:23.148	2020.02.14T18:00:26.749
+testJob             foo  2020.02.14T17:00:23.636 2020.02.14T17:00:23.639
+testJob20200214     foo  2020.02.14T17:30:23.908 2020.02.14T17:30:23.910
+testJob20200214000  foo  2020.02.14T18:00:23.148 2020.02.14T18:00:26.749
 ```
 
 第一次执行的作业 ID 是“testJob”，第二次执行的作业 ID 是“testJob20200214”，……，每次执行的作业 ID 不同。根据相应的作业ID，我们可用函数 getJobMessage 和 getJobReturn 查看第3次作业的执行情况。
@@ -154,10 +154,10 @@ deleteScheduledJob(jobId)
 
 ```
 def foo1(){
-	print "Test scheduled job "+ now()
-	cnt=exec count(*) from loadTable("dfs://FuturesContract","tb")
-	print "The count of table is "+cnt
-	return cnt
+ print "Test scheduled job "+ now()
+ cnt=exec count(*) from loadTable("dfs://FuturesContract","tb")
+ print "The count of table is "+cnt
+ return cnt
 }
 login("guestUser1","123456")
 scheduleJob(`guestGetDfsjob, "dfs read", foo1, [12:00m, 21:03m, 21:45m], 2020.01.01, 2021.12.31, "D");
@@ -175,11 +175,11 @@ scheduleJob(`guestGetDfsjob, "dfs read", foo1, [12:00m, 21:03m, 21:45m], 2020.01
 
 注意：
 
-从上述日志中可以发现，访问分布式表后的语句没有被执行，即作业执行过程中若遇到错误，执行就会中断。为防止出现异常而停止执行后续脚本，可使用 [try-catch ](https://www.dolphindb.cn/cn/help/ProgrammingStatements/tryCatch.html?highlight=try%20catch)语句俘获异常。代码运行中可以使用函数 print 打印运行信息，输出结果记录在日志文件 `<jobId>.msg` 中。
+从上述日志中可以发现，访问分布式表后的语句没有被执行，即作业执行过程中若遇到错误，执行就会中断。为防止出现异常而停止执行后续脚本，可使用 [try-catch](https://www.dolphindb.cn/cn/help/ProgrammingStatements/tryCatch.html?highlight=try%20catch)语句俘获异常。代码运行中可以使用函数 print 打印运行信息，输出结果记录在日志文件 `<jobId>.msg` 中。
 
 ## 5. 定时作业的序列化与反序列化
 
-定时作业创建后，作业的ID、描述信息、起始时间、作业频率、作业函数及创建用户（userID）将被序列化并保存到当前节点的磁盘文件中，存储路径为`<homeDir>/sysmgmt/jobEditlog.meta`。在节点重启时，系统将对文件反序列化以进行加载。
+定时作业创建后，作业的ID、描述信息、起始时间、作业频率、作业函数及创建用户（userID）将被序列化并保存到当前节点的磁盘文件中，存储路径为``HomeDir`/sysmgmt/jobEditlog.meta`。在节点重启时，系统将对文件反序列化以进行加载。
 
 作业函数用一个 DolphinDB 的函数来表示，函数的定义包括了一系列语句，这些语句又会调用其他函数和一些全局类对象，譬如共享变量(shared variable)。共享变量序列化时用名称来表示。反序列化时，共享变量必须存在于内存中，否则会失败。
 
@@ -201,7 +201,7 @@ scheduleJob(`guestGetDfsjob, "dfs read", foo1, [12:00m, 21:03m, 21:45m], 2020.01
 ```
 use odbc
 def jobDemo(){
-	conn = odbc::connect("dsn=mysql_factorDBURL");
+ conn = odbc::connect("dsn=mysql_factorDBURL");
 }
 scheduleJob("job demo","example of init",jobDemo,15:48m, 2019.01.01, 2020.12.31, 'D')
 ```
@@ -230,12 +230,12 @@ loadPlugin("plugins/odbc/odbc.cfg")
 
 ```
 def f(){
-	print "The old function is called " 
+ print "The old function is called " 
 }
 scheduleJob(`test, "f", f, 11:05m, today(), today(), 'D');
 go
 def f(){
-	print "The new function is called " 
+ print "The new function is called " 
 }
 ```
 
@@ -251,17 +251,17 @@ def f(){
 
 ```
 def foo(){
-	print "The old function is called " 
+ print "The old function is called " 
 }
 def fv(){
-	foo()
+ foo()
 }
 addFunctionView(fv)  
 
 scheduleJob(`testFvJob, "fv", fv, 11:36m, today(), today(), 'D');
 go
 def foo(){
-	print "The new function is called " 
+ print "The new function is called " 
 }
 dropFunctionView(`fv)
 addFunctionView(fv) 
@@ -280,8 +280,8 @@ addFunctionView(fv)
 ```
 module printLog
 def printLogs(logText){
-	writeLog(string(now()) + " : " + logText)
-	print "The old function is called"
+ writeLog(string(now()) + " : " + logText)
+ print "The old function is called"
 }
 ```
 
@@ -290,18 +290,18 @@ def printLogs(logText){
 ```
 use printLog
 def f5(){
-	printLogs("test my log")
+ printLogs("test my log")
 }
 scheduleJob(`testModule, "f5", f5, 13:32m, today(), today(), 'D');
 ```
 
-在运行定时作业之前修改模块如下：                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+在运行定时作业之前修改模块如下：
 
 ```
 module printLog
 def printLogs(logText){
-	writeLog(string(now()) + " : " + logText)
-	print "The new function is called"
+ writeLog(string(now()) + " : " + logText)
+ print "The new function is called"
 }
 ```
 
@@ -327,7 +327,7 @@ foo()
 
 ```
 def foo(){
-	print ("Hello world!")
+ print ("Hello world!")
 }
 run "/home/user/testjob.dos"
 ```
@@ -357,7 +357,7 @@ Exception was raised when running the script [/home/user/testjob.dos]:Syntax Err
 
 ```
 def foo(){
-	print ("Hello world!")
+ print ("Hello world!")
 }
 foo()
 ```
@@ -372,6 +372,6 @@ foo()
 | 作业函数引用了插件中的函数，但是作业加载前没有加载该插件。            | 建议在用户的启动脚本中定义加载该插件。                    |
 | 定时运行一个脚本文件，执行时找不到依赖的函数。                  | 脚本文件必须包含依赖的自定义函数。                        |
 | 创建定时作业的用户没有访问分布式数据库表的权限。                 | 授权该用户访问相应数据库的权限。                         |
-| 在启动脚本中使用函数 [scheduleJob](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/s/scheduleJob.html),  [getScheduledJobs](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getScheduledJobs.html) 和 [deleteScheduledJob](https://www.dolphindb.cn/cn/help/FunctionsandCommands/CommandsReferences/d/deleteScheduledJob.html) 时抛出异常。 | 节点启动时，定时作业在启动脚本之后加载，所以不能在启动脚本中使用与定时作业相关的任何功能，包括函数scheduleJob, getScheduledJobs 和deleteScheduledJob。如果需要在系统启动时初始化某些定时作业相关的任务，只能在初始化定时任务模块完成后通过 postStart 脚本执行。postStart 脚本文件路径由参数 postStart 指定。`if(getScheduledJobs().jobDesc.find("daily resub") == -1){	scheduleJob(jobId=`daily, jobDesc="daily resub", jobFunc=run{"/home/appadmin/server/resubJob.dos"}, scheduleTime=08:30m, startDate=2021.08.30, endDate=2023.12.01, frequency='D')	}` |
+| 在启动脚本中使用函数 [scheduleJob](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/s/scheduleJob.html),  [getScheduledJobs](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getScheduledJobs.html) 和 [deleteScheduledJob](https://www.dolphindb.cn/cn/help/FunctionsandCommands/CommandsReferences/d/deleteScheduledJob.html) 时抛出异常。 | 节点启动时，定时作业在启动脚本之后加载，所以不能在启动脚本中使用与定时作业相关的任何功能，包括函数scheduleJob, getScheduledJobs 和deleteScheduledJob。如果需要在系统启动时初始化某些定时作业相关的任务，只能在初始化定时任务模块完成后通过 postStart 脚本执行。postStart 脚本文件路径由参数 postStart 指定。`if(getScheduledJobs().jobDesc.find("daily resub") == -1){ scheduleJob(jobId=`daily, jobDesc="daily resub", jobFunc=run{"/home/appadmin/server/resubJob.dos"}, scheduleTime=08:30m, startDate=2021.08.30, endDate=2023.12.01, frequency='D') }` |
 
-特殊情况下，可能出现在系统重启时定时作业加载失败，甚至系统无法启动的情况。尤其是版本升级时，可能因为内置函数、插件函数等函数接口变化导致作业无法加载，或者出现一些兼容性 bug 导致系统重启失败。因此，建议用户在开发时保留定义定时作业的脚本。若因定时任务导致系统无法启动，可以先删除定时作业的序列化文件`<homeDir>/sysmgmt/jobEditlog.meta`，在系统重启后再重新创建定时作业。
+特殊情况下，可能出现在系统重启时定时作业加载失败，甚至系统无法启动的情况。尤其是版本升级时，可能因为内置函数、插件函数等函数接口变化导致作业无法加载，或者出现一些兼容性 bug 导致系统重启失败。因此，建议用户在开发时保留定义定时作业的脚本。若因定时任务导致系统无法启动，可以先删除定时作业的序列化文件``HomeDir`/sysmgmt/jobEditlog.meta`，在系统重启后再重新创建定时作业。

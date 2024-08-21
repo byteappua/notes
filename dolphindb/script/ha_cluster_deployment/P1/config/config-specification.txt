@@ -38,10 +38,10 @@ chunkCacheEngineMemSize=2
 #warningMemSize=75
 #
 ############################# Hard Disk Related Parameters #############################
-# The folder for batch job logs and results. The default value is <HomeDir>/batchJobs.
+# The folder for batch job logs and results. The default value is `HomeDir`/batchJobs.
 #batchJobDir = 
 #
-# The folder for the metadata of data chunks on each data node. The default value is <HomeDir>/storage/CHUNK_METADATA. 
+# The folder for the metadata of data chunks on each data node. The default value is `HomeDir`/storage/CHUNK_METADATA. 
 #chunkMetaDir =
 #
 # If dataSync=1, DolphinDB generates redo log when the database is being updated. It can avoid data loss in the event of a system crash or power outage. 
@@ -72,7 +72,7 @@ chunkCacheEngineMemSize=2
 #Clear the redo log of transactions whose data have been persisted if the size of the redo log exceeds redoLogPurgeLimit in terms of MB. The default value is 4000.
 #redoLogPurgeLimit=4000
 #
-# The folder where data chunks are saved in the distributed file system on a data node. The default value is <HomeDir>/<nodeAlias>/storage.
+# The folder where data chunks are saved in the distributed file system on a data node. The default value is `HomeDir`/<nodeAlias>/storage.
 #volumes=/hdd/hdd1/volumes,/hdd/hdd2/volumes,/hdd/hdd3/volumes,/hdd/hdd4/volumes
 #
 # The number of volumes that a data node can use.
@@ -156,10 +156,10 @@ newValuePartitionPolicy=add
 # The modules or plugins that are loaded after the system starts. Use commas to separate multiple modules/plugins.
 #preloadModules=plugins::mysql, system::log::fileLog
 #
-# This file is executed when the system starts. The default file is <HomeDir>/dolphindb.dos. It usually contains definitions of system-level functions that are visible to all users and cannot be overwritten.
+# This file is executed when the system starts. The default file is `HomeDir`/dolphindb.dos. It usually contains definitions of system-level functions that are visible to all users and cannot be overwritten.
 #init=dolphindb.dos
 #
-# This file is executed after the system starts. The default file is <HomeDir>/startup.dos. It can be used to load plugins, load tables and share them, define and load stream tables, etc.
+# This file is executed after the system starts. The default file is `HomeDir`/startup.dos. It can be used to load plugins, load tables and share them, define and load stream tables, etc.
 #startup=startup.dos
 #
 # This file is executed after the startup script (startup.dos) is executed. The default folder is DolphinDB home directory. It can be used to schedule jobs. After this file is executed, the system terminates.

@@ -93,7 +93,6 @@ tb.append!(data)
 
 > *需要了解集群初始化配置可以参考 [多物理机上部署集群教程](./multi_machine_cluster_deployment.md)*
 
-
 需要新增的物理机IP：
 
 ```
@@ -107,9 +106,10 @@ tb.append!(data)
 ```
 
 ### 3.1 离线增加数据节点
+
 #### 3.1.1 配置agent
 
-原服务器上的agent部署在/home/<DolphinDBRoot>目录下，将该目录下文件拷贝到新机器的/home/<DolphinDBRoot>目录，并对/home/<DolphinDBRoot>/config/agent.cfg做如下修改：
+原服务器上的agent部署在`/home/<DolphinDBRoot>`目录下，将该目录下文件拷贝到新机器的`/home/<DolphinDBRoot>`目录，并对`/home/<DolphinDBRoot>/config/agent.cfg`做如下修改：
 
 ```
 //指定新的agent node的IP和端口号
@@ -189,9 +189,10 @@ tb.append!(table(1001..2000 as id,rand(`A`B`C,1000) as name))
 ## 4. 扩展存储
 
 本例中沿用上例中的原有集群。由于node3所在服务器本身的磁盘空间不足，为node3扩展了一块磁盘，路径为/dev/disk2。
+
 ### 4.1 步骤
 
-DolphinDB database 的节点存储可以通过配置参数volumes来配置，默认的存储路径为`<HomeDir>/<Data Node Alias>/storage`，本例中为`/home/server/data/node3/storage`目录。
+DolphinDB database 的节点存储可以通过配置参数volumes来配置，默认的存储路径为``HomeDir`/<Data Node Alias>/storage`，本例中为`/home/server/data/node3/storage`目录。
 
 > 若从默认路径增加磁盘，那么在设置volumes参数时，必须要将原默认路径显式设置，否则会导致默认路径下元数据丢失。
 
@@ -216,6 +217,7 @@ node3.volumes=/home/server/data/node3/storage,/dev/disk2/node3
 > 如果希望node3暂不重启，但是新的存储马上生效，可以在node3上执行addVolumes("/dev/disk2/node3")函数动态添加volumes，此函数的效果并不会持久化，重启后会被新配置覆盖。
 
 ### 4.2 验证
+
 配置完成后，使用下面的语句向集群写入新数据，查看数据是否被写入新的磁盘卷。
 
 ```
@@ -228,11 +230,13 @@ tb.append!(table(1501..2000 as id,rand(`A`B`C,500) as name))
 ![image](images/scaleout/3.PNG?raw=true)
 
 ## 5. 常见问题
+
 - 在验证节点的数据写入分布情况时 , 从dfs explorer里经常会发现site信息有时候会发生变化，比如原来保存在node3的数据迁移到其他节点了?
 
 这个问题涉及到DolphinDB的Recovery 机制: DolphinDB的集群支持数据自动Recovery机制，当侦测到集群内部分节点长时间没有心跳时(判定宕机)，将会从其他副本中自动恢复数据并且保持整个集群的副本数稳定, 这也是当某个节点长时间未启动，系统后台会发生数据迁移的原因。需要注意的是，这个数据稳定的前提是宕掉的节点数少于系统设置的数据副本数。这个机制涉及到的配置项及默认值如下：
 
 controller.cfg
+
 ```
 //集群内每个数据副本数，默认2
 dfsReplicationFactor=2
@@ -241,6 +245,7 @@ dfsReplicaReliabilityLevel=1
 //节点心跳停止多久开启Recovery,默认不启用，单位ms
 dfsRecoveryWaitTime=30000
 ```
+
 这3个参数对于系统的数据稳定性非常重要。
 
 dfsRecoveryWaitTime控制recovery的启动，默认不设置即关闭recovery功能。这个等待时间的设置主要是为了避免一些计划内的停机维护导致不必要的recovery，需要用户根据运维的实际情况来设置。

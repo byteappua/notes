@@ -2,8 +2,6 @@
 
 DolphinDB 支持动态加载外部插件，以扩展系统功能。插件用 C\+\+ 编写，需要编译成 ".so" 或 ".dll" 共享库文件。插件使用的流程请参考 DolphinDB Plugin 的 [GitHub 页面](https://github.com/dolphindb/DolphinDBPlugin)。本文着重介绍如何开发插件，并详细介绍以下几个具体场景的插件开发流程：
 
-
-
 - [1. 如何开发插件](#1-如何开发插件)
   - [1.1 基本概念](#11-基本概念)
   - [1.2 创建变量](#12-创建变量)
@@ -46,9 +44,6 @@ DolphinDB 支持动态加载外部插件，以扩展系统功能。插件用 C\+
   - [8.7 如何处理执行插件函数时的错误提示："Cannot recognize the token xxx"？](#87-如何处理执行插件函数时的错误提示cannot-recognize-the-token-xxx)
 - [9. 附件](#9-附件)
 
-
-
-
 # 1. 如何开发插件
 
 ## 1.1 基本概念
@@ -57,7 +52,7 @@ DolphinDB 的插件实现了能在脚本中调用的函数。一个插件函数�
 
 开发一个运算符函数，需要编写一个原型为 ConstantSP (const ConstantSP& a, const ConstantSP& b) 的 C\+\+ 函数。当函数参数个数为 2 时，a 和 b 分别为插件函数的第一和第二个参数；当参数个数为 1 时，b 是一个占位符，没有实际用途；当没有参数时，a 和 b 均为占位符。
 
-开发一个系统函数，需要编写一个原型为 ConstantSP (Heap* heap, vector<ConstantSP>& args) 的 C\+\+ 函数。用户在 DolphinDB 中调用插件函数时传入的参数，都按顺序保存在 C++ 的向量 args 中。heap 参数不需要用户传入。
+开发一个系统函数，需要编写一个原型为 `ConstantSP (Heap* heap, vector<ConstantSP>& args)` 的 C\+\+ 函数。用户在 DolphinDB 中调用插件函数时传入的参数，都按顺序保存在 C++ 的向量 args 中。heap 参数不需要用户传入。
 
 函数原型中的 ConstantSP 可以表示绝大多数 DolphinDB 对象（标量、向量、矩阵、表，等等）。其他常用的派生自它的变量类型有 VectorSP（向量）以及 TableSP（表）等。
 
@@ -149,7 +144,7 @@ ConstantSP sum2 = v->sum2();   // 相当于 sum2(v)
 v->sort(false);                // 相当于 sort(v, false)
 ```
 
-如果需要调用其它内置函数，插件函数的类型必须是系统函数。通过 heap->currentSession()->getFunctionDef 函数获得一个内置函数，然后用 `call` 方法调用它。如果该内置函数是运算符函数，应调用原型 call(Heap, const ConstantSP&, const ConstantSP&)；如果是系统函数，应调用原型 call(Heap, vector<ConstantSP>&)。以下是调用内置函数 `cumsum` 的一个例子：
+如果需要调用其它内置函数，插件函数的类型必须是系统函数。通过 heap->currentSession()->getFunctionDef 函数获得一个内置函数，然后用 `call` 方法调用它。如果该内置函数是运算符函数，应调用原型 call(Heap, const ConstantSP&, const ConstantSP&)；如果是系统函数，应调用原型 `call(Heap, vector<ConstantSP>&)`。以下是调用内置函数 `cumsum` 的一个例子：
 
 ```cpp
 ConstantSP v = Util::createIndexVector(1, 100);
@@ -348,7 +343,7 @@ else {
 
 ```cpp
 def geometricMean(x) {
-	return exp(logSum::logSum(x) \ count(x))
+ return exp(logSum::logSum(x) \ count(x))
 }
 ```
 
@@ -356,7 +351,7 @@ def geometricMean(x) {
 
 ```cpp
 def geometricMeanMap(x) {
-	return logSum::logSum(x)
+ return logSum::logSum(x)
 }
 
 defg geometricMeanReduce(myLogSum, myCount) {
@@ -513,7 +508,7 @@ columnAvg::columnAvg(ds, `v1`v2)
 
 本章将编写一个 handler 函数。它接受的消息类型是元组。另外接受两个参数：一个是 INT 类型的标量或向量 indices，表示元组中元素的下标，另一个是一个表 table。它将元组中对应下标的列插入到表中。
 
-向表中添加数据的接口是 bool append(vector<ConstantSP>& values, INDEX& insertedRows, string& errMsg)，如果插入成功，返回 true，并向 insertedRows 中写入插入的行数。否则返回 false，并在 errMsg 中写入出错信息。插件的实现如下：
+向表中添加数据的接口是 `bool append(vector<ConstantSP>& values, INDEX& insertedRows, string& errMsg)`，如果插入成功，返回 true，并向 insertedRows 中写入插入的行数。否则返回 false，并在 errMsg 中写入出错信息。插件的实现如下：
 
 ```cpp
 ConstantSP handler(Heap *heap, vector<ConstantSP> &args) {
@@ -871,7 +866,7 @@ DolphinDB 插件代码存储于 github/gitee 的 dolphindb/DolphinDBPlugin，其
 
 ## 8.3 编译时需要包含哪些选项？
 
-windows 版本要添加 “WINDOWS”，Linux 版本要添加 “LINUX”。对 release130 及以上分支，添加选项 "LOCKFREE_SYMBASE"。另外，为了兼容旧版本的编译器，libDolphinDB.so 编译时使用了 _GLIBCXX_USE_CXX11_ABI=0 的选项，因此用户在编译插件时也应该加入该选项。若 libDolphinDB.so 编译时使用 ABI=1，编译插件时则无需添加 _GLIBCXX_USE_CXX11_ABI=0 的选项。
+windows 版本要添加 “WINDOWS”，Linux 版本要添加 “LINUX”。对 release130 及以上分支，添加选项 "LOCKFREE_SYMBASE"。另外，为了兼容旧版本的编译器，libDolphinDB.so 编译时使用了_GLIBCXX_USE_CXX11_ABI=0 的选项，因此用户在编译插件时也应该加入该选项。若 libDolphinDB.so 编译时使用 ABI=1，编译插件时则无需添加_GLIBCXX_USE_CXX11_ABI=0 的选项。
 
 编译步骤可参考已实现的插件案例，例如 NSQ 插件的 [CMakeList.txt]([https://github.com/dolphindb/Tutorials_CN/blob/master/plugin/Msum/CMakeLists.txt)。
 
@@ -882,15 +877,19 @@ windows 版本要添加 “WINDOWS”，Linux 版本要添加 “LINUX”。对 
 ## 8.5 如何加载插件，可以卸载后重新加载吗？
 
 插件的加载方式有 2 种：第 1 种，使用 loadPlugin 函数加载插件。该函数接受一个描述插件格式的文件的路径, 例如：
+
 ```cpp
 loadPlugin("/<YOUR_SERVER_PATH>/plugins/odbc/PluginODBC.txt");
 ```
+
 > 注意：格式文件介绍详见插件 [插件格式](https://github.com/dolphindb/DolphinDBPlugin/blob/master/README_CN.md#加载插件), 其中文件第一行规定了 lib 文件名以及路径。缺省不写路径，即需要插件库与格式文件在同一个目录。
 
 第 2 种，DolphinDB Server 1.20.0 及以上版本，可以通过 preloadModules 参数来自动加载。使用这个方法时需要保证预先加载的插件存在，否则 server 启动时会有异常。多个插件用逗号分离。例如:
+
 ```
 preloadModules=plugins::mysql,plugins::odbc
 ```
+
 已加载的插件不能卸载。重新加载需要重启节点。
 
 ## 8.6 如何处理执行插件函数时的报错信息："Connnection refused：connect" 或节点 crash 问题？
@@ -906,10 +905,13 @@ preloadModules=plugins::mysql,plugins::odbc
 ## 8.7 如何处理执行插件函数时的错误提示："Cannot recognize the token xxx"？
 
 使用前需引入插件的命名空间，例如：
+
 ```cpp
 use demo;
 ```
+
 或者函数前加上模块名称，例如：
+
 ```cpp
 demo::f1();
 ```

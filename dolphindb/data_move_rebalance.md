@@ -122,7 +122,7 @@ select count(*) from pnodeRun(getAllChunks) where dfsPath like "/Level1%" group 
 | P2-dn1 | 0    | 4     |
 | P2-dn1 | 1    | 200   |
 
-其中，type 字段表示分区类别，0表示 File Chunk，1表示 Tablet Chunk。File Chunk 包含 *domain*、*<Table Name>.tbl* 等文件，一个库对应一个 *domain* 文件，一个表对应一个 *tbl* 文件，存储库表结构相关的信息；真正存储数据的区块我们称之为 Tablet Chunk。因为配置了双副本，且在资源允许情况下，副本优先部署在多台物理服务器，所以上述结果符合预期，两个库共计包含408个分区。
+其中，type 字段表示分区类别，0表示 File Chunk，1表示 Tablet Chunk。File Chunk 包含 *domain*、*Table Name.tbl* 等文件，一个库对应一个 *domain* 文件，一个表对应一个 *tbl* 文件，存储库表结构相关的信息；真正存储数据的区块我们称之为 Tablet Chunk。因为配置了双副本，且在资源允许情况下，副本优先部署在多台物理服务器，所以上述结果符合预期，两个库共计包含408个分区。
 
 ### 2.4 注意事项
 

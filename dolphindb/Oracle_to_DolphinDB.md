@@ -76,7 +76,7 @@ DolphinDB 提供基于 DataXReader 和 DataXWriter 的开源驱动。DolphinDBWr
 
 [DolphinDB GUI](https://gitee.com/link?target=https%3A%2F%2Fwww.dolphindb.cn%2Falone%2Falone.php%3Fid%3D10) 版本：`1.30.21.4`
 
-2.00.9.3 版本 Server 自带 ODBC 插件，位于 Server 的 *\<HomeDir>/plugins* 目录，可直接加载使用。如果 *\<HomeDir>/plugins* 目录下不存在 ODBC 文件夹，则通过如下链接下载：
+2.00.9.3 版本 Server 自带 ODBC 插件，位于 Server 的 *\`HomeDir`/plugins* 目录，可直接加载使用。如果 *\`HomeDir`/plugins* 目录下不存在 ODBC 文件夹，则通过如下链接下载：
 
 [DolphinDBPlugin](https://gitee.com/dolphindb/DolphinDBPlugin/tree/release200.9/odbc/bin) 分支：release200.9
 

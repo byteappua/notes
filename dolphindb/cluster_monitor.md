@@ -27,19 +27,19 @@
 
 - 第一套：NodeExporter + Prometheus + Grafana 监控服务器资源
 
-  ![](/images/cluster_monitor/1-1.png)
+  ![](./images/cluster_monitor/1-1.png)
 
   本方案主要用于监控服务器资源使用情况，如 CPU 频率信息、内存占用信息、磁盘 IO 信息、网络 IO 信息等。本方案由 NodeExporter 采集服务器指标，Prometheus 定时抓取，再由 Grafana 对 Prometheus 采集的资源信息进行可视化展示。
 
 - 第二套：DolphinDB + Prometheus + Grafana 监控 DolphinDB 资源
 
-  ![](/images/cluster_monitor/1-2.png)
+  ![](./images/cluster_monitor/1-2.png)
 
   本方案主要用于监控 DolphinDB 进程对服务器资源的使用情况及 DolphinDB 性能，如 DolphinDB 进程 CPU 占用情况、DolphinDB 进程内存占用情况、DolphinDB 进程磁盘资源使用情况等。DolphinDB 内置了相应的运维函数以获取当前节点的资源使用情况，Prometheus 可以抓取到这些指标。本方案中 Prometheus 定时从 DolphinDB 抓取相关指标，再由 Grafana 对 Prometheus 采集的指标信息进行可视化展示。
 
 - 第三套：dolphindb-datasource 插件+ Grafana 监控 DolphinDB 集群节点状态
 
-  ![](/images/cluster_monitor/1-3.png)
+  ![](./images/cluster_monitor/1-3.png)
 
   本方案主要用于监控 DolphinDB 集群的节点状态、流表状态以及订阅状态。DolphinDB 开发了 Grafana 数据源插件 (dolphindb-datasource)，让用户在 Grafana 面板 (dashboard) 上通过编写查询脚本，与 DolphinDB 进行交互 (基于 WebSocket)，实现 DolphinDB 数据的可视化。本方案中，Grafana 直接连接 DolphinDB 服务，使用查询脚本直接展示数据库信息。
 
@@ -51,7 +51,7 @@
 
 NodeExporter 是 Prometheus 提供的一个可以采集到服务器信息的应用程序，它能采集到服务器的 CPU、内存、磁盘、网络等信息，[点击官网链接](https://prometheus.io/download/)下载对应版本软件包：
 
-![](/images/cluster_monitor/2-1.png)
+![](./images/cluster_monitor/2-1.png)
 
 ​将其拖拽到服务器上解压，解压后进入对应的安装目录运行 NodeExporter,可通过 `web.listen-address` 指定端口：
 
@@ -61,7 +61,7 @@ nohup ./node_exporter --web.listen-address IP:Port &
 
 ​ 访问 `http://IP:Port/metrics`,可看到当前 NodeExporter 获取到的当前服务器的所有监控数据，如下所示：
 
-![](/images/cluster_monitor/2-2.png)
+![](./images/cluster_monitor/2-2.png)
 
 ​其中，`HELP` 用于解释当前指标的含义，`TYPE` 则用于说明指标名称及指标类型，比如：
 
@@ -75,11 +75,11 @@ nohup ./node_exporter --web.listen-address IP:Port &
 
 ​ 在上述监控方案中，Prometheus 负责从数据源定时抓取数据。安装[Prometheus Server](https://prometheus.io/download/)，下载对应版本的软件包：
 
-![](/images/cluster_monitor/2-3.png)
+![](./images/cluster_monitor/2-3.png)
 
 ​将其拖拽到服务器上解压，可看到如下目录结构：
 
-![](/images/cluster_monitor/2-4.png)
+![](./images/cluster_monitor/2-4.png)
 
 其中，data 是数据的存储路径，prometheus.yml 是 Prometheus 的配置文件，启动 Prometheus 服务时，会默认加载当前路径下的 prometheus.yml 文件，若配置文件不在当前目录下，可通过 `--config.file` 指定。
 
@@ -151,13 +151,13 @@ DolphinDB 服务、Prometheus 服务和 NodeExporter 服务已启动，但此时
 
 配置完数据源后，必须重启 Prometheus 服务。重启 Prometheus 服务后，在 Prometheus UI 界面输入 `up` 命令，检查配置是否生效【1表示正常；0表示未生效，一般情形下是由于数据源未启动导致的，可检查端口是否被占用】：
 
-![](/images/cluster_monitor/2-6.png)
+![](./images/cluster_monitor/2-6.png)
 
 ## 2.3 Grafana部署
 
 ​Prometheus 提供了快速验证 PromQL 以及临时可视化支持的功能，但其可视化功能较弱。[Grafana](https://grafana.com/grafana/download) 提供了强大的可视化功能，只需配置好 Prometheus 数据源，便能实现对 Prometheus 的可视化。从官网上下载对应版本的软件包（本教程使用的版本为9.0.5）：
 
-![](/images/cluster_monitor/2-7.png)
+![](./images/cluster_monitor/2-7.png)
 
 ​将其拖拽到服务器上解压，解压后进入对应的 bin 目录并运行 Grafana
 
@@ -179,25 +179,25 @@ nohup ./grafana-server web &
 
 通过 `Configuration-->Data sources`，进入数据源添加界面，如下所示：
 
-![](/images/cluster_monitor/2-10.png)
+![](./images/cluster_monitor/2-10.png)
 
 ​点击 `Add data source` 添加数据源
 
-![](/images/cluster_monitor/2-11.png)
+![](./images/cluster_monitor/2-11.png)
 
 选择 `Prometheus` 数据源，进入以下配置数据源页面
 
-![](/images/cluster_monitor/2-12.png)
+![](./images/cluster_monitor/2-12.png)
 
 ​在 `URL` 上配置 Prometheus 对应的IP和端口（其他选项设置默认），然后点击下方的 `Save&test`，若出现了 Data source is working 就说明数据源连接成功（若连接失败，检查Prometheus端口是否被占用）。
 
-![](/images/cluster_monitor/2-13.png)
+![](./images/cluster_monitor/2-13.png)
 
 **步骤2：配置面板**
 
 ​在 Grafana 中有 Dashboard 和 Panel 的概念。
 
-![](/images/cluster_monitor/2-14.png)
+![](./images/cluster_monitor/2-14.png)
 
 ​如上图所示，点击 `Dashboards --> New dashboard` 创建一个 Dashboard，进入如下界面：
 
@@ -205,7 +205,7 @@ nohup ./grafana-server web &
 
 ​然后点击 `Add a new panel` 创建图表，进入如下界面：
 
-![](/images/cluster_monitor/2-16.png)
+![](./images/cluster_monitor/2-16.png)
 
 上图中，1为数据源，选择 `Prometheus`；2为查询方式，建议选择 `code`；3为查询语句，输入要查询的内容，这里不仅支持简单指标查询，也支持指标之间的运算；4为时间范围；5为展示方式，有 `Table` 和 `Graph` 两种选择；6为运行查询，测试查询结果是否符合预期；7是图表的标题；8是保存按钮。
 
@@ -272,7 +272,7 @@ select * from t
 
 注意，返回的结果的形式必须为一张表。​若想将结果展示为 Graph，可以点击右侧的 `Visualizations`，点击红色方框处下拉列表，选择 `Time series`，如下图所示：
 
-![](/images/cluster_monitor/2-25.png)
+![](./images/cluster_monitor/2-25.png)
 
 # 3 监控方案实现
 
@@ -436,15 +436,15 @@ select * from t
 
 步骤2：在 `Dashboards` 中选择 `Import` 。如下所示：
 
-![](/images/cluster_monitor/3-1.png)
+![](./images/cluster_monitor/3-1.png)
 
 步骤3：将 json 代码复制到下图所示的红框2中，然后点击 `Load`，即可导入模板。或选择 `Upload JSON file`，直接导入对应的 json 文件。
 
-![](/images/cluster_monitor/3-2.png)
+![](./images/cluster_monitor/3-2.png)
 
 步骤4：为保证能够正确拉取数据，需将 dashboards 里 panel 的数据源修改为已设置好的数据源，如果数据源为 dolphindb-datasource，监控指标需要手工填入（监控指标和指标对应的数据源参考3.1节），然后点击 `Run queries` 确认获取指标成功，即可正常开启监控 ，如下所示：
 
-![](/images/cluster_monitor/3-3.png)
+![](./images/cluster_monitor/3-3.png)
 
 # 4. 邮件告警与预警
 
@@ -476,7 +476,7 @@ Grafana中的 `Alert` 模块提供了告警和预警功能，使用告警和预�
 
 点击 `New alert rule` 添加新的告警规则，如下所示：
 
-![](/images/cluster_monitor/4-1.png)
+![](./images/cluster_monitor/4-1.png)
 
 上图为 `Alert rules` 的第一组件，告警条件。告警条件的一般设置为：
 
@@ -508,7 +508,7 @@ Grafana中的 `Alert` 模块提供了告警和预警功能，使用告警和预�
 
 返回三台服务器的 CPU 使用率数据，需要组合 `Reduce` 操作和 `Math` 操作，`Reduce` 作用将多条语句结果进行聚合分组，`Math` 为布尔运算表达式。如下图所示，当查询返回一条数据时：
 
-![](/images/cluster_monitor/4-3.png)
+![](./images/cluster_monitor/4-3.png)
 
 上图中的 `Conditions` 中的含义为，若在时间窗口中查询语句A的返回结果最后一个值大于3，返回1，否则返回0，对应的操作为 `WHEN=last()`，`OF=A`，`IS ABOVE=3`。也可以选择其他条件，如，若在时间窗口中A的平均值小于50，触发告警，对应的操作为 `WHEN=mean()`，`OF=A`，`IS BELOW=50`。此外，可供的选择有很多种，如下所示：
 
@@ -516,19 +516,19 @@ Grafana中的 `Alert` 模块提供了告警和预警功能，使用告警和预�
 
 当查询结果返回多条语句时，首先选择 `Reduce` 操作符。如下所示：
 
-![](/images/cluster_monitor/4-5.png)
+![](./images/cluster_monitor/4-5.png)
 
 上图中的含义为，将查询语句 A 的返回结果进行分组，然后对分组结果取均值，并且若时间窗口内有 Nan 值，在求均值时将 Nan 视为 Nan，而不是剔除（其余参数含义见 [Grafana 官方文档](https://grafana.com/docs/grafana/latest/alerting/)）。
 
 ​在进行了 `Reduce` 操作之后，新增一个 expression，选择 `Math` 操作符，进行布尔运算，如下所示：
 
-![](/images/cluster_monitor/4-6.png)
+![](./images/cluster_monitor/4-6.png)
 
 `$B>80`表示若表达式B返回的结果大于80，返回1，否则返回0。引用其他表达式或者查询的结果时，要使用一个'$'符号，比如，引用B表达式的结果，用'$B'表示。
 
 选择用于最终告警的数据。该数据一定为一个布尔类型的数据。如下所示：
 
-![](/images/cluster_monitor/4-7.png)
+![](./images/cluster_monitor/4-7.png)
 
 上图选择了 C 返回的结果作为告警触发条件。
 
@@ -536,7 +536,7 @@ Grafana中的 `Alert` 模块提供了告警和预警功能，使用告警和预�
 
 ​这个组件主要功能为每隔多久评估一次指标是否触发告警条件，以及持续多久触发告警条件后进行告警。如下图所示：
 
-![](/images/cluster_monitor/4-8.png)
+![](./images/cluster_monitor/4-8.png)
 
 1. 为每隔多久评估一次是否触发告警条件，上图选择1分钟评估一次。
 
@@ -546,7 +546,7 @@ Grafana中的 `Alert` 模块提供了告警和预警功能，使用告警和预�
 
 4. 为当告警条件出现异常时，设置告警规则的状态，有 Error, Alerting, OK 三种状态可以选择。若前面的告警条件出现了异常，设置为 Alerting 和 No Data 时，异常持续时间超过5分钟会触发告警，选择 OK 则不会触发告警。如下所示：
 
-![](/images/cluster_monitor/4-9.png)
+![](./images/cluster_monitor/4-9.png)
 
 上图中红框为告警规则的状态。`Pending` 表示该指标已经触发告警条件，但持续时间还未超过5分钟，一旦持续时间超过了5分钟，`Pending` 就会变为 `Firing`。`No data` 表示表达式查询返回值为空。`Normal` 表示指标正常。
 
@@ -554,7 +554,7 @@ Grafana中的 `Alert` 模块提供了告警和预警功能，使用告警和预�
 
 该组件主要为告警规则设置一些展示信息、设置告警组等等。如下所示：
 
-![](/images/cluster_monitor/4-10.png)
+![](./images/cluster_monitor/4-10.png)
 
 ​1.为设置告警规则名称。
 
@@ -566,31 +566,31 @@ Grafana中的 `Alert` 模块提供了告警和预警功能，使用告警和预�
 
 ​`Dashboard UID` 和 `Panel ID` 是一对组合使用的选项，其作用为：当告警触发时，Grafana 会在对应的 Dashboard UID 下对应的 Panel ID 里进行 warning 标识。如图所示：
 
-![](/images/cluster_monitor/4-11.png)
+![](./images/cluster_monitor/4-11.png)
 
 当填入了 Dashboard UID 和 Panel ID，对应的监控指标图出现了之前没有的图示项。绿色的心表示当前监控指标处于正常状态。红框标注出来的线条表示告警触发的开始时间和告警消息发送时间，对应告警状态里的 `Pending` 和 `firing`。如果告警规则是直接在 panel 里创建的，告警规则会自动补全 Dashboard UID 和 Panel ID。如下所示：
 
-![](/images/cluster_monitor/4-12.png)
+![](./images/cluster_monitor/4-12.png)
 
 在各节点等待执行 Job 个数这个 panel 里添加一个告警规则后，Dashboard UID 和 Panel ID 会自动补全：
 
-![](/images/cluster_monitor/4-13.png)
+![](./images/cluster_monitor/4-13.png)
 
 ​预警需要用到 `predict_linear(v range-vector,t scalar)` 函数，该函数基于 range-vector 内指标 V 的数据，预测 t 秒后该指标的值，详情见[predict\_linear](https://prometheus.io/docs/prometheus/latest/querying/functions/#predict_linear)。示例如下：
 
-![](/images/cluster_monitor/4-14.png)
+![](./images/cluster_monitor/4-14.png)
 
 ## 4.4 设置告警方式
 
 配置文件修改后，在 `Contact points` 模块设置告警消息的接收方式以及接收者，建立告警消息的发送模板，如下图所示：
 
-![](/images/cluster_monitor/4-15.png)
+![](./images/cluster_monitor/4-15.png)
 
 ​从 `hoose Alertmanager` 下拉列表中选择告警管理工具，默认选项为 Grafana。如需选择其他告警管理工具，请自行安装。`Message template` 为告警消息模板，它主要的功能为：给告警消息提供一个格式化模板，若不创建消息模板，Grafana 将使用默认的模板。
 
 ​`Contact point` 为告警消息的接收方式和接收者。点击 `New contact point` 进入如下页面：
 
-![](/images/cluster_monitor/4-16.png)
+![](./images/cluster_monitor/4-16.png)
 
 - `Name`，设置告警名称
 
@@ -608,7 +608,7 @@ Grafana中的 `Alert` 模块提供了告警和预警功能，使用告警和预�
 
 告警或预警邮件如下所示：
 
-![](/images/cluster_monitor/4-17.png)
+![](./images/cluster_monitor/4-17.png)
 
 若收到告警消息后需要跳转到具体的 panel 页面，可以点击下方的 `Go to Panel` 跳转。若点击后无法访问页面，是因为Grafana的配置文件中设置上述邮件里的跳转的链接默认值为 `https://localhost:9094`，不是指向服务器部署的 Grafana ，因此会出现拒绝访问。此时需要回到 defaults.ini中修改 `[server]` 选项里的内容，
 
@@ -672,43 +672,43 @@ delta(cpu_temp_celsius{host=“hostname”}[2h])，返回该服务器上的 CPU 
 
 默认情况下，Grafana 图形展示指标的标签会很详细，有的时候我们并不需要那么多的信息，如下图所示：
 
-![](/images/cluster_monitor/5-1.png)
+![](./images/cluster_monitor/5-1.png)
 
 ​对于查询出来的指标，有时我们只关心它的主要信息，比如说，上图中我们只关心网卡的名称，此时我们只需要如下所示操作，点击 `Transform`
 
-![](/images/cluster_monitor/5-2.png)
+![](./images/cluster_monitor/5-2.png)
 
 ​然后会跳转到如下所示页面，并在搜索栏输入 `Labels to fields`：
 
-![](/images/cluster_monitor/5-3.png)
+![](./images/cluster_monitor/5-3.png)
 
 ​点击搜索结果，会跳转到如下所示的页面：
 
-![](/images/cluster_monitor/5-4.png)
+![](./images/cluster_monitor/5-4.png)
 
 ​`Labels` 后面的值表明了可以用作图表的标签，下方的 `Value field name` 用于选择你希望取什么值作为图表的标签，在网卡的展示中，一般我们需要的信息是网卡的名称，所以选择 device，选择好后，指标的标签就变成如下所示的样子：
 
-![](/images/cluster_monitor/5-5.png)
+![](./images/cluster_monitor/5-5.png)
 
 ​有的时候，不同网卡的发送速率有很大的差别，而 Grafana 在对查询到的结果进行可视化作图时，它是以最大值作为指标波动的上限范围的，导致在可视化时会出现，发送速率较小的网卡看起来几乎没有波动。
 
 如上图所示，直观上 enp0s3 网卡在三十分钟内的发送速率曲线波动很小，但实际上是有变化的，点击上图中的 enp0s3，可得到如下所示图表：
 
-![](/images/cluster_monitor/5-6.png)
+![](./images/cluster_monitor/5-6.png)
 
 ​ 因此，在进行监控时，若一个 panel 中有多个指标，需要谨慎观察每一个设备的波动情况。
 
 ​ 一个 Dashboard 中可以追加多个图表：
 
-![](/images/cluster_monitor/5-7.png)
+![](./images/cluster_monitor/5-7.png)
 
 ​如上图所示，点击右上角的符号，就可以继续追加图表。如果一个 Dashboard 中的 panel 很多，可以进行分类管理。
 
-![](/images/cluster_monitor/5-8.png)
+![](./images/cluster_monitor/5-8.png)
 
 ​上图的 panel 的类别很乱，可点击 `Add a new row`，创建 panel 的分类，然后将对应的 panel 拖动到类别里：
 
-![](/images/cluster_monitor/5-9.png)
+![](./images/cluster_monitor/5-9.png)
 
 ## 5.3 Grafana 告警的进阶使用
 
@@ -716,19 +716,19 @@ delta(cpu_temp_celsius{host=“hostname”}[2h])，返回该服务器上的 CPU 
 
 ​在告警规则建立（4.2节）时，告警组件的最后一步，可以为告警设置一些查询语句中不具有的标签，以供 `Notification polices` 和 `Silence` 组件使用。如下所示：
 
-![](/images/cluster_monitor/5-10.png)
+![](./images/cluster_monitor/5-10.png)
 
 key 和 value 都是自定义的，如令 key=rule, value=cpuUsage。
 
 ​以 CPU 使用率为例，完成一个告警规则配置后，此时 `Alert rules` 界面会出现如下所示内容，Labels 会显示自定义的标签：
 
-![](/images/cluster_monitor/5-11.png)
+![](./images/cluster_monitor/5-11.png)
 
 ### 5.3.2 `Notification policies` 模块 <!-- omit in toc -->
 
 ​告警和预警的主要目的帮助相关人员了解服务器当前运行状况，当发生异常时，提醒专业的人员进行维护，但是不同的告警需要不同的部门或运维人员介入处理，因此我们需要将不同的告警消息发送给不同的人员。`Notification policies` 模块的作用是将告警消息按照制定好的策略发送。如下所示：
 
-![](/images/cluster_monitor/5-12.png)
+![](./images/cluster_monitor/5-12.png)
 
 `Notification policies` 一共有 `Root policy--default for all alerts, Specific routing, Mute timings` 三大组件。
 
@@ -736,7 +736,7 @@ key 和 value 都是自定义的，如令 key=rule, value=cpuUsage。
 
 `Root policy--default for all alerts` 组件设置的是告警消息的默认接收者，当某个告警规则未指定告警消息接收者时，告警发生后，告警消息将发送到默认接收者。点击 `Edit` 编辑告警消息的默认接收者，如下所示：
 
-![](/images/cluster_monitor/5-13.png)
+![](./images/cluster_monitor/5-13.png)
 
 ​`Default contact point` 为告警消息的默认接收者。
 
@@ -754,11 +754,11 @@ key 和 value 都是自定义的，如令 key=rule, value=cpuUsage。
 
 `Specific routing` 组件主要功能为将不同类型的告警消息发送给不同的人。如下所示，点击 `New specific policy`，进入如下所示页面：
 
-![](/images/cluster_monitor/5-14.png)
+![](./images/cluster_monitor/5-14.png)
 
 点击 `Add matcher`，进入如下所示页面：
 
-![](/images/cluster_monitor/5-15.png)
+![](./images/cluster_monitor/5-15.png)
 
 ​`Contact point` 选择接收者。
 
@@ -774,7 +774,7 @@ key 和 value 都是自定义的，如令 key=rule, value=cpuUsage。
 
 ​Grafana 提供按特定的时间段收到告警消息的功能，由 `Mute timings` 组件实现。点击 `Add mute timing`，进入如下所示页面：
 
-![](/images/cluster_monitor/5-16.png)
+![](./images/cluster_monitor/5-16.png)
 
 设定 `name` 字段为工作时间。`Time range` 含义：只有在此时间段产生的告警消息才会发送给用户。`Days of week` 含义：一周中的哪几天用户希望能收到告警消息。
 
@@ -782,11 +782,11 @@ key 和 value 都是自定义的，如令 key=rule, value=cpuUsage。
 
 该模块主要作用为，设置某些告警规则为静默状态，即不让这些规则发送告警消息，即便它满足告警消息的发送条件。如下图所示：
 
-![](/images/cluster_monitor/5-17.png)
+![](./images/cluster_monitor/5-17.png)
 
 点击 `New Silence` 添加静默，进入如下所示页面：
 
-![](/images/cluster_monitor/5-18.png)
+![](./images/cluster_monitor/5-18.png)
 
 `Matching labels` 模块通过标签筛选出告警规则，使所选规则在静默时间内处于静默状态。`Silence start and end` 为静默时间。
 
@@ -794,7 +794,7 @@ key 和 value 都是自定义的，如令 key=rule, value=cpuUsage。
 
 使用钉钉接收告警、预警消息时，要先在钉钉群聊里添加群聊机器人，如下所示
 
-![](/images/cluster_monitor/5-19.png)
+![](./images/cluster_monitor/5-19.png)
 
 点击`群设置-->智能群助手`，出现如下所示页面：
 
@@ -814,7 +814,7 @@ key 和 value 都是自定义的，如令 key=rule, value=cpuUsage。
 
 将`Webhook`复制下来，后面需要用到。然后回到 Grafana Alerting 页面，去 `Contact points` 模块里点击 `New contact point`，进入如下所示页面：
 
-![](/images/cluster_monitor/5-24.png)
+![](./images/cluster_monitor/5-24.png)
 
 命名为叫钉钉告警，然后 `contact point type` 选择 DingDing。`URL` 里填入你刚刚复制的 webhook。`Message Type` 有 Link 和 ActionCard 两种选择，这里选择了 Link。选择 Link 后，告警消息将以链接的方式发送到钉钉群里，点击链接会跳转到 Grafana 界面。
 
@@ -826,15 +826,15 @@ key 和 value 都是自定义的，如令 key=rule, value=cpuUsage。
 
 设置好 `Contact point` 后，还要设置 `Notification policies`。如果之前已经设置了告警消息的默认接收者，如下所示：
 
-![](/images/cluster_monitor/5-27.png)
+![](./images/cluster_monitor/5-27.png)
 
 上图已经将邮件作为默认接收者，需要先按照4.4节操作将钉钉设置为消息发送渠道，然后在标签匹配中将所有的告警规则都匹配上，如下所示：
 
-![](/images/cluster_monitor/5-28.png)
+![](./images/cluster_monitor/5-28.png)
 
 如果只是简单的在下面的 `New specific policy` 里添加钉钉，那么邮件将收不到告警消息。此时需要将邮件也加入到消息消息发送路径里，这样钉钉群和邮件都能收到告警。如下所示：
 
-![](/images/cluster_monitor/5-29.png)
+![](./images/cluster_monitor/5-29.png)
 
 ## 5.5 Prometheus+Alertmanager 企业微信告警与预警
 
@@ -982,7 +982,7 @@ nohup ./alertmanager --config.file=alertmanager.yml --web.listen-address=":9093"
 
 启动了 alertmanager 之后，在浏览器地址栏输入 Prometheus 的 IP 和端口，进入 prometheus，然后点击 `Alerts`，就会出现如下所示界面：
 
-![](/images/cluster_monitor/5-37.png)
+![](./images/cluster_monitor/5-37.png)
 
 表示告警规则创建成功了。触发告警规则后，企业微信收到的信息样式如下：
 

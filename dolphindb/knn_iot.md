@@ -24,7 +24,6 @@
   - [7.2 开发脚本](#72-开发脚本)
   - [7.3 参考文献](#73-参考文献)
 
-
 ## 1. 概要
 
 本教程基于一个典型的物联网企业生产场景，利用 DolphinDB 内置的机器学习框架中的 KNN（K-Nearest Neighbor，最经典和最简单的有监督学习方法之一）算法构建回归模型，对实时数据异常预警过程进行模拟。
@@ -47,9 +46,7 @@
 
 设备剩余使用寿命预测旨在根据设备的运行状态数据，结合设备的退化机理，利用人工智能技术对设备未来的故障发生时段进行预测。若能提前预测出设备的剩余使用寿命，在设备故障发生前进行预警，就能帮助维护人员及早制定出最优应对方案。
 
-<img alt="设备剩余使用寿命预测过程" src="images/knn_iot/2_2.png" height=450 width=500 scale=70>
-
-
+<img alt="设备剩余使用寿命预测过程" src="./images/knn_iot/2_2.png" height=450 width=500 scale=70>
 
 ### 2.3 工业生产异常数据预警
 
@@ -71,12 +68,11 @@ KNN ( K-NearestNeighbor ) 算法又叫 K 邻近算法，是一种比较简单的
 
 KNN 分类算法思路：设置近邻个数 K，如果一个样本在特征空间中的 K 个邻近样本中的大多数属于某一个类别，则该样本也属于这个类别。
 
-<img alt="KNN 分类任务" src="images/knn_iot/3_1_a.png" width=400 height=300>
+<img alt="KNN 分类任务" src="./images/knn_iot/3_1_a.png" width=400 height=300>
 
 KNN 回归算法思路：设置近邻个数 K，计算一个样本在特征空间中的 K 个近邻样本的平均值，作为该样本的预测值。
 
-<img alt="KNN 回归任务" src="images/knn_iot/3_1_b.png" width=400 height=300>
-
+<img alt="KNN 回归任务" src="./images/knn_iot/3_1_b.png" width=400 height=300>
 
 ### 3.2 KNN 优势
 
@@ -189,7 +185,7 @@ def send_data(begintime,endtime,hour,devices_number,rate,mutable dest)
 {
 
     btime=timestamp(begintime)
-	do{
+ do{
         seconds  = int(60*60*hour)  //定义需要压入的批次，每秒钟1批
 
         n = devices_number * rate* 1 // 每秒钟生产10万条数据
@@ -245,12 +241,12 @@ subscribeTable(tableName="dataTable", actionName="Aggregator", offset=0, handler
 /*
   * 将dataTable数据写入分布式表 
 
-	数据建模：
-	1）每小时记录数：360,000,000
-	2）每条记录大小：46字节
-	3）每小时空间占用（压缩前）：15.42G
-	4）建议以“Id”值和“小时”进行组合分区，每分区≈157.93M
-	5）分区索引为“时间戳”+“设备号”
+ 数据建模：
+ 1）每小时记录数：360,000,000
+ 2）每条记录大小：46字节
+ 3）每小时空间占用（压缩前）：15.42G
+ 4）建议以“Id”值和“小时”进行组合分区，每分区≈157.93M
+ 5）分区索引为“时间戳”+“设备号”
 
   */
  def createConsumerDataBase(dbname,tbname,col_names,col_types){
@@ -270,21 +266,21 @@ subscribeTable(tableName="dataTable", actionName="append_data_into_dfs", offset=
 ```python
 /*
   * 将聚合计算结果写入分布式表
-	数据建模：
-		1）每小时记录数：36,000,000
-		2）每条记录大小：46字节
-		3）每小时空间占用（压缩前）：1.54G
-		4）建议以“id”和“天”进行值分区，每分区≈ 379.03M
-		5）分区索引为“时间戳”+“设备号”
+ 数据建模：
+  1）每小时记录数：36,000,000
+  2）每条记录大小：46字节
+  3）每小时空间占用（压缩前）：1.54G
+  4）建议以“id”和“天”进行值分区，每分区≈ 379.03M
+  5）分区索引为“时间戳”+“设备号”
 
   */
 def createAggregateDataBase(dbname,tbname,col_names,col_types){
-	if(existsDatabase(dbname)){dropDatabase(dbname)}
-	Ids = 1..100
+ if(existsDatabase(dbname)){dropDatabase(dbname)}
+ Ids = 1..100
     dbId = database("",VALUE,Ids)
     dbTime = database("",VALUE,date(2023.01.01T00:00:00)..date(2023.12.31T20:00:00))
-	db = database(directory=dbname, partitionType=COMPO, partitionScheme=[dbTime,dbId],engine="TSDB")
-	factor_partition = db.createPartitionedTable(table=table(1:0,col_names,col_types),tableName = tbname,partitionColumns =["time","deviceCode"],sortColumns =["deviceCode","time"],compressMethods={time:"delta"},keepDuplicates=LAST)
+ db = database(directory=dbname, partitionType=COMPO, partitionScheme=[dbTime,dbId],engine="TSDB")
+ factor_partition = db.createPartitionedTable(table=table(1:0,col_names,col_types),tableName = tbname,partitionColumns =["time","deviceCode"],sortColumns =["deviceCode","time"],compressMethods={time:"delta"},keepDuplicates=LAST)
 }
 aggr_dbname,aggr_tbname = "dfs://Aggregate","data"
 createAggregateDataBase(aggr_dbname,aggr_tbname,orgColNames,orgColTypes)
@@ -343,7 +339,7 @@ subscribeTable(tableName="aggrTable", actionName="append_Aggregator_into_dfs", o
 
       //模型预测
       curtime_aggr = curtime_aggr + interval_past*1000
-      table_aggr = select * from AggrTable_dfs where time<=curtime_aggr and time>(curtime_aggr - interval_past*1000) order by deviceCode	 //查询当前时间前 interval 秒的数据
+      table_aggr = select * from AggrTable_dfs where time<=curtime_aggr and time>(curtime_aggr - interval_past*1000) order by deviceCode  //查询当前时间前 interval 秒的数据
       if(table_aggr.size()<interval_past*devices_number*rate/10) //如果查询数据小于正常查询到的数据数目
       {
          curtime_aggr = select top 1 time from AggrTable_dfs order by time desc //从表中查询最近的时间作为开始时间
@@ -454,12 +450,12 @@ pnodeRun(cancelAllBatchJob)
 
 t = getStreamingStat().pubTables
 for(row in t){
-	tableName = row.tableName
+ tableName = row.tableName
   if(row.actions[0]=='[') actions = split(substr(row.actions, 1, (strlen(row.actions)-2)), ",")
-	else actions = split(substr(row.actions, 0, strlen(row.actions)), ",")
-	for(action in actions){
-		unsubscribeTable(tableName=tableName, actionName=action)
-	}
+ else actions = split(substr(row.actions, 0, strlen(row.actions)), ",")
+ for(action in actions){
+  unsubscribeTable(tableName=tableName, actionName=action)
+ }
 }
 
 //删除流表
@@ -489,21 +485,21 @@ if(existsDatabase("dfs://warning")){dropDatabase("dfs://warning")}
 ```python
 /*
   * 将预测结果写入分布式表
-	数据建模：
-		1）每小时记录数：36,000,000
-		2）每条记录大小：46字节
-		3）每小时空间占用（压缩前）：1.54G
-		4）建议以“id”和“天”进行值分区，每分区≈ 379.03M
-		5）分区索引为“时间戳”+“设备号”
+ 数据建模：
+  1）每小时记录数：36,000,000
+  2）每条记录大小：46字节
+  3）每小时空间占用（压缩前）：1.54G
+  4）建议以“id”和“天”进行值分区，每分区≈ 379.03M
+  5）分区索引为“时间戳”+“设备号”
 
 */
 def createPredictDataBase(dbname,tbname,col_names,col_types){
-	if(existsDatabase(dbname)){dropDatabase(dbname)}
-	Ids = 1..100
+ if(existsDatabase(dbname)){dropDatabase(dbname)}
+ Ids = 1..100
   dbId = database("",VALUE,Ids)
   dbTime = database("",VALUE,date(2023.01.01T00:00:00)..date(2023.12.31T20:00:00))
-	db = database(directory=dbname, partitionType=COMPO, partitionScheme=[dbTime,dbId],engine="TSDB")
-	factor_partition = db.createPartitionedTable(table=table(1:0,col_names,col_types),tableName = tbname,partitionColumns =["time","deviceCode"],sortColumns =["deviceCode","time"],compressMethods={time:"delta"},keepDuplicates=LAST)
+ db = database(directory=dbname, partitionType=COMPO, partitionScheme=[dbTime,dbId],engine="TSDB")
+ factor_partition = db.createPartitionedTable(table=table(1:0,col_names,col_types),tableName = tbname,partitionColumns =["time","deviceCode"],sortColumns =["deviceCode","time"],compressMethods={time:"delta"},keepDuplicates=LAST)
 }
 predict_dbname,predict_tbname = "dfs://predict","data"
 createPredictDataBase(predict_dbname,predict_tbname,preColNames,preColTypes)
@@ -511,15 +507,15 @@ subscribeTable(tableName="predictTable", actionName="append_Predict_into_dfs", o
 
 /*
   * 将预警结果写入分布式表
-	数据建模：
-		1）每小时记录数：360
-		2）每条记录大小：20字节
-		3）每小时空间占用（压缩前）：7200 字节
-		4）建议以“年”进行值分区，每分区≈ 60.15M
-		5）分区索引为“时间戳”
+ 数据建模：
+  1）每小时记录数：360
+  2）每条记录大小：20字节
+  3）每小时空间占用（压缩前）：7200 字节
+  4）建议以“年”进行值分区，每分区≈ 60.15M
+  5）分区索引为“时间戳”
 */
 def createWarningDataBase(dbname,tbname,col_names,col_types){
-	if(existsDatabase(dbname)){dropDatabase(dbname)}
+ if(existsDatabase(dbname)){dropDatabase(dbname)}
   db = database(dbname,RANGE,sort(distinct(yearBegin((2023.01.01T00:00:00..2024.12.31T20:00:00)))),engine='TSDB')
   factor_partition = db.createPartitionedTable(table=table(1:0,col_names,col_types),tableName = tbname,partitionColumns=`time,sortColumns=`time)
 }
@@ -532,4 +528,4 @@ subscribeTable(tableName="warningTable", actionName="append_Warning_into_dfs", o
 
 - 孙海丽，龙翔，韩兰胜，黄炎，李清波。[《工业物联网异常检测技术综述》](http://www.infocomm-journal.com/txxb/CN/10.11959/j.issn.1000-436x.2022032). 通信学报，2022(003):043.
 - 裴丹，张圣林，裴昶华。[《基于机器学习的智能运维》](https://www.ccf.org.cn/c/2017-12-13/620954.shtml). 中国计算机学会通讯，2017, 013(012):68-72.
-- 王加昌，郑代威，唐雷，郑丹晨，刘梦娟。[《基于机器学习的剩余使用寿命预测实证研究》](https://www.jsjkx.com/CN/10.11896/jsjkx.211100285). 计算机科学，2022, 49(11A): 211100285-9. 
+- 王加昌，郑代威，唐雷，郑丹晨，刘梦娟。[《基于机器学习的剩余使用寿命预测实证研究》](https://www.jsjkx.com/CN/10.11896/jsjkx.211100285). 计算机科学，2022, 49(11A): 211100285-9.

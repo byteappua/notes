@@ -27,7 +27,7 @@ DolphinDB 服务器后端通过采样方式收集 CPU 和内存使用量信息�
 
 #### CPU 和内存使用量日志
 
-路径为：*\<HomeDir>/resource/hardware.log*，其中 *\<HomeDir>* 可通在数据节点运行 `getHomeDir()` 函数获取。日志样例如下：
+路径为：*\`HomeDir`/resource/hardware.log*，其中 *\`HomeDir`* 可通在数据节点运行`getHomeDir()` 函数获取。日志样例如下：
 
 ```
 timestamp,userId,cpu,memory
@@ -51,7 +51,7 @@ timestamp,userId,cpu,memory
 
 #### SQL 查询分布式表日志
 
-路径为：*\<HomeDir>/resource/access.log*，其中 *\<HomeDir>* 可通过在数据节点运行 `getHomeDir()` 函数获取。
+路径为：*\`HomeDir`/resource/access.log*，其中 *\`HomeDir`* 可通过在数据节点运行`getHomeDir()` 函数获取。
 
 以对单个分布式表的查询为例，日志样例如下：
 
@@ -70,7 +70,7 @@ timestamp,rootQueryId,userId,database,table,type,value,script
 - **database**: 数据库名。
 - **table**: 表名。
 - **type**: 记录的信息类型，包括 3 类：sql, rowCount, memUsage。
-- **value**: 
+- **value**:
   - 当类型为 sql 时，为 SQL 查询任务的执行次数。该值总是为 1。
   - 当类型为 rowCount 时，为读出的行数。
   - 当类型为 memUsage 时，为读出的表的数据量，单位是字节。
@@ -198,7 +198,7 @@ select sum(cpu), sum(memory) from pnodeRun(getUserHardwareUsage{2023.12.13}, dat
 
 ### 3.2 记录用户 SQL 访问分布式表信息
 
-DolphinDB 提供 `getUserTableAccessRecords([from=0], [to])` 函数，按时间范围 ` [from, to)` 查询本节点的表访问记录。该函数仅限管理员在数据节点上调用。关于函数的具体定义和返回参数请参考[函数介绍](https://docs.dolphindb.cn/zh/funcs/g/getUserTableAccessRecords.html?hl=getusertableaccessrecords)。
+DolphinDB 提供 `getUserTableAccessRecords([from=0], [to])` 函数，按时间范围 `[from, to)` 查询本节点的表访问记录。该函数仅限管理员在数据节点上调用。关于函数的具体定义和返回参数请参考[函数介绍](https://docs.dolphindb.cn/zh/funcs/g/getUserTableAccessRecords.html?hl=getusertableaccessrecords)。
 
 - **使用示例 - 统计分布式表的查询数据量**
 
@@ -214,10 +214,10 @@ query = select distinct script, rootQueryId, timestamp from dataUsage where type
 stats = select sum(value)
 from dataUsage d inner join query q on d.rootQueryId = q.rootQueryId where type!="sql" pivot by q.timestamp, userId, database, table, q.script, type
 if(count(stats)==0){
-	result = stats
-	}else{
-	result =stats.reorderColumns!(`timestamp`userId`database`table`memUsage`rowCount`script)
-	}
+ result = stats
+ }else{
+ result =stats.reorderColumns!(`timestamp`userId`database`table`memUsage`rowCount`script)
+ }
 result
 ```
 

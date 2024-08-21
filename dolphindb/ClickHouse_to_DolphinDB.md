@@ -100,7 +100,7 @@ ClickHouse 版本：`23.8.2.7`
 
 [DolphinDB GUI](https://gitee.com/link?target=https%3A%2F%2Fwww.dolphindb.cn%2Falone%2Falone.php%3Fid%3D10) 版本：`1.30.21.4`
 
-2.00.10.1 版本 Server 自带 ODBC 插件，位于 Server 的 *\<HomeDir>/plugins* 目录，可直接加载使用。如果 *\<HomeDir>/plugins* 目录下不存在 ODBC 文件夹，则通过如下链接下载：
+2.00.10.1 版本 Server 自带 ODBC 插件，位于 Server 的 *\`HomeDir`/plugins* 目录，可直接加载使用。如果 *\`HomeDir`/plugins* 目录下不存在 ODBC 文件夹，则通过如下链接下载：
 
 [DolphinDBPlugin](https://gitee.com/dolphindb/DolphinDBPlugin/tree/release200.9/odbc/bin) 分支：release200.10
 
@@ -292,7 +292,7 @@ Proto = http
 
 #### 部署 DataX-DolphinDBWriter 插件
 
-将 [DataX-DolphinDBWriter ](https://gitee.com/link?target=https%3A%2F%2Fgithub.com%2Fdolphindb%2Fdatax-writer)中源码的 *./dist/dolphindbwriter* 目录下所有内容拷贝到 *DataX/plugin/writer* 目录下，即可使用。
+将 [DataX-DolphinDBWriter](https://gitee.com/link?target=https%3A%2F%2Fgithub.com%2Fdolphindb%2Fdatax-writer)中源码的 *./dist/dolphindbwriter* 目录下所有内容拷贝到 *DataX/plugin/writer* 目录下，即可使用。
 
 #### 执行 DataX 任务
 
@@ -384,7 +384,7 @@ Proto = http
     }
     ```
 
-    **注**：当前 clickhousereader 无法识别 DateTime64 类型，故需转为字符串（`"toString(TradeTime)"`）取数。 
+    **注**：当前 clickhousereader 无法识别 DateTime64 类型，故需转为字符串（`"toString(TradeTime)"`）取数。
 
 2. Linux 终端中执行以下命令以执行 DataX 任务
 
@@ -456,7 +456,7 @@ Proto = http
 | saveFunctionName | 否           | string       | 无         | 自定义数据处理函数。若未指定此配置，插件在接收到 reader 的数据后，会将数据提交到 DolphinDB 并通过 `tableInsert` 函数写入指定库表；如果定义此参数，则会用指定函数替换 `tableInsert` 函数。 |
 | saveFunctionDef  | 否           | string       | 无         | 数据入库自定义函数。此函数指 用 dolphindb 脚本来实现的数据入库过程。 此函数必须接受三个参数：*dfsPath*（分布式库路径）、*tbName*（数据表名）、*data*（从 datax 导入的数据，table 格式）|
 
-###  table 配置详解
+### table 配置详解
 
 table 用于配置写入表的字段集合。内部结构为
 

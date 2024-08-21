@@ -12,17 +12,17 @@ DolphinDB 是一款国产的高性能分布式时序数据库产品，其综合�
 
 本文旨在为有从 Redshift 迁移数据到 DolphinDB 需求的用户提供一份简明的教程参考。
 
-- [从 Redshift 迁移数据到 DolphinDB](#从-redshift-迁移数据到-dolphindb)
-  - [1. 应用需求](#1-应用需求)
-  - [2. 实现方法](#2-实现方法)
-  - [3. 迁移步骤](#3-迁移步骤)
-    - [3.1 环境配置](#31-环境配置)
-    - [3.2 ODBC 配置](#32-odbc-配置)
-      - [3.2.1 安装 ODBC](#321-安装-odbc)
-      - [3.2.2 安装 Redshift.ODBC 驱动](#322-安装-redshiftodbc-驱动)
-    - [3.3 利用 DolphinDB 脚本同步数据](#33-利用-dolphindb-脚本同步数据)
-  - [4. 总结](#4-总结)
-  - [附录](#附录)
+* [从 Redshift 迁移数据到 DolphinDB](#从-redshift-迁移数据到-dolphindb)
+  * [1. 应用需求](#1-应用需求)
+  * [2. 实现方法](#2-实现方法)
+  * [3. 迁移步骤](#3-迁移步骤)
+    * [3.1 环境配置](#31-环境配置)
+    * [3.2 ODBC 配置](#32-odbc-配置)
+      * [3.2.1 安装 ODBC](#321-安装-odbc)
+      * [3.2.2 安装 Redshift.ODBC 驱动](#322-安装-redshiftodbc-驱动)
+    * [3.3 利用 DolphinDB 脚本同步数据](#33-利用-dolphindb-脚本同步数据)
+  * [4. 总结](#4-总结)
+  * [附录](#附录)
 
 ## 1. 应用需求
 
@@ -97,7 +97,7 @@ odbc::append(connHandle, tableData, tablename, [createTableIfNotExist], [insertI
 
 [DolphinDB GUI](https://www.dolphindb.cn/alone/alone.php?id=10) 版本：`1.30.20.1`
 
-`2.00.8.7` 版本 Server 自带 ODBC 插件，位于 Server 的 `<HomeDir>/plugins` 目录，可直接加载使用。如果 `<HomeDir>/plugins` 目录下不存在 ODBC 文件夹，则通过如下链接下载：
+`2.00.8.7` 版本 Server 自带 ODBC 插件，位于 Server 的 ``HomeDir`/plugins` 目录，可直接加载使用。如果``HomeDir`/plugins` 目录下不存在 ODBC 文件夹，则通过如下链接下载：
 
 [DolphinDB ODBC 插件](https://github.com/dolphindb/DolphinDBPlugin/tree/release200.8/odbc) 版本：`2.00.8`
 
@@ -139,7 +139,7 @@ SQLSETPOSIROW Size.: 8
 
 Redshift 配置 ODBC 连接可参考[配置 ODBC 连接](https://docs.aws.amazon.com/zh_cn/redshift/latest/mgmt/configure-odbc-connection.html)
 
-1. 下载 ODBC 驱动到本地    
+1. 下载 ODBC 驱动到本地
 
 Ubuntu 选择 Linux 操作系统 64 位 (.deb)，CentOS 选择 Linux 操作系统 64 位 (.deb)
 
@@ -181,11 +181,11 @@ Database=Your database
 
 预设情况下，用户创建的任何集群对所有人关闭。IAM 凭证仅控制对 Amazon Redshift API 相关资源的访问 AWS Redshift 控制台、命令行界面 (CLI)、API 和开发工具包。要能够通过 JDBC 或 ODBC 从 SQL 客户端工具访问集群，用户可以使用安全组
 
-* 将安全组的 inbound 规则设置如下，开放5439端口给外部    
+* 将安全组的 inbound 规则设置如下，开放5439端口给外部
 
 ![](images/Migrate_data_from_Redshift_to_DolphinDB/3-2.png)
 
-* 编辑集群的属性,修改网络和安全设置，设置 VPC 安全组为刚才创建的安全组，并启用可公开访问。    
+* 编辑集群的属性,修改网络和安全设置，设置 VPC 安全组为刚才创建的安全组，并启用可公开访问。
 
 ![](images/Migrate_data_from_Redshift_to_DolphinDB/3-3.png)
 
@@ -213,7 +213,7 @@ SQL>
 
 ### 3.3 利用 DolphinDB 脚本同步数据
 
-1.  运行以下命令加载 ODBC 插件    
+1. 运行以下命令加载 ODBC 插件
 
 ```
 login("admin","123456")
@@ -248,11 +248,11 @@ startTime                        endTime
 
 最终迁移3亿条数据，耗时仅为1610秒。该迁移案例测试的硬件环境为：
 
-* CPU：11th Gen Inter(R) Core(TM) i5-11500 @2.70GHz    
-* 处理器个数：12 个    
-* 单个处理器核数：6 核    
-* 内存大小：32 GB    
-* 网络传输速率：21508 MiB/s    
+* CPU：11th Gen Inter(R) Core(TM) i5-11500 @2.70GHz
+* 处理器个数：12 个
+* 单个处理器核数：6 核
+* 内存大小：32 GB
+* 网络传输速率：21508 MiB/s
 
 5. 查看表中数据
 
@@ -269,4 +269,5 @@ select top 10 * from pt
 DolphinDB 具有强大的金融数据处理能力，包含丰富的预定义函数功能，以及具备自带的持久化数据存储。既有非常高的吞吐量，又有较低的延时；既能够实时处理流数据，又能够处理海量的历史数据；既能满足简单的点查询的要求，又能满足批量数据复杂分析的要求。本教程中的数据迁移模拟操作充分地显示了 DolphinDB 的这些优势。
 
 ## 附录
+
 [完整脚本](script/Migrate_data_from_Redshift_to_DolphinDB/Redshift2DDB.txt)
