@@ -1,2 +1,0 @@
-columnAvg,libPluginColumnAvg.so
-columnAvg,columnAvg,system,2,2,0

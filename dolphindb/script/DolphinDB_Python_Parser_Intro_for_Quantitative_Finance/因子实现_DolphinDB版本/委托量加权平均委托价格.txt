@@ -1,9 +1,0 @@
-@state
-def volumeWeightedAvgPrice(OrderQty, Price, window){
-	return mwavg(Price, OrderQty, window)
-}
-
-timer{
-	orderTB = loadTable("dfs://TL_Level2", "entrust")
-	res = select SecurityID, TradeTime, volumeWeightedAvgPrice(OrderQty, Price, 60) as volumeWeightedAvgPrice from orderTB where date(TradeTime)=2023.02.01 context by date(TradeTime), SecurityID
-}

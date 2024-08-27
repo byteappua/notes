@@ -1,5 +1,0 @@
-module DolphinDBModules::SnapshotFactorCalculationPlatform::Factor1::High
-
-def High(){
-	return "max(LastPx)"
-}

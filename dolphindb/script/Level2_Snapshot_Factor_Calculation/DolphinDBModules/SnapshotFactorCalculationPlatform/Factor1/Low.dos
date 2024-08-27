@@ -1,5 +1,0 @@
-module DolphinDBModules::SnapshotFactorCalculationPlatform::Factor1::Low
-
-def Low(){
-	return "min(LastPx)"
-}

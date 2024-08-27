@@ -1,5 +1,0 @@
-module DolphinDBModules::SnapshotFactorCalculationPlatform::Factor1::TotalVolumeTrade
-
-def TotalVolumeTrade(){
-	return "last(TotalVolumeTrade)"
-}

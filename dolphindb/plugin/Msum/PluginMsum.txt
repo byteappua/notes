@@ -1,2 +1,0 @@
-msum,libPluginMsum.so
-msum,msum,operator,2,2,0
