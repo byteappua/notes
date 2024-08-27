@@ -12,7 +12,10 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: "hello-algo", link: "/hello-algo/docs/" },
-      { text: "dolphindb", link: "/documentation.latest.zh/index.html" },
+      {
+        text: "dolphindb",
+        link: "https://bytewer.github.io/code-note/documentation.latest.zh/index.html",
+      },
       { text: "test", link: "/" },
       { text: "Examples", link: "/markdown-examples" },
     ],
