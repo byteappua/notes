@@ -15,6 +15,8 @@ export default defineConfig({
       {
         text: "dolphindb",
         link: "https://bytewer.github.io/code-note/documentation.latest.zh/index.html",
+        target: "_self",
+        rel: "sponsored",
       },
       { text: "test", link: "/" },
       { text: "Examples", link: "/markdown-examples" },
