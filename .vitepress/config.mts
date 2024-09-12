@@ -30,6 +30,7 @@ export default defineConfig({
           // c/b: { sort : 3 }, // 通过路径精确匹配 c 文件夹下的 b 进行配置，排序时位于下标3的位置或最后
           // c/b2: { useArticleTitle: false }, // 关闭使用文章一级标题作为文章名称
           // d: { collapsed: true }, // 文件夹折叠配置
+          "一线互联网Java面试核心点(100万字)": { collapsed: true }, // 文件夹折叠配置
         },
         compareFn: (a, b) => {
           // 按最新提交时间(没有提交记录时为本地文件修改时间)升序排列
