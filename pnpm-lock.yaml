@@ -9,7 +9,7 @@ importers:
   .:
     devDependencies:
       vite:
-        specifier: ^5.4.1
+        specifier: ^5.4.4
         version: 5.4.4
       vite-plugin-vitepress-auto-nav:
         specifier: ^3.0.0
