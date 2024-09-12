@@ -77,6 +77,7 @@ public class ArrayStack {
 ```
 
 ### 说明
+
 - **初始化**：构造函数`ArrayStack(int capacity)`用于初始化栈的容量和数组。
 - **入栈**`**push**`：在栈顶插入一个元素，并更新`top`索引。
 - **出栈**`**pop**`：移除并返回栈顶元素，更新`top`索引。

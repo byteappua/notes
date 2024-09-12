@@ -42,6 +42,7 @@ public class JVMExitExample {
 ```
 
 ### 解释
+
 - **正常程序终止**：默认情况下，`main`执行完毕后，所有非守护线程完成，程序正常退出。
 - `**System.exit()**`：调用`System.exit(0)`立即终止JVM。非零参数值通常被用来指示异常终止。
 - **未捕获的异常**：在`willCauseException()`中，我们故意抛出一个未捕获的`RuntimeException`，导致程序退出。

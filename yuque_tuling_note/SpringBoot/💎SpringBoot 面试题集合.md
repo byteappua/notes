@@ -46,7 +46,7 @@ spring-boot-starter-validation本质是使用的Hibernate Validator，它并没�
 
 在我们对应的DTO上并在controller的上添加校验。
 
-#### 在DTO的属性上添加校验 
+#### 在DTO的属性上添加校验
 
 通过在参数上添加各种校验注解实现校验
 
@@ -982,7 +982,7 @@ maxConnections和accept-count的关系为：当连接数达到最大值maxConnec
 详细的来说：当调用HTTP请求数达到tomcat的最大线程数时，还有新的HTTP请求到来，这时tomcat会将该请求放在等待队列中，这个acceptCount就是指能够接受的最大等待数，默认100。如果等待队列也被放满了，这个时候再来新的请求就会被tomcat拒绝（connection refused）。
 >
 
-## 
+##
 
 ### 图解
 
@@ -1004,7 +1004,7 @@ min-spare、maxConnections、maxThreads、acceptCount关系之间，具体的关
 （2）上桌：如果有餐桌空出来了，表示maxConnections连接数没有满，排队的人，可以进入大堂上桌就餐。  
 （3）就餐：就餐需要厨师炒菜。厨师的数量，比顾客的数量，肯定会少一些。一个厨师一定需要给多张餐桌炒菜，如果就餐的人越多，厨师也会忙不过来。这时候就可以增加厨师，一增加到上限maxThreads的值，如果还是不够，只能是拖慢每一张餐桌的上菜速度，这种情况，就是大家常见的“上一道菜吃光了，下一道菜还没有上”尴尬场景。
 
-### 
+###
 
 ## 代码示例
 

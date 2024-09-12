@@ -118,6 +118,7 @@ public class CouponExpirationListener implements RocketMQListener<Long> {
     - `CouponExpirationListener`监听指定的主题，消费消息并将对应优惠券标记为无效。这一过程依赖于RocketMQ的延时消息特性。
 
 ### 项目亮点
+
 - **自动过期**：通过延时消息自动管理优惠券的过期，无需手动干预。
 - **降低复杂度**：避免手动调度任务或定时任务，完全依靠消息中间件实现。
 - **节省资源**：只有在消息到期时才触发处理逻辑，节省系统资源。
