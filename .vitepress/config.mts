@@ -4,8 +4,8 @@ import AutoNav from "vite-plugin-vitepress-auto-nav";
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   ignoreDeadLinks: true,
-  title: "My Awesome Project",
-  description: "A VitePress Site",
+  title: "笔记",
+  description: "知识库",
   lang: "zh-CN",
   base: "/code-note",
   themeConfig: {
