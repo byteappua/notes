@@ -36,15 +36,15 @@ export default defineConfig({
         compareFn: (a: Item, b: Item) => {
           const nameA = a.name.toLowerCase();
           const nameB = b.name.toLowerCase();
-
+          return nameA.localeCompare(nameB, "zh-CN");
           // Compare file names
-          if (nameA < nameB) {
-            return -1;
-          } else if (nameA > nameB) {
-            return 1;
-          } else {
-            return 0;
-          }
+          // if (nameA < nameB) {
+          //   return -1;
+          // } else if (nameA > nameB) {
+          //   return 1;
+          // } else {
+          //   return 0;
+          // }
           // 按最新提交时间(没有提交记录时为本地文件修改时间)升序排列
           // return (
           //   (b.options.lastCommitTime || b.options.modifyTime) -
