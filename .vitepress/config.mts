@@ -1,6 +1,7 @@
 import { defineConfig } from "vitepress";
 
 import AutoNav from "vite-plugin-vitepress-auto-nav";
+import { Item } from "vite-plugin-vitepress-auto-nav/types";
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   ignoreDeadLinks: true,
@@ -32,12 +33,23 @@ export default defineConfig({
           // d: { collapsed: true }, // 文件夹折叠配置
           "一线互联网Java面试核心点(100万字)": { collapsed: true }, // 文件夹折叠配置
         },
-        compareFn: (a, b) => {
+        compareFn: (a: Item, b: Item) => {
+          const nameA = a.name.toLowerCase();
+          const nameB = b.name.toLowerCase();
+
+          // Compare file names
+          if (nameA < nameB) {
+            return -1;
+          } else if (nameA > nameB) {
+            return 1;
+          } else {
+            return 0;
+          }
           // 按最新提交时间(没有提交记录时为本地文件修改时间)升序排列
-          return (
-            (b.options.lastCommitTime || b.options.modifyTime) -
-            (a.options.lastCommitTime || a.options.modifyTime)
-          );
+          // return (
+          //   (b.options.lastCommitTime || b.options.modifyTime) -
+          //   (a.options.lastCommitTime || a.options.modifyTime)
+          // );
         },
         useArticleTitle: true, // 全局开启使用文章一级标题作为文章名称
       }),
