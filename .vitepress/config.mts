@@ -60,7 +60,7 @@ export default defineConfig({
           short_name: "日记",
           theme_color: "#373737",
           start_url: "./",
-          display: "standalone",
+          // display: "standalone",
           background_color: "#373737",
           icons: [
             {
