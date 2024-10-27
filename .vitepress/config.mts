@@ -1,5 +1,5 @@
 import { defineConfig } from "vitepress";
-
+import { VitePWA } from "vite-plugin-pwa";
 import AutoNav from "vite-plugin-vitepress-auto-nav";
 import { Item } from "vite-plugin-vitepress-auto-nav/types";
 // https://vitepress.dev/reference/site-config
@@ -45,6 +45,7 @@ export default defineConfig({
         },
         useArticleTitle: true, // 全局开启使用文章一级标题作为文章名称
       }),
+      VitePWA({ registerType: "autoUpdate" }),
     ],
   },
 });
