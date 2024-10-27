@@ -45,7 +45,38 @@ export default defineConfig({
         },
         useArticleTitle: true, // 全局开启使用文章一级标题作为文章名称
       }),
-      VitePWA({ registerType: "autoUpdate" }),
+      VitePWA({
+        injectRegister: "auto",
+        registerType: "autoUpdate",
+        devOptions: {
+          enabled: true, // 是否支持开发模式下也使 pwa 生效
+        },
+
+        // MANIFEST PWA https://vite-pwa-org.netlify.app/guide/pwa-minimal-requirements.html
+        includeAssets: ["logo.svg", "apple-touch-icon.png", "mask-icon.svg", "favicon.png"], // 应该是下面 manifest 中可能用到的文件名字吧
+        manifest: {
+          name: "标题日记",
+          short_name: "日记",
+          theme_color: "#373737",
+          start_url: "./",
+          display: "standalone",
+          background_color: "#373737",
+          icons: [
+            {
+              src: "logo.svg",
+              sizes: "512x512",
+              type: "image/svg+xml",
+              purpose: "any",
+            },
+            {
+              src: "appicon-apple.png",
+              sizes: "512x512",
+              type: "image/png",
+              purpose: "any",
+            },
+          ],
+        },
+      }),
     ],
   },
 });
