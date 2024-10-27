@@ -65,7 +65,7 @@ export default defineConfig({
           icons: [
             {
               src: "next.svg",
-              sizes: "300x61",
+              sizes: "512x512",
               type: "image/svg+xml",
               purpose: "any",
             },
