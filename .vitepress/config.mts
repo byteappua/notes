@@ -53,8 +53,9 @@ export default defineConfig({
         },
 
         // MANIFEST PWA https://vite-pwa-org.netlify.app/guide/pwa-minimal-requirements.html
-        includeAssets: ["logo.svg", "apple-touch-icon.png", "mask-icon.svg", "favicon.png"], // 应该是下面 manifest 中可能用到的文件名字吧
+        includeAssets: ["../public/next.svg"], // 应该是下面 manifest 中可能用到的文件名字吧
         manifest: {
+          id: "/code-note/",
           name: "标题日记",
           short_name: "日记",
           theme_color: "#373737",
@@ -63,15 +64,9 @@ export default defineConfig({
           background_color: "#373737",
           icons: [
             {
-              src: "logo.svg",
+              src: "next.svg",
               sizes: "512x512",
               type: "image/svg+xml",
-              purpose: "any",
-            },
-            {
-              src: "appicon-apple.png",
-              sizes: "512x512",
-              type: "image/png",
               purpose: "any",
             },
           ],
