@@ -20,6 +20,7 @@ export default defineConfig({
       lazyLoading: true,
     },
   },
+
   vite: {
     assetsInclude: ["**/*.svg", "**/*.JPG", "**/*.PNG"],
     plugins: [
