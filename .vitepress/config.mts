@@ -8,11 +8,11 @@ export default defineConfig({
   title: "笔记",
   description: "知识库",
   lang: "zh-CN",
-  base: "/code-note",
+  base: "/notes",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
 
-    socialLinks: [{ icon: "github", link: "https://github.com/Bytewer/code-note" }],
+    socialLinks: [{ icon: "github", link: "https://github.com/byteappua/notes" }],
   },
   markdown: {
     image: {
@@ -56,7 +56,7 @@ export default defineConfig({
         // MANIFEST PWA https://vite-pwa-org.netlify.app/guide/pwa-minimal-requirements.html
         includeAssets: ["../public/next.svg"], // 应该是下面 manifest 中可能用到的文件名字吧
         manifest: {
-          id: "/code-note/",
+          id: "/notes/",
           name: "标题日记",
           short_name: "日记",
           theme_color: "#373737",
