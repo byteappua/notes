@@ -24,7 +24,7 @@ $ uvicorn main:app --reload
 
 </div>
 
-/// note
+###note
 
 `uvicorn main:app` 命令含义如下:
 
