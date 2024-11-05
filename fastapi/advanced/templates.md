@@ -31,23 +31,6 @@ $ pip install jinja2
 {!../../docs_src/templates/tutorial001.py!}
 ```
 
-### "笔记"
-
-
-
-### "提示"
-
-通过声明 `response_class=HTMLResponse`，API 文档就能识别响应的对象是 HTML。
-
-
-
-### "技术细节"
-
-您还可以使用 `from starlette.templating import Jinja2Templates`。
-
-**FastAPI** 的 `fastapi.templating` 只是为开发者提供的快捷方式。实际上，绝大多数可用响应都直接继承自 Starlette。 `Request` 与 `StaticFiles` 也一样。
-
-
 ## 编写模板
 
 编写模板 `templates/item.html`，代码如下：
