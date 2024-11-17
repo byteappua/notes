@@ -1,7 +1,6 @@
 import { defineConfig } from "vitepress";
 //import { VitePWA } from "vite-plugin-pwa";
 import AutoNav from "vite-plugin-vitepress-auto-nav";
-import { Item } from "vite-plugin-vitepress-auto-nav/types";
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   ignoreDeadLinks: true,
@@ -32,9 +31,9 @@ export default defineConfig({
           // c/b: { sort : 3 }, // 通过路径精确匹配 c 文件夹下的 b 进行配置，排序时位于下标3的位置或最后
           // c/b2: { useArticleTitle: false }, // 关闭使用文章一级标题作为文章名称
           // d: { collapsed: true }, // 文件夹折叠配置
-          "java": { collapsed: true }, // 文件夹折叠配置
+          java: { collapsed: true }, // 文件夹折叠配置
         },
-        compareFn: (a: Item, b: Item) => {
+        compareFn: (a: any, b: any) => {
           const nameA = a.name.toLowerCase();
           const nameB = b.name.toLowerCase();
           if (a.isFolder && !b.isFolder) {
@@ -74,8 +73,6 @@ export default defineConfig({
       //purpose: "any",
       //},
       //],
-      //},
-      //}),
     ],
   },
 });
