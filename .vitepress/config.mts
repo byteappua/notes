@@ -25,6 +25,7 @@ export default defineConfig({
   vite: {
     assetsInclude: ["**/*.svg", "**/*.JPG", "**/*.PNG"],
     plugins: [
+      //https://xaviw.github.io/XaviDocs/%E5%B7%A5%E5%85%B7%E7%B3%BB%E5%88%97/VitePress%E6%90%AD%E5%BB%BA/%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E7%9B%AE%E5%BD%95.html
       AutoNav({
         // pattern: ["**/!(README|TODO).md"], // 也可以在这里排除不展示的文件，例如不匹配 README 和 TODO 文件
         itemsSetting: {
