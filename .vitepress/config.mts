@@ -35,6 +35,7 @@ export default defineConfig({
           // c/b2: { useArticleTitle: false }, // 关闭使用文章一级标题作为文章名称
           // d: { collapsed: true }, // 文件夹折叠配置
           java: { collapsed: true }, // 文件夹折叠配置
+          kaogong: { collapsed: true }, // 文件夹折叠配置
         },
         compareFn: (a: any, b: any) => {
           const nameA = a.name.toLowerCase();
