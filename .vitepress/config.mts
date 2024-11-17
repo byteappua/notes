@@ -7,7 +7,7 @@ export default defineConfig({
   title: "笔记",
   description: "知识库",
   lang: "zh-CN",
-  base: "/notesw",
+  base: "/notes",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     search: {
