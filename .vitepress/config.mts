@@ -7,10 +7,12 @@ export default defineConfig({
   title: "笔记",
   description: "知识库",
   lang: "zh-CN",
-  base: "/notes",
+  base: "/notesw",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
-
+    search: {
+      provider: "local",
+    },
     socialLinks: [{ icon: "github", link: "https://github.com/byteappua/notes" }],
   },
   markdown: {
